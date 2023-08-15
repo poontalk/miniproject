@@ -5,6 +5,8 @@ class UserModel{
   String? address;
   String? email;
   String? mobileNo;
+  String? username;
+  String? password;
 
   UserModel({
     this.userId,
@@ -12,7 +14,9 @@ class UserModel{
     this.lastName,
     this.address,
     this.email,
-    this.mobileNo
+    this.mobileNo,
+    this.username,
+    this.password
   });
 
   Map<String,dynamic> fromUserToJson(){
@@ -22,7 +26,9 @@ class UserModel{
       'lastName' : lastName,
       'address' : address,
       'email' : email,      
-      'mobileNo' : mobileNo
+      'mobileNo' : mobileNo,
+      'username' : username,
+      'password' : password
     };
   }
 
@@ -33,7 +39,9 @@ class UserModel{
       lastName: json["lastName"],
       address: json["address"],
       email: json["email"],
-      mobileNo: json["mobileNo"],      
+      mobileNo: json["mobileNo"],    
+      username: json["username"],
+      password: json["password"]
     );
   }
 }

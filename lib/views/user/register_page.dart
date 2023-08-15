@@ -1,12 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:miniproject/components/myButton.dart';
 import 'package:miniproject/components/myTextField.dart';
-
+import 'package:http/http.dart' as http;
+import 'package:miniproject/controller/registerController.dart';
+import 'package:miniproject/views/user/login_page.dart';
 import '../../components/mySeparator.dart';
 
 
 class registerPage extends StatelessWidget {
   registerPage({super.key});
+
+  
 
  final firstnameController = TextEditingController();
  final lastnameController = TextEditingController();
@@ -17,9 +21,7 @@ class registerPage extends StatelessWidget {
  final passwordController = TextEditingController();
  final addressController = TextEditingController();
 
-  void Register() {
-  
-}
+  final RegisterController rc = RegisterController();
 
  @override
   Widget build (BuildContext context){
@@ -99,7 +101,7 @@ const SizedBox(height: 25),
                MyTextField(
                 controller: passwordController,
                 hintText: 'รหัสผ่าน',
-                obcureText: false,
+                obcureText: true,
               ),
 
               const SizedBox(height: 25),
@@ -108,14 +110,31 @@ const SizedBox(height: 25),
                MyTextField(
                 controller: ConfirmpasswordController,
                 hintText: 'ยืนยันรหัสผ่าน',
-                obcureText: false,
+                obcureText: true,
               ),
 
              const SizedBox(height: 25),
 
             //Confirm Button
-            ElevatedButton(style: ElevatedButton.styleFrom(primary: Colors.green),
-              onPressed: (){}, child: const Text('ยืนยัน')),
+            ElevatedButton(style: ElevatedButton.styleFrom(backgroundColor: Colors.green),
+              onPressed: () async{
+                  http.Response response = await(rc.addResgister(
+                  "U0001", firstnameController.text, lastnameController.text, addressController.text, 
+                  emailController.text, phonenumberController.text, usernameController.text, ConfirmpasswordController.text)
+                  );
+                   if (response.statusCode == 500) {
+                    print("Error!");
+                }  else {
+                  // print(firstnameController.text);
+                  // print(lastnameController.text);
+                  // print(addressController.text);
+                  // print(emailController.text);                  
+                  print("Service was added successfully");
+                  Navigator.of(context).pushReplacement(
+                  MaterialPageRoute(builder: (bui) => LoginPage())
+                 );
+                }   
+              }, child: const Text('ยืนยัน')),
 
             const SizedBox(height: 25)
 
