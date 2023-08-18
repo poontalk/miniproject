@@ -119,16 +119,12 @@ const SizedBox(height: 25),
             ElevatedButton(style: ElevatedButton.styleFrom(backgroundColor: Colors.green),
               onPressed: () async{
                   http.Response response = await(rc.addResgister(
-                  "U0001", firstnameController.text, lastnameController.text, addressController.text, 
+                  firstnameController.text, lastnameController.text, addressController.text, 
                   emailController.text, phonenumberController.text, usernameController.text, ConfirmpasswordController.text)
                   );
                    if (response.statusCode == 500) {
                     print("Error!");
-                }  else {
-                  // print(firstnameController.text);
-                  // print(lastnameController.text);
-                  // print(addressController.text);
-                  // print(emailController.text);                  
+                }  else {                                 
                   print("Service was added successfully");
                   Navigator.of(context).pushReplacement(
                   MaterialPageRoute(builder: (bui) => LoginPage())
