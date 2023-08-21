@@ -1,8 +1,12 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:miniproject/components/myButton.dart';
 import 'package:miniproject/components/myTextField.dart';
+import 'package:miniproject/controller/loginController.dart';
+import 'package:miniproject/main.dart';
 import 'package:miniproject/views/user/register_page.dart';
+import 'package:http/http.dart' as http;
 
 class LoginPage extends StatelessWidget{
    LoginPage({super.key});
@@ -11,12 +15,8 @@ class LoginPage extends StatelessWidget{
 // text editing controllers
 final usernameController = TextEditingController();
 final passwordController = TextEditingController();
-
-// sign user in method
-void signUserIn() {
-  
-}
-
+//import controller
+final LoginController loginController = LoginController();
 
   @override
   Widget build (BuildContext context){
@@ -63,44 +63,49 @@ void signUserIn() {
               obcureText: true,
              ),
 
-            const SizedBox(height: 25),
+            const SizedBox(height: 25),            
+             
+                //sign in button
+              ElevatedButton(style: ElevatedButton.styleFrom(backgroundColor: Colors.green),
+              onPressed: () async{                  
+                  http.Response response = await loginController.loginId(
+                   usernameController.text, passwordController.text);
 
-            //sign in button
-              MyButton(
-                onTap: signUserIn,                
-              ),
+                  if(response.statusCode == 500){
+                   print("Failed Login");
+                  }else {
+                    print("Success Login");                    
+                  Navigator.of(context).pushReplacement(
+                      MaterialPageRoute(builder: (bui) => MyApp())
+                 );
+                    }                  
+              }, child: const Text('ยืนยัน')),
 
               const SizedBox(height: 50),
+
             //not a member? register now
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Text('Not a member?',
                 style: TextStyle(color: Colors.grey[700])),
-                const SizedBox(width: 4),
-                                
+                const SizedBox(width: 4),                                
                TextButton(
-            style: TextButton.styleFrom(
-              textStyle: const TextStyle(
+                style: TextButton.styleFrom(
+                textStyle: const TextStyle(
                 color: Colors.blue,
                 fontWeight: FontWeight.bold),
             ),
-            onPressed: () {Navigator.push(context, MaterialPageRoute(builder: (context) => registerPage())
-            );},
+            onPressed: () {Navigator.push(context, MaterialPageRoute(builder: (context) => registerPage()));
+            },
             child: const Text('Register now'),
-          ),
-                
-                
-               
-              ],
-            ),
-
+              ), 
             ],
+          ),
+        ],
       ),
     ),
       ),
     );
-   
-
   }
 }
