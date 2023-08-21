@@ -37,23 +37,6 @@ class _AddServiceState extends State<AddService> {
 
           SizedBox(height: 50,),
 
-          //Box ID Service 
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 30),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                Text('รหัสบริการ')
-              ],
-            ),
-          ),      
-
-          SizedBox(height: 10,),
-
-           MyTextField(controller: serviceIdController, hintText: '', obcureText: false),
-
-          SizedBox(height: 10,),
-
           //Box Name Service
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 30),
@@ -105,8 +88,7 @@ class _AddServiceState extends State<AddService> {
           //Button Submit
            ElevatedButton(
             onPressed: () async{
-                http.Response response = await serviceController.addServcieModel(
-                 serviceIdController.text, 
+                http.Response response = await serviceController.addServcieModel(                 
                  serviceNameController.text,
                 double.parse(priceController.text) ,
                 int.parse(timespendController.text)                
@@ -114,8 +96,7 @@ class _AddServiceState extends State<AddService> {
 
                 if (response.statusCode == 500) {
                     print("Error!");
-                }  else {
-                  print(serviceIdController.text);
+                }  else {                  
                   print(serviceNameController.text);
                   print(priceController.text);
                   print(timespendController.text);                  

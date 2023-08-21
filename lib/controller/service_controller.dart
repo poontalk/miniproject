@@ -7,9 +7,8 @@ import 'package:miniproject/ws_config.dart';
 
 class ServiceController {
 
-    Future addServcieModel (String serviceId,String serviceName,double price, int timespend) async {
-      Map<String,dynamic> data = {
-        "serviceId" : serviceId,
+    Future addServcieModel (String serviceName,double price, int timespend) async {
+      Map<String,dynamic> data = {        
         "serviceName" : serviceName,
         "price" : price,
         "timespend" : timespend
