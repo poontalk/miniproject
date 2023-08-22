@@ -84,7 +84,7 @@ class _DeleteServiceScreenState extends State<DeleteServiceScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('List Service'),
+        title: const Text('Delete Service'),
       ),
       backgroundColor: Colors.white,
       body: ListView.builder(
