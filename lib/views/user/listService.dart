@@ -3,7 +3,10 @@ import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter/src/widgets/placeholder.dart';
 import 'package:miniproject/controller/service_controller.dart';
 import 'package:miniproject/model/service.dart';
+import 'package:miniproject/views/admin/deleteService.dart';
 import 'package:miniproject/views/admin/editService.dart';
+
+import '../../main.dart';
 
 
 class ListServiceScreen extends StatefulWidget {
@@ -21,9 +24,11 @@ class _ListServiceScreenState extends State<ListServiceScreen> {
 
   void fetchData () async {
     serviceModels = await serviceController.listAllService();
-    setState(() {
+    if(mounted){
+       setState(() {
       isLoaded = true;
     });
+    }   
   }
 
   @override
@@ -32,9 +37,7 @@ class _ListServiceScreenState extends State<ListServiceScreen> {
     fetchData();
   }
 
-  void showFailToDeleteServiceAlert(){
-
-  }
+  
 
   @override
   Widget build(BuildContext context) {   
@@ -43,27 +46,47 @@ class _ListServiceScreenState extends State<ListServiceScreen> {
         title: const Text('List Service'),
       ),
       backgroundColor: Colors.white,
-      body: ListView.builder(
-        itemCount: serviceModels?.length,
-        itemBuilder: ((context,index){
-        return Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Card(
-          elevation: 10,
-          child: ListTile(
-            leading: Text('${serviceModels?[index].serviceName} ${serviceModels?[index].price} บาท'),
-            onTap: (){
-              print("Click at ${index}");
-              Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => EditService(serviceId: serviceModels?[index].serviceId ?? "",)
-              )
-              );
-            },
-            ),
+      
+      body: Column( 
+       
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+                ElevatedButton(
+              onPressed: () {                 
+               Navigator.push(context, MaterialPageRoute(builder: (context) => const DeleteServiceScreen()));                        
+             },
+              child: const Text("Delete")
+              ),
+          ],
+          ),      
+
+         Expanded(
+             child: ListView.builder(        
+          itemCount: serviceModels?.length,
+          itemBuilder: ((context,index){
+          return Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Card(
+            elevation: 10,
+            child: ListTile(
+              leading: Text('${serviceModels?[index].serviceName} ${serviceModels?[index].price} บาท'),
+              ),
+          ),
+          );
+        }        
+        )        
         ),
-        );
-      }
-      )
-      ),
+         ),
+         Row(
+          children: [
+
+          ],
+         )
+        ],         
+     
+      ),      
     );
   }
 }

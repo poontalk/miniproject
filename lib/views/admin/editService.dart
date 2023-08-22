@@ -42,9 +42,17 @@ class _EditServiceState extends State<EditService> {
   void fetchData(String serviceId) async {
     serviceModel = await serviceController.getServiceById(serviceId);
     setDataToText();
-    setState(() {
+    if (mounted){
+      setState(() {
       isLoaded = true;
     });
+    }   
+  }
+
+  @override
+  void initState(){
+    super.initState();
+    fetchData(widget.serviceId);
   }
 
   void showSureToUpdateServiceAlert(ServiceModel uService) {
@@ -56,12 +64,10 @@ class _EditServiceState extends State<EditService> {
       confirmBtnText: "แก้ไข",
       onConfirmBtnTap: () async{
       http.Response response = await serviceController.updateService(uService);
-
         if(response.statusCode == 200){
           Navigator.pop(context);
           showUpdateServiceSuccessAlert();
         }else {
-
         }
     },
     cancelBtnText: "ยกเลิก",
@@ -76,25 +82,63 @@ class _EditServiceState extends State<EditService> {
       text: "แก้ไขข้อมูลเสร็จสิ้น",
      type: QuickAlertType.success,
      confirmBtnText: "ตกลง",
+     onConfirmBtnTap: () =>      
+      Navigator.of(context).pushReplacement(
+                  MaterialPageRoute(builder: (bui) => const ListServiceScreen())
+                 )
+      );
+
+  }
+  void showFailToDeleteServiceAlert () {
+    QuickAlert.show(
+      context: context,
+      title: "เกิดข้อมูลผิดพลาด",
+      text: "ไม่สามารถลบข้อมูลบริการได้",    
+      type: QuickAlertType.error
+    );
+  }
+
+   void showSureToDeleteServiceAlert(String serviceId) {
+    QuickAlert.show(
+      context: context ,
+      title: "ลบสำเร็จ",
+      text: "ลบข้อมูลบริการเสร็จสิ้น",
+      type: QuickAlertType.warning,
+      confirmBtnText: "ลบ",
+      confirmBtnColor: Colors.red,
+      onConfirmBtnTap: () async{
+      http.Response response = await serviceController.deleteService(serviceId);
+
+        if(response.statusCode == 200){
+          Navigator.pop(context);
+          showDeleteServiceSuccessAlert();
+        }else {
+          showFailToDeleteServiceAlert();
+        }
+    },
+    cancelBtnText: "ยกเลิก",
+    showCancelBtn: true
+    );
+  }
+
+  void showDeleteServiceSuccessAlert () {
+    QuickAlert.show(
+      context: context,
+      title: "สำเร็จ",
+      text: "ลบข้อมูลเสร็จสิ้น",
+     type: QuickAlertType.success,
+     confirmBtnText: "ตกลง",
      onConfirmBtnTap: () => 
       Navigator.of(context).pushReplacement(
-                  MaterialPageRoute(builder: (bui) => ListServiceScreen())
+                  MaterialPageRoute(builder: (bui) => const ListServiceScreen())
                  )
       );
   }
 
-  @override
-  void initState(){
-    super.initState();
-    fetchData(widget.serviceId);
-  }
+ 
 
   @override
-  Widget build(BuildContext context) {
-
-    
-   
-    
+  Widget build(BuildContext context) {     
      return Scaffold(     
       body: Column(
         children: [
