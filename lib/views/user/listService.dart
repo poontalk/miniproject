@@ -53,12 +53,22 @@ class _ListServiceScreenState extends State<ListServiceScreen> {
           Row(
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
-                ElevatedButton(
-              onPressed: () {                 
-               Navigator.push(context, MaterialPageRoute(builder: (context) => const DeleteServiceScreen()));                        
-             },
-              child: const Text("Delete")
-              ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 10,vertical: 3),
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30.0)),
+                  primary: Colors.yellow, onPrimary: Colors.black,
+                  side: const BorderSide(
+                    width: 2,
+                    color: Colors.black
+                  )),    
+                              onPressed: () {                 
+                               Navigator.push(context, MaterialPageRoute(builder: (context) => const DeleteServiceScreen()));                        
+                             },
+                              child: const Text("Delete")
+                              ),
+                ),
           ],
           ),      
 
