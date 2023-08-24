@@ -65,7 +65,9 @@ class _EditServiceState extends State<EditService> {
       onConfirmBtnTap: () async{
       http.Response response = await serviceController.updateService(uService);
         if(response.statusCode == 200){
-          Navigator.pop(context);
+          if(mounted){
+              Navigator.pop(context);
+          }          
           showUpdateServiceSuccessAlert();
         }else {
         }
@@ -244,7 +246,7 @@ class _EditServiceState extends State<EditService> {
              ElevatedButton(
             onPressed: () async{
                  Navigator.of(context).pushReplacement(
-                  MaterialPageRoute(builder: (bui) => MyApp())
+                  MaterialPageRoute(builder: (bui) => ListServiceScreen())
                  );
            },
             child: Text("ยกเลิก"),

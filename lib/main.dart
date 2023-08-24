@@ -3,6 +3,7 @@ import 'package:line_icons/line_icons.dart';
 import 'package:miniproject/views/admin/addService.dart';
 import 'package:miniproject/views/admin/deleteService.dart';
 import 'package:miniproject/views/admin/editShopProfile.dart';
+import 'package:miniproject/views/admin/listallmember.dart';
 import 'package:miniproject/views/user/listService.dart';
 import 'package:miniproject/views/user/login_page.dart';
 import 'package:miniproject/views/user/register_page.dart';
@@ -26,8 +27,8 @@ class _MyAppState extends State<MyApp>{
    int _selectedIndex = 0;
   static const TextStyle optionStyle = TextStyle(fontSize: 30, fontWeight: FontWeight.w600);
   final List<Widget> _widgetOptions = <Widget> [   
-     const AddService(),
-     const DeleteServiceScreen(),
+     const ListAllMembersScreen(),
+     const ListServiceScreen(),
      LoginPage(),
      registerPage(),   
   ];

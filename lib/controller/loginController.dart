@@ -12,20 +12,17 @@ class LoginController {
         "username" : userName,
         "password" : password        
       };
-      var url = Uri.parse(baseURL + '/login/loginUserName');
-      
+      var url = Uri.parse(baseURL + '/login/loginUserName');      
 
       // final utf8body = utf8.decode(response.bodyBytes);
       // var jsonResponse = json.decode(utf8body);
       // LoginModel loginModel = LoginModel.fromJsonToLogin(jsonResponse);
       // return loginModel;    
       //
-
          http.Response response = await http.post(
         url,
         headers: headers,
         body: json.encode(data));
-
       return response;       
-  }
+  }  
 }

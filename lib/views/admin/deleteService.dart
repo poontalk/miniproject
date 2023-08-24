@@ -46,7 +46,9 @@ class _DeleteServiceScreenState extends State<DeleteServiceScreen> {
       http.Response response = await serviceController.deleteService(serviceId);
 
         if(response.statusCode == 200){
-          Navigator.pop(context);
+          if(mounted){
+             Navigator.pop(context);
+          }         
           showDeleteServiceSuccessAlert();
         }else {
           showFailToDeleteServiceAlert();
