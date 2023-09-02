@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:line_icons/line_icons.dart';
+import 'package:miniproject/views/admin/addBarber.dart';
 import 'package:miniproject/views/admin/addService.dart';
 import 'package:miniproject/views/admin/deleteService.dart';
 import 'package:miniproject/views/admin/editShopProfile.dart';
