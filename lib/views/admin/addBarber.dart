@@ -5,6 +5,10 @@ import 'package:http/http.dart' as http;
 import 'package:miniproject/controller/barberController.dart';
 import '../../controller/userController.dart';
 import '../../model/user.dart';
+import 'package:quickalert/quickalert.dart';
+import 'package:http/http.dart' as http;
+
+import 'listallmember.dart';
 
 class AddBarber extends StatefulWidget {
   const AddBarber({super.key});
@@ -21,13 +25,60 @@ class _AddBarberState extends State<AddBarber> {
     bool? isLoaded = false;
     List<UserModel>? user;
 
-  void addBarber(String userId) async{
-    http.Response response = await barberController.addBarber(userId);
-    if(response.statusCode == 200){
-      print("success insert");
-    }else{
-      print("Failed insert");
-    }
+  // void addBarber(String userId) async{
+  //   http.Response response = await barberController.addBarber(userId);
+  //   if(response.statusCode == 200){
+  //     print("success insert");
+  //   }else{
+  //     print("Failed insert");
+  //   }
+  // }
+
+   void showSureToAddBarberAlert(String userId) {
+    QuickAlert.show(
+      context: context ,
+      title: "เพิ่มช่างตัดผม",
+      text: "ท่านต้องการเพิ่มช่างตัดผมหรือไม่",
+      type: QuickAlertType.warning,
+      confirmBtnText: "ตกลง",
+      confirmBtnColor: Colors.green,
+      onConfirmBtnTap: () async{
+      http.Response response = await barberController.addBarber(userId);
+        if(response.statusCode == 200){
+          if(mounted){
+             Navigator.pop(context);
+          }         
+          showAddBarberSuccessAlert();
+        }else {
+          showFailToAddBarberAlert();
+        }
+    },
+    cancelBtnText: "ยกเลิก",
+    showCancelBtn: true
+    );
+  }
+
+  void showFailToAddBarberAlert () {
+    QuickAlert.show(
+      context: context,
+      title: "เกิดข้อมูลผิดพลาด",
+      text: "ไม่สามารถเพิ่มช่างตัดผมได้",    
+      type: QuickAlertType.error
+    );
+  }
+
+  void showAddBarberSuccessAlert () {
+    QuickAlert.show(
+      context: context,
+      title: "สำเร็จ",
+      text: "เพิ่มช่างตัดผมเสร็จสิ้น",
+     type: QuickAlertType.success,
+     confirmBtnText: "ตกลง",
+     onConfirmBtnTap: () => 
+      Navigator.of(context).pushReplacement(
+                  MaterialPageRoute(builder: (bui) => const ListAllMembersScreen())
+                 )
+      );
   }
 
   void fetchData () async {
@@ -105,8 +156,7 @@ class _AddBarberState extends State<AddBarber> {
                                 
                  trailing: GestureDetector(
                       onTap: () {
-                        //showSureToDeleteServiceAlert(serviceModels?[index].serviceId ?? "");
-                        addBarber(user?[index].userId ?? "");                        
+                        showSureToAddBarberAlert(user?[index].userId ?? "");                                               
                         print("Add");
                       },
                       child: const Icon(
