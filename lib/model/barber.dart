@@ -1,19 +1,28 @@
+
+
 class BarberModel {
   String? barberId;
   String? userId;
+  String? barberFirstName;
+  String? barberLastName;
   String? barberStatus;
+  
 
   BarberModel({
-    this.barberId,
-    this.barberStatus,
-    this.userId
+    this.barberId,    
+    this.userId,
+    this.barberFirstName,
+    this.barberLastName,
+    this.barberStatus,    
   });
 
     Map<String,dynamic> fromBarberToJson(){
     return<String,dynamic> {
-      'userId' : userId,
       'barberId' : barberId,
-      'barberStatus' : barberStatus     
+      'userId' : userId,           
+      'firstName' : barberFirstName,
+      'lastName' : barberLastName,
+      'barberStatus' : barberStatus      
     };
   }
 
@@ -21,7 +30,9 @@ class BarberModel {
     return BarberModel(
       userId: json["userId"],
       barberId: json["barberId"],
-      barberStatus: json["barberStatus"]
+      barberFirstName: json["firstName"],
+      barberLastName: json["lastName"],
+      barberStatus: json["barberStatus"]                 
     );
   }
 }

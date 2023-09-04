@@ -18,4 +18,17 @@ class UserController {
     return list;
 
   }
+
+  Future listAllBarbers() async{
+    
+    var url = Uri.parse(baseURL + '/user/listfirstnameandlastname');
+
+    http.Response response = await http.get(url);
+
+    final utf8body = utf8.decode(response.bodyBytes);
+    List<dynamic> jsonResponse = json.decode(utf8body);
+    List<UserModel> list = jsonResponse.map((e) => UserModel.fromJsonToUser(e)).toList();
+    return list;
+
+  }
 }

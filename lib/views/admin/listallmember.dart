@@ -26,8 +26,8 @@ class _ListAllMembersScreenState extends State<ListAllMembersScreen> {
     List<BarberModel>? barber;
 
   void fetchData () async {
-    barber = await barberController.listAllBarber();
-    user = await userController.listAllUser();
+     barber = await barberController.listAllBarber();
+    user = await userController.listAllBarbers();
     if(mounted){
        setState(() {
       isLoaded = true;
@@ -134,14 +134,14 @@ class _ListAllMembersScreenState extends State<ListAllMembersScreen> {
          Expanded(
              child: Container(
                    child: ListView.builder(        
-                       itemCount: barber?.length,
+                       itemCount: barber?.length ?? user?.length,
                        itemBuilder: ((context,index){
                        return Padding(
                        padding: const EdgeInsets.all(8.0),
                        child: Card(
                          elevation: 10,
                          child: ListTile(
-                leading: Text(' ${barber?[index].barberId}        ${barber?[index].barberStatus} ${user?[index].firstName} ${user?[index].lastName}') ,
+                leading: Text('${barber?[index].barberId}    ${user?[index].firstName}        ${user?[index].lastName}    ${barber?[index].barberStatus}') ,
                                 
                  trailing: GestureDetector(
                       onTap: () {
