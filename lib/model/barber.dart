@@ -1,28 +1,30 @@
+import 'package:miniproject/model/user.dart';
+
 class BarberModel {
   String? barberId;
-  String? userId; 
+  UserModel? userModel; 
   String? barberStatus;
   
 
   BarberModel({
     this.barberId,    
-    this.userId,
+    this.userModel,
     this.barberStatus,    
   });
 
     Map<String,dynamic> fromBarberToJson(){
     return<String,dynamic> {
-      'barberId' : barberId,
-      'userId' : userId,
-      'barberStatus' : barberStatus      
+      'barberId' : barberId,      
+      'barberStatus' : barberStatus,    
+      'user' : userModel?.fromUserToJson()  
     };
   }
 
    factory BarberModel.fromJsonToBarber(Map<String, dynamic> json) {
-    return BarberModel(
-      userId: json["userId"],
+    return BarberModel(      
       barberId: json["barberId"],
-      barberStatus: json["barberStatus"]                 
+      barberStatus: json["barberStatus"],  
+      userModel: UserModel.fromJsonToUser(json["user"])               
     );
   }
 }

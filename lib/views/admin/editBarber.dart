@@ -5,6 +5,7 @@ import 'package:miniproject/components/myTextField.dart';
 import 'package:miniproject/controller/barberController.dart';
 import 'package:miniproject/main.dart';
 import 'package:miniproject/model/barber.dart';
+import 'package:miniproject/model/user.dart';
 import 'package:miniproject/views/admin/listallmember.dart';
 import 'package:http/http.dart' as http;
 
@@ -20,14 +21,18 @@ class EditBarberScreen extends StatefulWidget {
 class _EditBarberScreenState extends State<EditBarberScreen> {
   BarberModel? barberModel;
   bool? isLoaded = false;
+  UserModel? userModel;
 
   final BarberController barberController = BarberController();
   TextEditingController barberIdController = TextEditingController();
+  TextEditingController userIdController = TextEditingController();
 
   void fetchData(String baeberId) async {
     barberModel = await barberController.getBarberById(baeberId);
     // setDataToText();
     barberIdController.text = barberModel?.barberId ?? "";
+    userIdController.text = barberModel?.userModel?.userId ?? "";
+    
     if (mounted) {
       setState(() {
         isLoaded = true;
@@ -90,6 +95,7 @@ class _EditBarberScreenState extends State<EditBarberScreen> {
                         await barberController.updateBarber(BarberModel(
                       barberId: barberIdController.text,
                       barberStatus: selectedItem,
+                      userModel: barberModel?.userModel
                     ));
 
                     if (response.statusCode == 500) {
