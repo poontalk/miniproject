@@ -101,14 +101,6 @@ class _EditBarberScreenState extends State<EditBarberScreen> {
                     if (response.statusCode == 500) {
                       print('Failed to update');
                     }
-                    print('$selectedItem');
-                    // ServiceModel updateService = ServiceModel(
-                    //   serviceId: serviceModel?.serviceId,
-                    //   serviceName: serviceNameController.text,
-                    //   price: double.parse(priceController.text) ,
-                    //   timespend: int.parse(timespendController.text)
-                    // );
-                    //  showSureToUpdateServiceAlert(updateService);
                   },
                   child: Text("ยืนยัน")),
               SizedBox(
