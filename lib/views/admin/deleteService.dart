@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/src/widgets/framework.dart';
-import 'package:flutter/src/widgets/placeholder.dart';
 import 'package:miniproject/controller/service_controller.dart';
 import 'package:miniproject/model/service.dart';
 import 'package:miniproject/views/admin/addService.dart';
@@ -8,7 +6,6 @@ import 'package:miniproject/views/admin/editService.dart';
 import 'package:miniproject/views/user/listService.dart';
 import 'package:quickalert/quickalert.dart';
 import 'package:http/http.dart' as http;
-
 import '../../main.dart';
 
 class DeleteServiceScreen extends StatefulWidget {
@@ -86,18 +83,6 @@ class _DeleteServiceScreenState extends State<DeleteServiceScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Delete Service'),
-         actions: <Widget>[
-          IconButton(
-            icon: const Icon(
-              Icons.home,
-              color: Colors.white,
-            ),
-            onPressed: () {
-              Navigator.push(
-                  context, MaterialPageRoute(builder: (context) => MyApp()));
-            },
-          )
-        ],
       ),
       backgroundColor: Colors.white,
       body: Column(
@@ -141,7 +126,7 @@ class _DeleteServiceScreenState extends State<DeleteServiceScreen> {
                         onTap: () {
                           print("Click at ${index}");
                           Navigator.of(context)
-                              .pushReplacement(MaterialPageRoute(
+                              .push(MaterialPageRoute(
                                   builder: (context) => EditService(
                                         serviceId:
                                             serviceModels?[index].serviceId ??

@@ -29,6 +29,16 @@ class UserController {
     List<dynamic> jsonResponse = json.decode(utf8body);
     List<UserModel> list = jsonResponse.map((e) => UserModel.fromJsonToUser(e)).toList();
     return list;
+  }
 
+  Future getUserByLoginId(String loginId) async {
+    var url = Uri.parse(baseURL + '/user/getuserbylogin/' + loginId);
+
+    http.Response response = await http.get(url);
+
+    final utf8body = utf8.decode(response.bodyBytes);
+    var jsonResponse = json.decode(utf8body);
+    UserModel userModel = UserModel.fromJsonToUser(jsonResponse);
+    return userModel;
   }
 }

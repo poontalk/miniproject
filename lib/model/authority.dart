@@ -1,22 +1,23 @@
 import 'dart:ffi';
 
-class AuthorityLogin {
+class AuthorityModel {
   int? authorityId;
   Long? loginId;
+  String? role;
 
-  AuthorityLogin({this.authorityId,this.loginId});
+  AuthorityModel({this.authorityId,this.role});
 
-  Map<String,dynamic> fromAuthorityLoginToJson(){
+  Map<String,dynamic> fromAuthorityToJson(){
     return<String,dynamic> {      
-      'authorityId' : authorityId,
-      'loginId' : loginId
+      'authorityId' : authorityId,      
+      'role' : role
     };
   }
 
-   factory AuthorityLogin.fromJsonToAuthorityLogin(Map<String, dynamic> json) {
-    return AuthorityLogin(         
-      authorityId: json["authorityId"],
-      loginId: json["loginId"]
+   factory AuthorityModel.fromJsonToAuthority(Map<String, dynamic> json) {
+    return AuthorityModel(         
+      authorityId: json["authorityId"],     
+      role: json["role"]
     );
   }
 }

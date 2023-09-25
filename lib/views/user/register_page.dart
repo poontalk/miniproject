@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:miniproject/components/myButton.dart';
-import 'package:miniproject/components/myTextField.dart';
 import 'package:http/http.dart' as http;
 import 'package:miniproject/controller/registerController.dart';
 import 'package:miniproject/views/user/login_page.dart';

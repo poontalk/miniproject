@@ -1,13 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/src/widgets/framework.dart';
-import 'package:flutter/src/widgets/placeholder.dart';
+import 'package:flutter_session_manager/flutter_session_manager.dart';
 import 'package:http/http.dart' as http;
 import 'package:miniproject/controller/barberController.dart';
 import '../../controller/userController.dart';
 import '../../model/user.dart';
 import 'package:quickalert/quickalert.dart';
-import 'package:http/http.dart' as http;
-
 import 'listallmember.dart';
 
 class AddBarber extends StatefulWidget {
@@ -22,6 +19,7 @@ class _AddBarberState extends State<AddBarber> {
   final UserController userController = UserController();
   final BarberController barberController = BarberController();
 
+  
     bool? isLoaded = false;
     List<UserModel>? user;
 
@@ -104,37 +102,15 @@ class _AddBarberState extends State<AddBarber> {
       ),
       backgroundColor: Colors.white,
       
-      body: Column( 
-       
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.end,
-            children: [
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 15 , vertical: 5),
-                  child: ElevatedButton(style: ElevatedButton.styleFrom(
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30.0)),
-                  primary: Colors.yellow, onPrimary: Colors.black,
-                  side: const BorderSide(
-                    width: 2,
-                    color: Colors.black
-                  )),    
-                                
-                              onPressed: () {                 
-                              // Navigator.push(context, MaterialPageRoute(builder: (context) => const DeleteServiceScreen()));                        
-                             },
-                              child: const Text("เพิ่มช่างตัดผม")
-                              ),
-                ),
-          ],
-          ),   
-          Row(
+      body: Column(        
+        children: [ 
+          const SizedBox(height: 40),     
+          const  Row (
             mainAxisAlignment: MainAxisAlignment.start,
-              children: [                           
-              Text("ชื่อ"),             
-                           
-              ],
-              
+              children: [                   
+                Padding(padding: EdgeInsets.only(left: 15.0)),                                  
+              Text("ชื่อ"),                              
+              ],             
           ),   
 
          Expanded(
@@ -149,9 +125,7 @@ class _AddBarberState extends State<AddBarber> {
                          child: ListTile(
                 leading: Text(' ${user?[index].firstName} ${user?[index].lastName} ') ,
                 onTap: (){
-                  print("Click at ${index}");
-             /* Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => EditService(userId: user()?[index].serviceId ?? "",) )
-              );*/
+                  print("Click at ${index}");             
                 },
                                 
                  trailing: GestureDetector(

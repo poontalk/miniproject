@@ -1,7 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/src/widgets/framework.dart';
-import 'package:flutter/src/widgets/placeholder.dart';
-import 'package:miniproject/components/myTextField.dart';
 import 'package:miniproject/controller/barberController.dart';
 import 'package:miniproject/main.dart';
 import 'package:miniproject/model/barber.dart';
@@ -103,13 +100,12 @@ class _EditBarberScreenState extends State<EditBarberScreen> {
                     }
                   },
                   child: Text("ยืนยัน")),
-              SizedBox(
-                width: 10,
-              ),
+
+              const SizedBox( width: 10, ),
+
               ElevatedButton(
                 onPressed: () async {
-                  Navigator.of(context).pushReplacement(MaterialPageRoute(
-                      builder: (bui) => const ListAllMembersScreen()));
+                  Navigator.pop(context);
                 },
                 child: Text("ยกเลิก"),
                 style: ButtonStyle(

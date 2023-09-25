@@ -1,16 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/src/widgets/framework.dart';
-import 'package:flutter/src/widgets/placeholder.dart';
 import 'package:miniproject/controller/service_controller.dart';
 import 'package:miniproject/model/service.dart';
 import 'package:miniproject/views/admin/deleteService.dart';
-import 'package:miniproject/views/admin/editService.dart';
-import 'package:line_icons/line_icons.dart';
-import 'package:google_nav_bar/google_nav_bar.dart';
-import 'package:miniproject/views/user/register_page.dart';
-import '../../main.dart';
-import '../admin/listallmember.dart';
-import 'login_page.dart';
 
 class ListServiceScreen extends StatefulWidget {
   const ListServiceScreen({super.key});
@@ -24,17 +15,7 @@ class _ListServiceScreenState extends State<ListServiceScreen> {
 
   bool? isLoaded = false;
   List<ServiceModel>? serviceModels;
-
   int i = 0;
-  int _selectedIndex = 0;
-  static const TextStyle optionStyle =
-      TextStyle(fontSize: 30, fontWeight: FontWeight.w600);
-  final List<Widget> _widgetOptions = <Widget>[
-    const ListAllMembersScreen(),
-    const ListServiceScreen(),
-    LoginPage(),
-    RegisterPage(),
-  ];
 
   void fetchData() async {
     serviceModels = await serviceController.listAllService();
@@ -97,9 +78,6 @@ class _ListServiceScreenState extends State<ListServiceScreen> {
                     ),
                   );
                 })),
-          ),
-          Row(
-            children: [],
           )
         ],
       ),

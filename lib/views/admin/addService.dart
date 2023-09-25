@@ -1,9 +1,6 @@
 import 'package:flutter/material.dart';
-
-import 'package:miniproject/components/myTextField.dart';
 import 'package:miniproject/controller/service_controller.dart';
 import 'package:http/http.dart' as http;
-
 import '../../components/validator.dart';
 import 'deleteService.dart';
 
@@ -128,10 +125,13 @@ class _AddServiceState extends State<AddService> {
                     print(priceController.text);
                     print(timespendController.text);
                     print("Service was added successfully");
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => const DeleteServiceScreen()));
+                    if (context.mounted) {
+                      Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) =>
+                                  const DeleteServiceScreen()));
+                    }
                   }
                   print('success');
                 }

@@ -1,7 +1,4 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
-import 'package:miniproject/components/myTextField.dart';
 import 'package:miniproject/controller/service_controller.dart';
 import 'package:http/http.dart' as http;
 import 'package:miniproject/main.dart';
@@ -158,18 +155,6 @@ class _EditServiceState extends State<EditService> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Edit Service'),
-         actions: <Widget>[
-          IconButton(
-            icon: const Icon(
-              Icons.home,
-              color: Colors.white,
-            ),
-            onPressed: () {
-              Navigator.push(
-                  context, MaterialPageRoute(builder: (context) => MyApp()));
-            },
-          )
-        ],
       ),
       body: Column(
         children: [
@@ -285,8 +270,7 @@ class _EditServiceState extends State<EditService> {
             //ส่วนปุ่มกดยกเลิก
             ElevatedButton(
               onPressed: () async {
-                Navigator.of(context).pushReplacement(MaterialPageRoute(
-                    builder: (bui) => const ListServiceScreen()));
+                 Navigator.pop(context);
               },
               child: Text("ยกเลิก"),
               style: ButtonStyle(

@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/src/widgets/framework.dart';
-import 'package:flutter/src/widgets/placeholder.dart';
 import 'package:miniproject/components/validator.dart';
 import 'package:miniproject/controller/userController.dart';
 import 'package:miniproject/model/login.dart';

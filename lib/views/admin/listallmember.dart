@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/src/widgets/framework.dart';
-import 'package:flutter/src/widgets/placeholder.dart';
 import 'package:miniproject/controller/barberController.dart';
 import 'package:miniproject/controller/userController.dart';
 import 'package:miniproject/model/barber.dart';
@@ -118,7 +116,7 @@ class _ListAllMembersScreenState extends State<ListAllMembersScreen> {
               ),
             ],
           ),
-          Row(
+          const Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
               Text("ชื่อ"),
@@ -139,7 +137,7 @@ class _ListAllMembersScreenState extends State<ListAllMembersScreen> {
                               '${barber?[index].barberId}    ${user?[index].firstName}        ${user?[index].lastName}    ${barber?[index].barberStatus}'),
                           onTap: () {
                             Navigator.of(context)
-                                .pushReplacement(MaterialPageRoute(
+                                .push(MaterialPageRoute(
                                     builder: (context) => EditBarberScreen(
                                           barberId:
                                               barber?[index].barberId ?? "",

@@ -1,14 +1,16 @@
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:miniproject/components/myButton.dart';
-import 'package:miniproject/components/myTextField.dart';
+import 'package:flutter_session_manager/flutter_session_manager.dart';
 import 'package:miniproject/controller/loginController.dart';
 import 'package:miniproject/main.dart';
+import 'package:miniproject/model/login.dart';
+import 'package:miniproject/model/user.dart';
+import 'package:miniproject/views/user/dashboard.dart';
 import 'package:miniproject/views/user/register_page.dart';
 import 'package:http/http.dart' as http;
 
 import '../../components/validator.dart';
+import '../../controller/userController.dart';
 
 class LoginPage extends StatefulWidget {
   LoginPage({super.key});
@@ -18,18 +20,23 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
-// text editing controllers
+  // text editing controllers
   final usernameController = TextEditingController();
   final passwordController = TextEditingController();
-//import controller
+  //import controller
+  final UserController userController = UserController();
   final LoginController loginController = LoginController();
-
+  //import models
+  LoginModel? loginModel;
+  UserModel? userModel;
+  //property
   bool isUsernameCorrect = false;
   bool isPasswordCorrect = false;
+  var sessionManager = SessionManager();
 
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
+  Widget build(BuildContext context) {    
+    return Scaffold(      
       backgroundColor: Colors.grey[300],
       body: SingleChildScrollView(
         child: Center(
@@ -70,12 +77,23 @@ class _LoginPageState extends State<LoginPage> {
                     http.Response response = await loginController.loginId(
                         usernameController.text, passwordController.text);
 
-                    if (response.statusCode == 500) {
+                    if (response.body.contains('false')) {
                       print("Failed Login");
                     } else {
+                      loginModel = await loginController
+                          .findLoginIdByUsername(usernameController.text);                        
+                      userModel = await userController.getUserByLoginId(loginModel!.loginId.toString());
+                     
+                      await sessionManager.set("firstname", userModel?.firstName);
+                      await sessionManager.set("lastname", userModel?.lastName);
+                      await sessionManager.set("username", userModel?.username.toString());
                       print("Success Login");
-                      Navigator.of(context).pushReplacement(
-                          MaterialPageRoute(builder: (bui) => MyApp()));
+                      print(loginModel?.username);
+                      print(userModel?.firstName);
+                       if(context.mounted){
+                         Navigator.of(context).pushReplacement(
+                           MaterialPageRoute(builder: (bui) => MyApp()));
+                      }                      
                     }
                   },
                   child: const Text('ยืนยัน')),
@@ -119,7 +137,7 @@ class _LoginPageState extends State<LoginPage> {
         controller: usernameController,
         onChanged: (val) {
           setState(() {
-            isPasswordCorrect = validateUserName(val);
+            isUsernameCorrect = validateUserName(val);
           });
         },
         showCursor: true,
@@ -179,8 +197,6 @@ class _LoginPageState extends State<LoginPage> {
             fontSize: 16,
             fontWeight: FontWeight.w300,
           ),
-          hintText: "",
-          hintStyle: const TextStyle(color: Colors.grey, fontSize: 15),
           prefixIcon: const Icon(
             Icons.key_sharp,
             color: Colors.black,
