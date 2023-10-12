@@ -96,8 +96,9 @@ class _EditBarberScreenState extends State<EditBarberScreen> {
                     ));
 
                     if (response.statusCode == 500) {
-                      print('Failed to update');
+                      print('Failed to update');                      
                     }
+                    Navigator.pop(context);
                   },
                   child: Text("ยืนยัน")),
 

@@ -1,11 +1,17 @@
+import 'dart:convert';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_session_manager/flutter_session_manager.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:miniproject/controller/authorityController.dart';
 import 'package:miniproject/controller/loginController.dart';
 import 'package:miniproject/main.dart';
+import 'package:miniproject/model/authority.dart';
 import 'package:miniproject/model/login.dart';
 import 'package:miniproject/model/user.dart';
-import 'package:miniproject/views/user/dashboard.dart';
+import 'package:miniproject/views/barber/listReserve.dart';
+import 'package:miniproject/views/customer/dashboard.dart';
 import 'package:miniproject/views/user/register_page.dart';
 import 'package:http/http.dart' as http;
 
@@ -26,20 +32,23 @@ class _LoginPageState extends State<LoginPage> {
   //import controller
   final UserController userController = UserController();
   final LoginController loginController = LoginController();
+  final AuthorityLoginController authorityLoginController =
+      AuthorityLoginController();
+  final _formKey = GlobalKey<FormState>();
   //import models
   LoginModel? loginModel;
   UserModel? userModel;
-  //property
-  bool isUsernameCorrect = false;
-  bool isPasswordCorrect = false;
+  List<AuthorityModel>? authorityModel;
+
   var sessionManager = SessionManager();
 
   @override
-  Widget build(BuildContext context) {    
-    return Scaffold(      
+  Widget build(BuildContext context) {
+    return Scaffold(
       backgroundColor: Colors.grey[300],
       body: SingleChildScrollView(
-        child: Center(
+        child: Form(
+          key: _formKey,
           child: Column(
             children: [
               const SizedBox(height: 50),
@@ -74,26 +83,24 @@ class _LoginPageState extends State<LoginPage> {
                   style:
                       ElevatedButton.styleFrom(backgroundColor: Colors.green),
                   onPressed: () async {
-                    http.Response response = await loginController.loginId(
-                        usernameController.text, passwordController.text);
-
-                    if (response.body.contains('false')) {
-                      print("Failed Login");
-                    } else {
-                      loginModel = await loginController
-                          .findLoginIdByUsername(usernameController.text);                        
-                      userModel = await userController.getUserByLoginId(loginModel!.loginId.toString());
-                     
-                      await sessionManager.set("firstname", userModel?.firstName);
-                      await sessionManager.set("lastname", userModel?.lastName);
-                      await sessionManager.set("username", userModel?.username.toString());
-                      print("Success Login");
-                      print(loginModel?.username);
-                      print(userModel?.firstName);
-                       if(context.mounted){
-                         Navigator.of(context).pushReplacement(
-                           MaterialPageRoute(builder: (bui) => MyApp()));
-                      }                      
+                    if (_formKey.currentState!.validate()) {
+                      http.Response response = await loginController.loginId(
+                          usernameController.text, passwordController.text);
+                      print(response.body);
+                      if (response.body.contains("false")) {
+                        // print("Failed Login");
+                        Fluttertoast.showToast(msg: "Failed Login");
+                      } else {
+                        loginModel = await loginController
+                            .findLoginIdByUsername(usernameController.text);
+                        await _checkRoleUser(context);
+                        await _keepUserData();
+                        await Future.delayed(const Duration(seconds: 2));
+                        if (context.mounted) {
+                          Navigator.of(context).pushReplacement(
+                              MaterialPageRoute(builder: (bui) => MyApp()));
+                        }
+                      }
                     }
                   },
                   child: const Text('ยืนยัน')),
@@ -129,21 +136,54 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
+  Future<void> _checkRoleUser(BuildContext context) async {
+    http.Response response2 = await authorityLoginController
+        .findAuthorityIdByUsername(usernameController.text);
+    var jsonResponse = jsonDecode(response2.body);
+    List<dynamic> roles = jsonResponse['authorities'];
+    for (int i = 0; i < roles.length; i++) {
+      var roleName = roles[i]['role'];
+      if (roleName == "barber") {
+        await sessionManager.set("roles", roleName);
+        print(roleName);
+        break;
+      } else if (roleName == "admin") {
+        await sessionManager.set("roles", roleName);
+        print(roleName);
+        break;
+      }else if(roleName == "owner"){
+        await sessionManager.set("roles", roleName);
+        break;
+      }
+      await sessionManager.set("roles", "customer");
+    }
+     
+  }
+
+  Future<void> _keepUserData() async {
+    userModel =
+        await userController.getUserByLoginId(loginModel!.loginId.toString());
+
+    await sessionManager.set("firstname", userModel?.firstName);
+    await sessionManager.set("lastname", userModel?.lastName);
+    await sessionManager.set("username", loginModel?.username.toString());
+    await sessionManager.set("userId", userModel?.userId);
+    await sessionManager.set("loginId", loginModel?.loginId);
+    print("Success Login");
+  }
+
   //Text field Username
   Padding textFieldUserName() {
     return Padding(
       padding: const EdgeInsets.only(left: 20.0, right: 20.0),
-      child: TextField(
+      child: TextFormField(
         controller: usernameController,
-        onChanged: (val) {
-          setState(() {
-            isUsernameCorrect = validateUserName(val);
-          });
-        },
+        validator: validateUserName,
+        autovalidateMode: AutovalidateMode.onUserInteraction,
         showCursor: true,
         style: const TextStyle(color: Colors.black),
         decoration: InputDecoration(
-          labelText: "Username",
+          labelText: 'ชื่อผู้ใช้งาน',
           labelStyle: const TextStyle(
             color: Colors.black,
             fontSize: 16,
@@ -155,22 +195,12 @@ class _LoginPageState extends State<LoginPage> {
             Icons.email_outlined,
             color: Colors.black,
           ),
-          suffixIcon: isUsernameCorrect == false
-              ? const Icon(
-                  Icons.close_sharp,
-                  color: Colors.red,
-                )
-              : const Icon(Icons.done, color: Colors.green),
-          enabledBorder: OutlineInputBorder(
-              borderSide: BorderSide(color: Colors.grey.shade100, width: 2),
-              borderRadius: BorderRadius.circular(10.0)),
+          border: const OutlineInputBorder(
+              borderRadius: BorderRadius.all(Radius.circular(10.0))),
           floatingLabelStyle: const TextStyle(
               color: Colors.black, fontSize: 18, fontWeight: FontWeight.w300),
-          focusedBorder: OutlineInputBorder(
-              borderSide: BorderSide(
-                  color: isUsernameCorrect == false ? Colors.red : Colors.green,
-                  width: 2),
-              borderRadius: BorderRadius.circular(15)),
+          focusedBorder:
+              OutlineInputBorder(borderRadius: BorderRadius.circular(15)),
         ),
       ),
     );
@@ -180,18 +210,15 @@ class _LoginPageState extends State<LoginPage> {
   Padding textFieldPassword() {
     return Padding(
       padding: const EdgeInsets.only(left: 20.0, right: 20.0),
-      child: TextField(
+      child: TextFormField(
         controller: passwordController,
-        onChanged: (val) {
-          setState(() {
-            isPasswordCorrect = validatePassword(val);
-          });
-        },
+        validator: validatePassword,
+        autovalidateMode: AutovalidateMode.onUserInteraction,
         showCursor: true,
         style: const TextStyle(color: Colors.black),
         obscureText: true,
         decoration: InputDecoration(
-          labelText: "Password",
+          labelText: 'รหัสผ่าน',
           labelStyle: const TextStyle(
             color: Colors.black,
             fontSize: 16,
@@ -201,22 +228,12 @@ class _LoginPageState extends State<LoginPage> {
             Icons.key_sharp,
             color: Colors.black,
           ),
-          suffixIcon: isPasswordCorrect == false
-              ? const Icon(
-                  Icons.close_sharp,
-                  color: Colors.red,
-                )
-              : const Icon(Icons.done, color: Colors.green),
-          enabledBorder: OutlineInputBorder(
-              borderSide: BorderSide(color: Colors.grey.shade100, width: 2),
-              borderRadius: BorderRadius.circular(10.0)),
+          border: const OutlineInputBorder(
+              borderRadius: BorderRadius.all(Radius.circular(10.0))),
           floatingLabelStyle: const TextStyle(
               color: Colors.black, fontSize: 18, fontWeight: FontWeight.w300),
-          focusedBorder: OutlineInputBorder(
-              borderSide: BorderSide(
-                  color: isPasswordCorrect == false ? Colors.red : Colors.green,
-                  width: 2),
-              borderRadius: BorderRadius.circular(15)),
+          focusedBorder:
+              OutlineInputBorder(borderRadius: BorderRadius.circular(15)),
         ),
       ),
     );

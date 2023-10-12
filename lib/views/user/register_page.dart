@@ -4,7 +4,6 @@ import 'package:miniproject/controller/registerController.dart';
 import 'package:miniproject/views/user/login_page.dart';
 import '../../components/mySeparator.dart';
 import '../../components/validator.dart';
-import 'package:validators/validators.dart';
 
 class RegisterPage extends StatefulWidget {
   RegisterPage({super.key});
@@ -22,53 +21,32 @@ class _RegisterPageState extends State<RegisterPage> {
   final confirmpasswordController = TextEditingController();
   final passwordController = TextEditingController();
   final addressController = TextEditingController();
-  bool isEmailCorrect = false;
-  bool isFnameCorrect = false;
-  bool isLnameCorrect = false;
-  bool isAddressCorrect = false;
-  bool isPhoneNumberCorrect = false;
-  bool isUserNameCorrect = false;
-  bool isPasswordCorrect = false;
-  bool isCPasswordCorrect = false;
-
-  //เช็คค่าใน textfield
-  bool _checkNullTextField() {
-    if (passwordController.text == "" ||
-        confirmpasswordController.text == "" ||
-        firstnameController.text == "" ||
-        lastnameController.text == "" ||
-        addressController.text == "" ||
-        phonenumberController.text == "" ||
-        usernameController.text == "" ||
-        emailController.text == "") {
-      return false;
-    } else
-      return true;
-  }
-  //เช็คscript ผิดพลาด
-  bool _checkValidator() {
-    if (isAddressCorrect &&
-        isCPasswordCorrect &&
-        isEmailCorrect &&
-        isFnameCorrect &&
-        isLnameCorrect &&
-        isPasswordCorrect &&
-        isPhoneNumberCorrect &&
-        isUserNameCorrect == false) {
-      return true;
-    } else {
-      return false;
-    }
-  }
-
+  final _formKey = GlobalKey<FormState>();
   final RegisterController rc = RegisterController();
+
+  //script ของ confirm password
+  String? validateCFpassword(String? password) {
+    RegExp passwordRegex = RegExp(r"^[a-zA-Z0-9.!#$%&'*+-/=?^_`@]");
+    final ispasswordValid = passwordRegex.hasMatch(password ?? '');
+    if (password!.length < 8) {
+      return 'รหัสผ่าน อย่างน้อยต้องมี 8 ตัวอักษร';
+    }
+    if (!ispasswordValid) {
+      return 'กรุณากรอกรหัสผ่านใหม่';
+    }
+    if (password != passwordController.text) {
+      return 'รหัสผ่าน ไม่เหมือนกัน';
+    }
+    return null;
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.grey[300],
       body: SingleChildScrollView(
-        child: Center(
+        child: Form(
+          key: _formKey,
           child: Column(
             children: [
               const SizedBox(height: 25),
@@ -79,27 +57,27 @@ class _RegisterPageState extends State<RegisterPage> {
 
               const SizedBox(height: 25),
               //FirstName
-              textFieldFirstName(),
+              _textFieldFirstName(),
 
               const SizedBox(height: 25),
 
               //lastname
-              textFieldLastName(),
+              _textFieldLastName(),
 
-              const SizedBox(height: 25),
+              const SizedBox(height: 15),
 
               //email
-              textFieldEmail(),
+              _textFieldEmail(),
 
-              const SizedBox(height: 25),
+              const SizedBox(height: 15),
 
               //phonenumber
-              textFieldPhoneNumber(),
+              _textFieldPhoneNumber(),
 
               const SizedBox(height: 25),
 
               //address
-              textFieldAddress(),
+              _textFieldAddress(),
 
               const SizedBox(height: 15),
 
@@ -107,17 +85,17 @@ class _RegisterPageState extends State<RegisterPage> {
               const SizedBox(height: 15),
 
               //username
-              textFieldUserName(),
+              _textFieldUserName(),
 
               const SizedBox(height: 25),
 
               //password
-              textFieldPassword(),
+              _textFieldPassword(),
 
               const SizedBox(height: 25),
 
               //confirmpassword
-              textFieldConfirmPassword(),
+              _textFieldConfirmPassword(),
 
               const SizedBox(height: 25),
 
@@ -125,44 +103,8 @@ class _RegisterPageState extends State<RegisterPage> {
               ElevatedButton(
                   style:
                       ElevatedButton.styleFrom(backgroundColor: Colors.green),
-                  onPressed: () async {                    
-                    if (!_checkNullTextField()) {
-                      showDialog(
-                          context: context,
-                          builder: (BuildContext context) {
-                            return AlertDialog(
-                              title: const Text('แจ้งเตือน'),
-                              content: const Text('กรุณากรอกข้อมูลทั้งหมด'),
-                              actions: <Widget>[
-                                // ปุ่มปิด AlertDialog
-                                TextButton(
-                                  child: Text('Close'),
-                                  onPressed: () {
-                                    Navigator.of(context).pop();
-                                  },
-                                ),
-                              ],
-                            );
-                          });
-                    } else if (_checkValidator()) {
-                      showDialog(
-                          context: context,
-                          builder: (BuildContext context) {
-                            return AlertDialog(
-                              title: const Text('แจ้งเตือน'),
-                              content: const Text('กรุณากรอกข้อมูลให้ถูกต้อง'),
-                              actions: <Widget>[
-                                // ปุ่มปิด AlertDialog
-                                TextButton(
-                                  child: Text('Close'),
-                                  onPressed: () {
-                                    Navigator.of(context).pop();
-                                  },
-                                ),
-                              ],
-                            );
-                          });
-                    } else {
+                  onPressed: () async {
+                    if (_formKey.currentState!.validate()) {
                       http.Response response = await (rc.addResgister(
                           firstnameController.text,
                           lastnameController.text,
@@ -174,7 +116,7 @@ class _RegisterPageState extends State<RegisterPage> {
                       if (response.statusCode == 500) {
                         print("Error!");
                       } else {
-                        print("Service was added successfully");
+                        print("Register was added successfully");
                         Navigator.of(context).pushReplacement(
                             MaterialPageRoute(builder: (bui) => LoginPage()));
                       }
@@ -190,312 +132,132 @@ class _RegisterPageState extends State<RegisterPage> {
     );
   }
 
-  
-  Padding textFieldEmail() {
+  Padding _textFieldConfirmPassword() {
     return Padding(
       padding: const EdgeInsets.only(left: 20.0, right: 20.0),
-      child: TextField(
-        controller: emailController,
-        onChanged: (val) {
-          setState(() {
-            isEmailCorrect = isEmail(val);
-          });
-        },
-        showCursor: true,
-        style: const TextStyle(color: Colors.black),
-        decoration: InputDecoration(
-          labelText: "อีเมล์",
-          labelStyle: const TextStyle(
-            color: Colors.black,
-            fontSize: 16,
-            fontWeight: FontWeight.w300,
-          ),
-          hintText: "something@email.com",
-          hintStyle: const TextStyle(color: Colors.grey, fontSize: 15),
-          suffixIcon: isEmailCorrect == false
-              ? const Icon(null)
-              : const Icon(Icons.done, color: Colors.green),
-          enabledBorder: OutlineInputBorder(
-              borderSide: BorderSide(color: Colors.grey.shade100, width: 2),
-              borderRadius: BorderRadius.circular(10.0)),
-          floatingLabelStyle: const TextStyle(
-              color: Colors.black, fontSize: 18, fontWeight: FontWeight.w300),
-          focusedBorder: OutlineInputBorder(
-              borderSide: BorderSide(
-                  color: isEmailCorrect == false ? Colors.red : Colors.green,
-                  width: 2),
-              borderRadius: BorderRadius.circular(15)),
-        ),
-      ),
-    );
-  }
-
-  Padding textFieldFirstName() {
-    return Padding(
-      padding: const EdgeInsets.only(left: 20.0, right: 20.0),
-      child: TextField(
-        controller: firstnameController,
-        onChanged: (val) {
-          setState(() {
-            isFnameCorrect = validateName(val);
-          });
-        },
-        showCursor: true,
-        style: const TextStyle(color: Colors.black),
-        decoration: InputDecoration(
-          labelText: "ชื่อจริง",
-          labelStyle: const TextStyle(
-            color: Colors.black,
-            fontSize: 16,
-            fontWeight: FontWeight.w300,
-          ),
-          suffixIcon: isFnameCorrect == false
-              ? const Icon(null)
-              : const Icon(Icons.done, color: Colors.green),
-          enabledBorder: OutlineInputBorder(
-              borderSide: BorderSide(color: Colors.grey.shade100, width: 2),
-              borderRadius: BorderRadius.circular(10.0)),
-          floatingLabelStyle: const TextStyle(
-              color: Colors.black, fontSize: 18, fontWeight: FontWeight.w300),
-          focusedBorder: OutlineInputBorder(
-              borderSide: BorderSide(
-                  color: isFnameCorrect == false ? Colors.red : Colors.green,
-                  width: 2),
-              borderRadius: BorderRadius.circular(15)),
-        ),
-      ),
-    );
-  }
-
-  Padding textFieldLastName() {
-    return Padding(
-      padding: const EdgeInsets.only(left: 20.0, right: 20.0),
-      child: TextField(
-        controller: lastnameController,
-        onChanged: (val) {
-          setState(() {
-            isLnameCorrect = validateName(val);
-          });
-        },
-        showCursor: true,
-        style: const TextStyle(color: Colors.black),
-        decoration: InputDecoration(
-          labelText: "นามสกุล",
-          labelStyle: const TextStyle(
-            color: Colors.black,
-            fontSize: 16,
-            fontWeight: FontWeight.w300,
-          ),
-          suffixIcon: isLnameCorrect == false
-              ? const Icon(null)
-              : const Icon(Icons.done, color: Colors.green),
-          enabledBorder: OutlineInputBorder(
-              borderSide: BorderSide(color: Colors.grey.shade100, width: 2),
-              borderRadius: BorderRadius.circular(10.0)),
-          floatingLabelStyle: const TextStyle(
-              color: Colors.black, fontSize: 18, fontWeight: FontWeight.w300),
-          focusedBorder: OutlineInputBorder(
-              borderSide: BorderSide(
-                  color: isLnameCorrect == false ? Colors.red : Colors.green,
-                  width: 2),
-              borderRadius: BorderRadius.circular(15)),
-        ),
-      ),
-    );
-  }
-
-  Padding textFieldPhoneNumber() {
-    return Padding(
-      padding: const EdgeInsets.only(left: 20.0, right: 20.0),
-      child: TextField(
-        controller: phonenumberController,
-        onChanged: (val) {
-          setState(() {
-            isPhoneNumberCorrect = validatePhoneNumber(val);
-          });
-        },
-        showCursor: true,
-        style: const TextStyle(color: Colors.black),
-        decoration: InputDecoration(
-          labelText: "เบอร์โทร",
-          labelStyle: const TextStyle(
-            color: Colors.black,
-            fontSize: 16,
-            fontWeight: FontWeight.w300,
-          ),
-          suffixIcon: isPhoneNumberCorrect == false
-              ? const Icon(null)
-              : const Icon(Icons.done, color: Colors.green),
-          enabledBorder: OutlineInputBorder(
-              borderSide: BorderSide(color: Colors.grey.shade100, width: 2),
-              borderRadius: BorderRadius.circular(10.0)),
-          floatingLabelStyle: const TextStyle(
-              color: Colors.black, fontSize: 18, fontWeight: FontWeight.w300),
-          focusedBorder: OutlineInputBorder(
-              borderSide: BorderSide(
-                  color:
-                      isPhoneNumberCorrect == false ? Colors.red : Colors.green,
-                  width: 2),
-              borderRadius: BorderRadius.circular(15)),
-        ),
-      ),
-    );
-  }
-
-  Padding textFieldAddress() {
-    return Padding(
-      padding: const EdgeInsets.only(left: 20.0, right: 20.0),
-      child: TextField(
-        controller: addressController,
-        onChanged: (val) {
-          setState(() {
-            isAddressCorrect = validateAddress(val);
-          });
-        },
-        showCursor: true,
-        style: const TextStyle(color: Colors.black),
-        decoration: InputDecoration(
-          labelText: "ที่อยู่",
-          labelStyle: const TextStyle(
-            color: Colors.black,
-            fontSize: 16,
-            fontWeight: FontWeight.w300,
-          ),
-          hintText: "1/10 จ.เชียงใหม่ ต.สันนาเม็ง อ.สันทราย 50210",
-          hintStyle: const TextStyle(color: Colors.grey, fontSize: 15),
-          suffixIcon: isAddressCorrect == false
-              ? const Icon(null)
-              : const Icon(Icons.done, color: Colors.green),
-          enabledBorder: OutlineInputBorder(
-              borderSide: BorderSide(color: Colors.grey.shade100, width: 2),
-              borderRadius: BorderRadius.circular(10.0)),
-          floatingLabelStyle: const TextStyle(
-              color: Colors.black, fontSize: 18, fontWeight: FontWeight.w300),
-          focusedBorder: OutlineInputBorder(
-              borderSide: BorderSide(
-                  color: isAddressCorrect == false ? Colors.red : Colors.green,
-                  width: 2),
-              borderRadius: BorderRadius.circular(15)),
-        ),
-      ),
-    );
-  }
-
-  Padding textFieldUserName() {
-    return Padding(
-      padding: const EdgeInsets.only(left: 20.0, right: 20.0),
-      child: TextField(
-        controller: usernameController,
-        onChanged: (val) {
-          setState(() {
-            isUserNameCorrect = validateUserName(val);
-          });
-        },
-        showCursor: true,
-        style: const TextStyle(color: Colors.black),
-        decoration: InputDecoration(
-          labelText: "ชื่อผู้ใช้งาน",
-          labelStyle: const TextStyle(
-            color: Colors.black,
-            fontSize: 16,
-            fontWeight: FontWeight.w300,
-          ),
-          suffixIcon: isUserNameCorrect == false
-              ? const Icon(null)
-              : const Icon(Icons.done, color: Colors.green),
-          enabledBorder: OutlineInputBorder(
-              borderSide: BorderSide(color: Colors.grey.shade100, width: 2),
-              borderRadius: BorderRadius.circular(10.0)),
-          floatingLabelStyle: const TextStyle(
-              color: Colors.black, fontSize: 18, fontWeight: FontWeight.w300),
-          focusedBorder: OutlineInputBorder(
-              borderSide: BorderSide(
-                  color: isUserNameCorrect == false ? Colors.red : Colors.green,
-                  width: 2),
-              borderRadius: BorderRadius.circular(15)),
-        ),
-      ),
-    );
-  }
-
-  Padding textFieldPassword() {
-    return Padding(
-      padding: const EdgeInsets.only(left: 20.0, right: 20.0),
-      child: TextField(
-        controller: passwordController,
-        obscureText: true,
-        onChanged: (val) {
-          setState(() {
-            isPasswordCorrect = validatePassword(val);
-          });
-        },
-        showCursor: true,
-        style: const TextStyle(color: Colors.black),
-        decoration: InputDecoration(
-          labelText: "รหัสผ่าน",
-          labelStyle: const TextStyle(
-            color: Colors.black,
-            fontSize: 16,
-            fontWeight: FontWeight.w300,
-          ),
-          suffixIcon: isPasswordCorrect == false
-              ? const Icon(null)
-              : const Icon(Icons.done, color: Colors.green),
-          enabledBorder: OutlineInputBorder(
-              borderSide: BorderSide(color: Colors.grey.shade100, width: 2),
-              borderRadius: BorderRadius.circular(10.0)),
-          floatingLabelStyle: const TextStyle(
-              color: Colors.black, fontSize: 18, fontWeight: FontWeight.w300),
-          focusedBorder: OutlineInputBorder(
-              borderSide: BorderSide(
-                  color: isPasswordCorrect == false ? Colors.red : Colors.green,
-                  width: 2),
-              borderRadius: BorderRadius.circular(15)),
-        ),
-      ),
-    );
-  }
-
-  Padding textFieldConfirmPassword() {
-    return Padding(
-      padding: const EdgeInsets.only(left: 20.0, right: 20.0),
-      child: TextField(
+      child: TextFormField(
         controller: confirmpasswordController,
         obscureText: true,
-        onChanged: (val) {
-          setState(() {
-            if (confirmpasswordController.text == passwordController.text) {
-              isCPasswordCorrect = true;
-              isCPasswordCorrect = validatePassword(val);
-            } else {
-              isCPasswordCorrect = false;
-            }
-          });
-        },
-        showCursor: true,
-        style: const TextStyle(color: Colors.black),
-        decoration: InputDecoration(
-          labelText: "ยืนยันรหัสผ่าน",
-          labelStyle: const TextStyle(
-            color: Colors.black,
-            fontSize: 16,
-            fontWeight: FontWeight.w300,
-          ),
-          suffixIcon: isCPasswordCorrect == false
-              ? const Icon(null)
-              : const Icon(Icons.done, color: Colors.green),
-          enabledBorder: OutlineInputBorder(
-              borderSide: BorderSide(color: Colors.grey.shade100, width: 2),
-              borderRadius: BorderRadius.circular(10.0)),
-          floatingLabelStyle: const TextStyle(
-              color: Colors.black, fontSize: 18, fontWeight: FontWeight.w300),
-          focusedBorder: OutlineInputBorder(
-              borderSide: BorderSide(
-                  color:
-                      isCPasswordCorrect == false ? Colors.red : Colors.green,
-                  width: 2),
-              borderRadius: BorderRadius.circular(15)),
+        decoration: const InputDecoration(
+          hintText: 'ยืนยันรหัสผ่าน',
+          border: OutlineInputBorder(
+              borderRadius: BorderRadius.all(Radius.circular(10.0))),
         ),
+        validator: validateCFpassword,
+        autovalidateMode: AutovalidateMode.onUserInteraction,
+      ),
+    );
+  }
+
+  Padding _textFieldPassword() {
+    return Padding(
+      padding: const EdgeInsets.only(left: 20.0, right: 20.0),
+      child: TextFormField(
+        controller: passwordController,
+        obscureText: true,
+        decoration: const InputDecoration(
+          hintText: 'รหัสผ่าน',
+          border: OutlineInputBorder(
+              borderRadius: BorderRadius.all(Radius.circular(10.0))),
+        ),
+        validator: validatePassword,
+        autovalidateMode: AutovalidateMode.onUserInteraction,
+      ),
+    );
+  }
+
+  Padding _textFieldUserName() {
+    return Padding(
+      padding: const EdgeInsets.only(left: 20.0, right: 20.0),
+      child: TextFormField(
+        controller: usernameController,
+        decoration: const InputDecoration(
+          hintText: 'ชื่อผู้ใช้งาน',
+          border: OutlineInputBorder(
+              borderRadius: BorderRadius.all(Radius.circular(10.0))),
+        ),
+        validator: validateUserName,
+        autovalidateMode: AutovalidateMode.onUserInteraction,
+      ),
+    );
+  }
+
+  Padding _textFieldAddress() {
+    return Padding(
+      padding: const EdgeInsets.only(left: 20.0, right: 20.0),
+      child: TextFormField(
+        controller: addressController,
+        decoration: const InputDecoration(
+          hintText: 'ที่อยู่',
+          border: OutlineInputBorder(
+              borderRadius: BorderRadius.all(Radius.circular(10.0))),
+        ),
+        validator: validateAddress,
+        autovalidateMode: AutovalidateMode.onUserInteraction,
+      ),
+    );
+  }
+
+  Padding _textFieldPhoneNumber() {
+    return Padding(
+      padding: const EdgeInsets.only(left: 20.0, right: 20.0),
+      child: TextFormField(
+        controller: phonenumberController,
+        decoration: const InputDecoration(
+          hintText: 'เบอร์โทร',
+          border: OutlineInputBorder(
+              borderRadius: BorderRadius.all(Radius.circular(10.0))),
+        ),
+        validator: validatePhoneNumber,
+        autovalidateMode: AutovalidateMode.onUserInteraction,
+      ),
+    );
+  }
+
+  Padding _textFieldEmail() {
+    return Padding(
+      padding: const EdgeInsets.only(left: 20.0, right: 20.0),
+      child: TextFormField(
+        controller: emailController,
+        decoration: const InputDecoration(
+          hintText: 'อีเมล์',
+          border: OutlineInputBorder(
+              borderRadius: BorderRadius.all(Radius.circular(10.0))),
+        ),
+        validator: validateEmail,
+        autovalidateMode: AutovalidateMode.onUserInteraction,
+      ),
+    );
+  }
+
+  Padding _textFieldLastName() {
+    return Padding(
+      padding: const EdgeInsets.only(left: 20.0, right: 20.0),
+      child: TextFormField(
+        controller: lastnameController,
+        decoration: const InputDecoration(
+          hintText: 'นามสกุล',
+          border: OutlineInputBorder(
+              borderRadius: BorderRadius.all(Radius.circular(10.0))),
+        ),
+        validator: validateName,
+        autovalidateMode: AutovalidateMode.onUserInteraction,
+      ),
+    );
+  }
+
+  Padding _textFieldFirstName() {
+    return Padding(
+      padding: const EdgeInsets.only(left: 20.0, right: 20.0),
+      child: TextFormField(
+        controller: firstnameController,
+        decoration: const InputDecoration(
+          hintText: 'ชื่อจริง',
+          border: OutlineInputBorder(
+              borderRadius: BorderRadius.all(Radius.circular(10.0))),
+        ),
+        validator: validateName,
+        autovalidateMode: AutovalidateMode.onUserInteraction,
       ),
     );
   }

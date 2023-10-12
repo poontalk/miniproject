@@ -52,10 +52,7 @@ class _ListAllMembersScreenState extends State<ListAllMembersScreen> {
               await barberController.deleteAuthorityLoginBarber(barberId);
 
           if (response.statusCode == 200) {
-            await barberController.deleteBarber(barberId);
-            if (mounted) {
-              Navigator.pop(context);
-            }
+            await barberController.deleteBarber(barberId);            
             showDeleteBarberSuccessAlert();
           } else {
             showFailToDeleteBarberAlert();
@@ -80,8 +77,7 @@ class _ListAllMembersScreenState extends State<ListAllMembersScreen> {
         text: "ลบช่างตัดผมเสร็จสิ้น",
         type: QuickAlertType.success,
         confirmBtnText: "ตกลง",
-        onConfirmBtnTap: () => Navigator.of(context).pushReplacement(
-            MaterialPageRoute(builder: (bui) => const ListAllMembersScreen())));
+        onConfirmBtnTap: () => Navigator.pop(context));
   }
 
   @override

@@ -158,7 +158,7 @@ class _ReserveSerivePageState extends State<ReserveSerivePage> {
         controller: reserveDateController,
         onChanged: (val) {
           setState(() {
-            isDateCorrect = validateUserName(val);
+            //isDateCorrect = validateUserName(val);
           });
         },
         showCursor: true,
@@ -196,7 +196,7 @@ class _ReserveSerivePageState extends State<ReserveSerivePage> {
         controller: reserveTimeController,
         onChanged: (val) {
           setState(() {
-            isTimeCorrect = validateUserName(val);
+            //isTimeCorrect = validateUserName(val);
           });
         },
         showCursor: true,

@@ -13,131 +13,77 @@ class AddService extends StatefulWidget {
 
 class _AddServiceState extends State<AddService> {
   final ServiceController serviceController = ServiceController();
+  final _formKey = GlobalKey<FormState>();
 
   TextEditingController serviceIdController = TextEditingController();
   TextEditingController serviceNameController = TextEditingController();
   TextEditingController priceController = TextEditingController();
   TextEditingController timespendController = TextEditingController();
-  bool isServiceNameCorrect = false;
-  bool isPriceCorrect = false;
-  bool isTimespendCorrect = false;
-//ส่วนค่า null ใน textfield
-  bool _checknullTextfield() {
-    if (serviceNameController.text == "" ||
-        priceController.text == "" ||
-        timespendController.text == "") {
-      return false;
-    } else {
-      return true;
-    }
-  }
-
-//ส่วนเช็ค script
-  bool _checkValidator() {
-    if (isPriceCorrect && isServiceNameCorrect && isTimespendCorrect == false) {
-      return true;
-    } else {
-      return false;
-    }
-  }
-
+ 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Add Service'),
       ),
-      body: Column(
-        children: [
-          const SizedBox(height: 10),
-
-          const Align(
-            alignment: Alignment.center,
-            child: Text('เพิ่มบริการ',
-                style: TextStyle(
-                    decoration: TextDecoration.underline, fontSize: 30)),
-          ),
-
-          const SizedBox(height: 10),
-          //Text field Name
-          const SizedBox(height: 10),
-          textFieldServiceName(),
-
-          //Text field price
-          const SizedBox(height: 10),
-          textFieldPrice(),
-
-          //Text field timespend
-          const SizedBox(height: 10),
-          textFieldTimespend(),
-          const SizedBox(height: 10),
-
-          //Button Submit
-          ElevatedButton(
-              onPressed: () async {
-                if (!_checknullTextfield()) {
-                  showDialog(
-                      context: context,
-                      builder: (BuildContext context) {
-                        return AlertDialog(
-                          title: const Text('แจ้งเตือน'),
-                          content: const Text('กรุณากรอกข้อมูลทั้งหมด'),
-                          actions: <Widget>[
-                            // ปุ่มปิด AlertDialog
-                            TextButton(
-                              child: Text('Close'),
-                              onPressed: () {
-                                Navigator.of(context).pop();
-                              },
-                            ),
-                          ],
-                        );
-                      });
-                } else if (_checkValidator()) {
-                  showDialog(
-                      context: context,
-                      builder: (BuildContext context) {
-                        return AlertDialog(
-                          title: const Text('แจ้งเตือน'),
-                          content: const Text('กรุณากรอกข้อมูลให้ถูกต้อง'),
-                          actions: <Widget>[
-                            // ปุ่มปิด AlertDialog
-                            TextButton(
-                              child: Text('Close'),
-                              onPressed: () {
-                                Navigator.of(context).pop();
-                              },
-                            ),
-                          ],
-                        );
-                      });
-                } else {
-                  http.Response response =
-                      await serviceController.addServcieModel(
-                          serviceNameController.text,
-                          double.parse(priceController.text),
-                          int.parse(timespendController.text));
-
-                  if (response.statusCode == 500) {
-                    print("Error!");
-                  } else {
-                    print(serviceNameController.text);
-                    print(priceController.text);
-                    print(timespendController.text);
-                    print("Service was added successfully");
-                    if (context.mounted) {
-                      Navigator.pushReplacement(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) =>
-                                  const DeleteServiceScreen()));
+      body: Form(
+        key: _formKey,
+        child: Column(
+          children: [
+            const SizedBox(height: 10),
+      
+            const Align(
+              alignment: Alignment.center,
+              child: Text('เพิ่มบริการ',
+                  style: TextStyle(
+                      decoration: TextDecoration.underline, fontSize: 30)),
+            ),
+      
+            const SizedBox(height: 10),
+            //Text field Name
+            const SizedBox(height: 10),
+            textFieldServiceName(),
+      
+            //Text field price
+            const SizedBox(height: 10),
+            textFieldPrice(),
+      
+            //Text field timespend
+            const SizedBox(height: 10),
+            textFieldTimespend(),
+            const SizedBox(height: 10),
+      
+            //Button Submit
+            ElevatedButton(
+                onPressed: () async {
+                  if(_formKey.currentState!.validate()){
+                          http.Response response =
+                        await serviceController.addServcieModel(
+                            serviceNameController.text,
+                            double.parse(priceController.text),
+                            int.parse(timespendController.text));
+      
+                    if (response.statusCode == 500) {
+                      print("Error!");
+                    } else {
+                      print(serviceNameController.text);
+                      print(priceController.text);
+                      print(timespendController.text);
+                      print("Service was added successfully");
+                      if (context.mounted) {
+                        Navigator.pushReplacement(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) =>
+                                    const DeleteServiceScreen()));
+                      }
                     }
-                  }
-                  print('success');
-                }
-              },
-              child: Text("Add"))
-        ],
+                    print('success');
+                  }               
+                },
+                child: Text("Add"))
+          ],
+        ),
       ),
     );
   }
@@ -145,13 +91,10 @@ class _AddServiceState extends State<AddService> {
   Padding textFieldServiceName() {
     return Padding(
       padding: const EdgeInsets.only(left: 20.0, right: 20.0),
-      child: TextField(
+      child: TextFormField(
         controller: serviceNameController,
-        onChanged: (val) {
-          setState(() {
-            isServiceNameCorrect = validateServiceName(val);
-          });
-        },
+        validator: validateServiceName,
+        autovalidateMode: AutovalidateMode.onUserInteraction,
         showCursor: true,
         style: const TextStyle(color: Colors.black),
         decoration: InputDecoration(
@@ -162,20 +105,12 @@ class _AddServiceState extends State<AddService> {
             fontWeight: FontWeight.w300,
           ),
           hintStyle: const TextStyle(color: Colors.grey, fontSize: 15),
-          suffixIcon: isServiceNameCorrect == false
-              ? const Icon(null)
-              : const Icon(Icons.done, color: Colors.green),
-          enabledBorder: OutlineInputBorder(
-              borderSide: BorderSide(color: Colors.grey.shade100, width: 2),
-              borderRadius: BorderRadius.circular(10.0)),
+          border: const OutlineInputBorder(
+              borderRadius: BorderRadius.all(Radius.circular(10.0))),
           floatingLabelStyle: const TextStyle(
               color: Colors.black, fontSize: 18, fontWeight: FontWeight.w300),
-          focusedBorder: OutlineInputBorder(
-              borderSide: BorderSide(
-                  color:
-                      isServiceNameCorrect == false ? Colors.red : Colors.green,
-                  width: 2),
-              borderRadius: BorderRadius.circular(15)),
+          focusedBorder:
+              OutlineInputBorder(borderRadius: BorderRadius.circular(15)),
         ),
       ),
     );
@@ -184,14 +119,11 @@ class _AddServiceState extends State<AddService> {
   Padding textFieldPrice() {
     return Padding(
       padding: const EdgeInsets.only(left: 20.0, right: 20.0),
-      child: TextField(
+      child: TextFormField(
         keyboardType: TextInputType.number,
         controller: priceController,
-        onChanged: (val) {
-          setState(() {
-            isPriceCorrect = validateServicPrice(val);
-          });
-        },
+        validator: validateServicPrice,
+        autovalidateMode: AutovalidateMode.onUserInteraction,
         showCursor: true,
         style: const TextStyle(color: Colors.black),
         decoration: InputDecoration(
@@ -202,19 +134,12 @@ class _AddServiceState extends State<AddService> {
             fontWeight: FontWeight.w300,
           ),
           hintStyle: const TextStyle(color: Colors.grey, fontSize: 15),
-          suffixIcon: isPriceCorrect == false
-              ? const Icon(null)
-              : const Icon(Icons.done, color: Colors.green),
-          enabledBorder: OutlineInputBorder(
-              borderSide: BorderSide(color: Colors.grey.shade100, width: 2),
-              borderRadius: BorderRadius.circular(10.0)),
+          border: const OutlineInputBorder(
+              borderRadius: BorderRadius.all(Radius.circular(10.0))),
           floatingLabelStyle: const TextStyle(
               color: Colors.black, fontSize: 18, fontWeight: FontWeight.w300),
-          focusedBorder: OutlineInputBorder(
-              borderSide: BorderSide(
-                  color: isPriceCorrect == false ? Colors.red : Colors.green,
-                  width: 2),
-              borderRadius: BorderRadius.circular(15)),
+          focusedBorder:
+              OutlineInputBorder(borderRadius: BorderRadius.circular(15)),
         ),
       ),
     );
@@ -223,14 +148,11 @@ class _AddServiceState extends State<AddService> {
   Padding textFieldTimespend() {
     return Padding(
       padding: const EdgeInsets.only(left: 20.0, right: 20.0),
-      child: TextField(
+      child: TextFormField(
         keyboardType: TextInputType.number,
         controller: timespendController,
-        onChanged: (val) {
-          setState(() {
-            isTimespendCorrect = validateServicTimespend(val);
-          });
-        },
+        validator: validateServicTimespend,
+        autovalidateMode: AutovalidateMode.onUserInteraction,
         showCursor: true,
         style: const TextStyle(color: Colors.black),
         decoration: InputDecoration(
@@ -241,20 +163,12 @@ class _AddServiceState extends State<AddService> {
             fontWeight: FontWeight.w300,
           ),
           hintStyle: const TextStyle(color: Colors.grey, fontSize: 15),
-          suffixIcon: isTimespendCorrect == false
-              ? const Icon(null)
-              : const Icon(Icons.done, color: Colors.green),
-          enabledBorder: OutlineInputBorder(
-              borderSide: BorderSide(color: Colors.grey.shade100, width: 2),
-              borderRadius: BorderRadius.circular(10.0)),
+          border: const OutlineInputBorder(
+              borderRadius: BorderRadius.all(Radius.circular(10.0))),
           floatingLabelStyle: const TextStyle(
               color: Colors.black, fontSize: 18, fontWeight: FontWeight.w300),
-          focusedBorder: OutlineInputBorder(
-              borderSide: BorderSide(
-                  color:
-                      isTimespendCorrect == false ? Colors.red : Colors.green,
-                  width: 2),
-              borderRadius: BorderRadius.circular(15)),
+          focusedBorder:
+              OutlineInputBorder(borderRadius: BorderRadius.circular(15)),
         ),
       ),
     );

@@ -42,10 +42,7 @@ class _AddBarberState extends State<AddBarber> {
       confirmBtnColor: Colors.green,
       onConfirmBtnTap: () async{
       http.Response response = await barberController.addBarber(userId);
-        if(response.statusCode == 200){
-          if(mounted){
-             Navigator.pop(context);
-          }         
+        if(response.statusCode == 200){                 
           showAddBarberSuccessAlert();
         }else {
           showFailToAddBarberAlert();
@@ -59,8 +56,8 @@ class _AddBarberState extends State<AddBarber> {
   void showFailToAddBarberAlert () {
     QuickAlert.show(
       context: context,
-      title: "เกิดข้อมูลผิดพลาด",
-      text: "ไม่สามารถเพิ่มช่างตัดผมได้",    
+      title: "ไม่สามารถเพิ่มช่างตัดผมได้",
+      text: "เพราะเป็นช่างตัดผมอยู่แล้ว",    
       type: QuickAlertType.error
     );
   }
@@ -72,20 +69,14 @@ class _AddBarberState extends State<AddBarber> {
       text: "เพิ่มช่างตัดผมเสร็จสิ้น",
      type: QuickAlertType.success,
      confirmBtnText: "ตกลง",
-     onConfirmBtnTap: () => 
-      Navigator.of(context).pushReplacement(
-                  MaterialPageRoute(builder: (bui) => const ListAllMembersScreen())
-                 )
-      );
+     onConfirmBtnTap: () => Navigator.pop(context));
   }
 
   void fetchData () async {
-    user = await userController.listAllUser();
-    if(mounted){
+    user = await userController.listAllUser();   
        setState(() {
       isLoaded = true;
-    });
-    }   
+    });       
   }
 
   @override

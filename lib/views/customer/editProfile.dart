@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_session_manager/flutter_session_manager.dart';
 import 'package:miniproject/components/validator.dart';
+import 'package:miniproject/controller/loginController.dart';
 import 'package:miniproject/controller/userController.dart';
 import 'package:miniproject/model/login.dart';
 
@@ -13,12 +15,14 @@ class EditProfile extends StatefulWidget {
 }
 
 class _EditProfileState extends State<EditProfile> {
+  final _formKey = GlobalKey<FormState>();
 
   LoginModel? loginModel;
   bool? isLoaded = false;
   UserModel? userModel;
-
+  var sessionManager = SessionManager();
   UserController userController = UserController();
+  LoginController loginController = LoginController();
 
   TextEditingController fNameController = TextEditingController();
   TextEditingController lNameController = TextEditingController();
@@ -33,34 +37,38 @@ class _EditProfileState extends State<EditProfile> {
   bool isLnameCorrect = false;
   bool isAddressCorrect = false;
   bool isPhoneNumberCorrect = false;
-  bool isUserNameCorrect= false;
+  bool isUserNameCorrect = false;
   bool isPasswordCorrect = false;
 
-   //ส่วนการใส่ข้อมูล
+  String? userId;
+  String? userName;
+
+  //ส่วนการใส่ข้อมูล
   void setDataToText() {
     fNameController.text = userModel?.firstName ?? "";
     lNameController.text = userModel?.lastName ?? "";
     phonenumberController.text = userModel?.mobileNo ?? "";
     emailController.text = userModel?.email ?? "";
     addressController.text = userModel?.address ?? "";
-    userNameController.text = userModel?.username ?? "";    
+    userNameController.text = loginModel?.username ?? "";    
   }
 
   //ส่วนการรับค่าข้อมูล
-  void fetchData(String userId) async {
-   // userModel = await userController.getUserById(userId);
+  void fetchData() async {
+    userId = await SessionManager().get("userId");
+    userModel = await userController.doProfileDetail(userId!);
+    userName = await SessionManager().get("username");
+    loginModel = await loginController.findLoginIdByUsername(userName!);
     setDataToText();
-    if (mounted) {
-      setState(() {
-        isLoaded = true;
-      });
-    }
+    setState(() {
+      isLoaded = true;
+    });
   }
 
   @override
   void initState() {
     super.initState();
-    //fetchData(widget.serviceId);
+    fetchData();
   }
 
   @override
@@ -70,75 +78,76 @@ class _EditProfileState extends State<EditProfile> {
         title: const Text('Edit Profile'),
       ),
       body: SingleChildScrollView(
-        child: Column(
-          children: [
-      
-             const SizedBox(height: 10),
-      
-             const Align(
-              alignment: Alignment.center,
-              child: Text('แก้ไขโปรไฟล์',
-                  style: TextStyle(
-                      decoration: TextDecoration.underline, fontSize: 30)),
-            ),
+        child: Form(
+          key: _formKey,
+          child: Column(
+            children: [
+              const SizedBox(height: 10),
 
-            const SizedBox(height: 20),
+              const Align(
+                alignment: Alignment.center,
+                child: Text('แก้ไขโปรไฟล์',
+                    style: TextStyle(
+                        decoration: TextDecoration.underline, fontSize: 30)),
+              ),
 
-            textFieldFirstName(),
+              const SizedBox(height: 20),
 
-            const SizedBox(height: 20),
+              textFieldFirstName(),
 
-            textFieldLastName(),
+              const SizedBox(height: 20),
 
-            const SizedBox(height: 20),
+              textFieldLastName(),
 
-            textFieldPhoneNumber(),
+              const SizedBox(height: 20),
 
-            const SizedBox(height: 20),
+              textFieldPhoneNumber(),
 
-            textFieldEmail(),
+              const SizedBox(height: 20),
 
-            const SizedBox(height: 20),
+              textFieldEmail(),
 
-            textFieldAddress(),
+              const SizedBox(height: 20),
 
-            const SizedBox(height: 20),
+              textFieldAddress(),
 
-            textFieldUserName(),
+              const SizedBox(height: 20),
 
-            const SizedBox(height: 20),
+               textFieldUserName(),
 
-            textFieldPassword(),
+               const SizedBox(height: 20),
 
-            const SizedBox(height: 20),
+               textFieldPassword(),
 
-            //ปุ่มกดแก้ไข
-            ElevatedButton(
-              style:ElevatedButton.styleFrom(backgroundColor: Colors.green),
-              onPressed: (){
+               const SizedBox(height: 20),
 
-            }, 
-            child: const Text('แก้ไข')
-            ),
+              //ปุ่มกดแก้ไข
+              ElevatedButton(
+                  style:
+                      ElevatedButton.styleFrom(backgroundColor: Colors.green),
+                  onPressed: () {
+                    if (_formKey.currentState!.validate()) {
 
-            const SizedBox(height: 20),
-          ],
+                    }
+                  },
+                  child: const Text('แก้ไข')),
+
+              const SizedBox(height: 20),
+            ],
+          ),
         ),
       ),
     );
   }
 
-   //Text field Username
+  //Text field Username
   Padding textFieldFirstName() {
     return Padding(
       padding: const EdgeInsets.only(left: 20.0, right: 20.0),
-      child: TextField(
+      child: TextFormField(
         controller: fNameController,
-        onChanged: (val) {
-          setState(() {
-            isFnameCorrect = validateName(val);
-          });
-        },
+        validator: validateName,
+        autovalidateMode: AutovalidateMode.onUserInteraction,
         showCursor: true,
         style: const TextStyle(color: Colors.black),
         decoration: InputDecoration(
@@ -148,262 +157,175 @@ class _EditProfileState extends State<EditProfile> {
             fontSize: 16,
             fontWeight: FontWeight.w300,
           ),
-          suffixIcon: isFnameCorrect == false
-              ? const Icon(
-                  null
-                )
-              : const Icon(Icons.done, color: Colors.green),
-          enabledBorder: OutlineInputBorder(
-              borderSide: BorderSide(color: Colors.grey.shade600, width: 2),
-              borderRadius: BorderRadius.circular(10.0)),
+          border: const OutlineInputBorder(
+              borderRadius: BorderRadius.all(Radius.circular(10.0))),
           floatingLabelStyle: const TextStyle(
               color: Colors.black, fontSize: 18, fontWeight: FontWeight.w300),
-          focusedBorder: OutlineInputBorder(
-              borderSide: BorderSide(
-                  color: isFnameCorrect == false ? Colors.red : Colors.green,
-                  width: 2),
-              borderRadius: BorderRadius.circular(15)),
+          focusedBorder:
+              OutlineInputBorder(borderRadius: BorderRadius.circular(15)),
         ),
       ),
     );
   }
 
-    //Text field lastname
+  //Text field lastname
   Padding textFieldLastName() {
     return Padding(
       padding: const EdgeInsets.only(left: 20.0, right: 20.0),
-      child: TextField(
+      child: TextFormField(
         controller: lNameController,
-        onChanged: (val) {
-          setState(() {
-            isLnameCorrect = validateName(val);
-          });
-        },
+        validator: validateName,
+        autovalidateMode: AutovalidateMode.onUserInteraction,
         showCursor: true,
         style: const TextStyle(color: Colors.black),
         decoration: InputDecoration(
-          labelText: "นามสกุล",
-          labelStyle: const TextStyle(
-            color: Colors.black,
-            fontSize: 16,
-            fontWeight: FontWeight.w300,
-          ),
-          suffixIcon: isLnameCorrect == false
-              ? const Icon(
-                  null
-                )
-              : const Icon(Icons.done, color: Colors.green),
-          enabledBorder: OutlineInputBorder(
-              borderSide: BorderSide(color: Colors.grey.shade600, width: 2),
-              borderRadius: BorderRadius.circular(10.0)),
-          floatingLabelStyle: const TextStyle(
-              color: Colors.black, fontSize: 18, fontWeight: FontWeight.w300),
-          focusedBorder: OutlineInputBorder(
-              borderSide: BorderSide(
-                  color: isLnameCorrect == false ? Colors.red : Colors.green,
-                  width: 2),
-              borderRadius: BorderRadius.circular(15)),
-        ),
+            labelText: "นามสกุล",
+            labelStyle: const TextStyle(
+              color: Colors.black,
+              fontSize: 16,
+              fontWeight: FontWeight.w300,
+            ),
+            border: const OutlineInputBorder(
+                borderRadius: BorderRadius.all(Radius.circular(10.0))),
+            floatingLabelStyle: const TextStyle(
+                color: Colors.black, fontSize: 18, fontWeight: FontWeight.w300),
+            focusedBorder:
+                OutlineInputBorder(borderRadius: BorderRadius.circular(15))),
       ),
     );
   }
 
-    //Text field PhoneNumber
+  //Text field PhoneNumber
   Padding textFieldPhoneNumber() {
     return Padding(
       padding: const EdgeInsets.only(left: 20.0, right: 20.0),
-      child: TextField(
+      child: TextFormField(
         controller: phonenumberController,
-        onChanged: (val) {
-          setState(() {
-            isPhoneNumberCorrect = validateName(val);
-          });
-        },
+        validator: validatePhoneNumber,
+        autovalidateMode: AutovalidateMode.onUserInteraction,
         showCursor: true,
         style: const TextStyle(color: Colors.black),
         decoration: InputDecoration(
-          labelText: "เบอร์โทร",
-          labelStyle: const TextStyle(
-            color: Colors.black,
-            fontSize: 16,
-            fontWeight: FontWeight.w300,
-          ),
-          suffixIcon: isPhoneNumberCorrect == false
-              ? const Icon(
-                  null
-                )
-              : const Icon(Icons.done, color: Colors.green),
-          enabledBorder: OutlineInputBorder(
-              borderSide: BorderSide(color: Colors.grey.shade600, width: 2),
-              borderRadius: BorderRadius.circular(10.0)),
-          floatingLabelStyle: const TextStyle(
-              color: Colors.black, fontSize: 18, fontWeight: FontWeight.w300),
-          focusedBorder: OutlineInputBorder(
-              borderSide: BorderSide(
-                  color: isPhoneNumberCorrect == false ? Colors.red : Colors.green,
-                  width: 2),
-              borderRadius: BorderRadius.circular(15)),
-        ),
+            labelText: "เบอร์โทร",
+            labelStyle: const TextStyle(
+              color: Colors.black,
+              fontSize: 16,
+              fontWeight: FontWeight.w300,
+            ),
+            border: const OutlineInputBorder(
+                borderRadius: BorderRadius.all(Radius.circular(10.0))),
+            floatingLabelStyle: const TextStyle(
+                color: Colors.black, fontSize: 18, fontWeight: FontWeight.w300),
+            focusedBorder:
+                OutlineInputBorder(borderRadius: BorderRadius.circular(15))),
       ),
     );
   }
 
-    //Text field Email
+  //Text field Email
   Padding textFieldEmail() {
     return Padding(
       padding: const EdgeInsets.only(left: 20.0, right: 20.0),
-      child: TextField(
+      child: TextFormField(
         controller: emailController,
-        onChanged: (val) {
-          setState(() {
-            isEmailCorrect = validateName(val);
-          });
-        },
+        validator: validateEmail,
+        autovalidateMode: AutovalidateMode.onUserInteraction,
         showCursor: true,
         style: const TextStyle(color: Colors.black),
         decoration: InputDecoration(
-          labelText: "อีเมล์",
-          labelStyle: const TextStyle(
-            color: Colors.black,
-            fontSize: 16,
-            fontWeight: FontWeight.w300,
-          ),
-          suffixIcon: isEmailCorrect == false
-              ? const Icon(
-                  null
-                )
-              : const Icon(Icons.done, color: Colors.green),
-          enabledBorder: OutlineInputBorder(
-              borderSide: BorderSide(color: Colors.grey.shade600, width: 2),
-              borderRadius: BorderRadius.circular(10.0)),
-          floatingLabelStyle: const TextStyle(
-              color: Colors.black, fontSize: 18, fontWeight: FontWeight.w300),
-          focusedBorder: OutlineInputBorder(
-              borderSide: BorderSide(
-                  color: isEmailCorrect == false ? Colors.red : Colors.green,
-                  width: 2),
-              borderRadius: BorderRadius.circular(15)),
-        ),
+            labelText: "อีเมล์",
+            labelStyle: const TextStyle(
+              color: Colors.black,
+              fontSize: 16,
+              fontWeight: FontWeight.w300,
+            ),
+            border: const OutlineInputBorder(
+                borderRadius: BorderRadius.all(Radius.circular(10.0))),
+            floatingLabelStyle: const TextStyle(
+                color: Colors.black, fontSize: 18, fontWeight: FontWeight.w300),
+            focusedBorder:
+                OutlineInputBorder(borderRadius: BorderRadius.circular(15))),
       ),
     );
   }
 
-    //Text field Address
+  //Text field Address
   Padding textFieldAddress() {
     return Padding(
       padding: const EdgeInsets.only(left: 20.0, right: 20.0),
-      child: TextField(
+      child: TextFormField(
         controller: addressController,
-        onChanged: (val) {
-          setState(() {
-            isAddressCorrect = validateName(val);
-          });
-        },
+        validator: validateAddress,
+        autovalidateMode: AutovalidateMode.onUserInteraction,
         showCursor: true,
         style: const TextStyle(color: Colors.black),
         decoration: InputDecoration(
-          labelText: "ที่อยู่",
-          labelStyle: const TextStyle(
-            color: Colors.black,
-            fontSize: 16,
-            fontWeight: FontWeight.w300,
-          ),
-          suffixIcon: isAddressCorrect == false
-              ? const Icon(
-                  null
-                )
-              : const Icon(Icons.done, color: Colors.green),
-          enabledBorder: OutlineInputBorder(
-              borderSide: BorderSide(color: Colors.grey.shade600, width: 2),
-              borderRadius: BorderRadius.circular(10.0)),
-          floatingLabelStyle: const TextStyle(
-              color: Colors.black, fontSize: 18, fontWeight: FontWeight.w300),
-          focusedBorder: OutlineInputBorder(
-              borderSide: BorderSide(
-                  color: isAddressCorrect == false ? Colors.red : Colors.green,
-                  width: 2),
-              borderRadius: BorderRadius.circular(15)),
-        ),
+            labelText: "ที่อยู่",
+            labelStyle: const TextStyle(
+              color: Colors.black,
+              fontSize: 16,
+              fontWeight: FontWeight.w300,
+            ),
+            border: const OutlineInputBorder(
+                borderRadius: BorderRadius.all(Radius.circular(10.0))),
+            floatingLabelStyle: const TextStyle(
+                color: Colors.black, fontSize: 18, fontWeight: FontWeight.w300),
+            focusedBorder:
+                OutlineInputBorder(borderRadius: BorderRadius.circular(15))),
       ),
     );
   }
 
-    //Text field Username
+  //Text field Username
   Padding textFieldUserName() {
     return Padding(
       padding: const EdgeInsets.only(left: 20.0, right: 20.0),
-      child: TextField(
+      child: TextFormField(
         controller: userNameController,
-        onChanged: (val) {
-          setState(() {
-            isUserNameCorrect = validateName(val);
-          });
-        },
+        validator: validateUserName,
+        autovalidateMode: AutovalidateMode.onUserInteraction,
         showCursor: true,
         style: const TextStyle(color: Colors.black),
         decoration: InputDecoration(
-          labelText: "ชื่อผู้ใช้งาน",
-          labelStyle: const TextStyle(
-            color: Colors.black,
-            fontSize: 16,
-            fontWeight: FontWeight.w300,
-          ),
-          suffixIcon: isFnameCorrect == false
-              ? const Icon(
-                  null
-                )
-              : const Icon(Icons.done, color: Colors.green),
-          enabledBorder: OutlineInputBorder(
-              borderSide: BorderSide(color: Colors.grey.shade600, width: 2),
-              borderRadius: BorderRadius.circular(10.0)),
-          floatingLabelStyle: const TextStyle(
-              color: Colors.black, fontSize: 18, fontWeight: FontWeight.w300),
-          focusedBorder: OutlineInputBorder(
-              borderSide: BorderSide(
-                  color: isFnameCorrect == false ? Colors.red : Colors.green,
-                  width: 2),
-              borderRadius: BorderRadius.circular(15)),
-        ),
+            labelText: "ชื่อผู้ใช้งาน",
+            labelStyle: const TextStyle(
+              color: Colors.black,
+              fontSize: 16,
+              fontWeight: FontWeight.w300,
+            ),
+            border: const OutlineInputBorder(
+                borderRadius: BorderRadius.all(Radius.circular(10.0))),
+            floatingLabelStyle: const TextStyle(
+                color: Colors.black, fontSize: 18, fontWeight: FontWeight.w300),
+            focusedBorder:
+                OutlineInputBorder(borderRadius: BorderRadius.circular(15))),
       ),
     );
   }
 
-    //Text field Password
+  //Text field Password
   Padding textFieldPassword() {
     return Padding(
       padding: const EdgeInsets.only(left: 20.0, right: 20.0),
-      child: TextField(
+      child: TextFormField(
         controller: passwordController,
-        onChanged: (val) {
-          setState(() {
-            isPasswordCorrect = validateName(val);
-          });
-        },
+        validator: validatePassword,
+        autovalidateMode: AutovalidateMode.onUserInteraction,
         showCursor: true,
         style: const TextStyle(color: Colors.black),
         decoration: InputDecoration(
-          labelText: "รหัสผ่าน",
-          labelStyle: const TextStyle(
-            color: Colors.black,
-            fontSize: 16,
-            fontWeight: FontWeight.w300,
-          ),
-          suffixIcon: isPasswordCorrect == false
-              ? const Icon(
-                  null
-                )
-              : const Icon(Icons.done, color: Colors.green),
-          enabledBorder: OutlineInputBorder(
-              borderSide: BorderSide(color: Colors.grey.shade600, width: 2),
-              borderRadius: BorderRadius.circular(10.0)),
-          floatingLabelStyle: const TextStyle(
-              color: Colors.black, fontSize: 18, fontWeight: FontWeight.w300),
-          focusedBorder: OutlineInputBorder(
-              borderSide: BorderSide(
-                  color: isPasswordCorrect == false ? Colors.red : Colors.green,
-                  width: 2),
-              borderRadius: BorderRadius.circular(15)),
-        ),
+            labelText: "รหัสผ่าน",
+            labelStyle: const TextStyle(
+              color: Colors.black,
+              fontSize: 16,
+              fontWeight: FontWeight.w300,
+            ),
+            border: const OutlineInputBorder(
+                borderRadius: BorderRadius.all(Radius.circular(10.0))),
+            floatingLabelStyle: const TextStyle(
+                color: Colors.black, fontSize: 18, fontWeight: FontWeight.w300),
+            focusedBorder:
+                OutlineInputBorder(borderRadius: BorderRadius.circular(15))),
       ),
     );
   }

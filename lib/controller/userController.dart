@@ -41,4 +41,27 @@ class UserController {
     UserModel userModel = UserModel.fromJsonToUser(jsonResponse);
     return userModel;
   }
+
+   Future doProfileDetail(String userId) async {
+    var url = Uri.parse(baseURL + '/user/getbyid/' + userId);
+
+    http.Response response = await http.get(url);
+
+    final utf8body = utf8.decode(response.bodyBytes);
+    var jsonResponse = json.decode(utf8body);
+    UserModel userModel = UserModel.fromJsonToUser(jsonResponse);
+    return userModel;
+  }
+
+  Future doEditProfile(UserModel userModel) async {
+    Map<String, dynamic> data = userModel.fromUserToJson();
+
+    var body = json.encode(data);
+
+    var url = Uri.parse(baseURL + '/user/update');
+
+    http.Response response = await http.put(url, headers: headers, body: body);
+
+    return response;
+  }
 }

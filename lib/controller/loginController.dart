@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 
 
 import 'package:miniproject/model/login.dart';
@@ -9,19 +10,21 @@ class LoginController {
 
   //ใช้ Log in โดยเรียกผ่าน webservice 
   Future loginId (String userName, String password) async{
-      Map<String,dynamic> data = {
+    try {
+       Map<String,dynamic> data = {
         "username" : userName,
         "password" : password        
       };
-      var url = Uri.parse(baseURL + '/login/loginUserName');      
-
-      
-         http.Response response = await http.post(
+      var url = Uri.parse(baseURL + '/login/loginUserName');         
+        http.Response response = await http.post(
         url,
         headers: headers,
         body: json.encode(data));
         print(response.body);
-      return response;       
+      return response;   
+    } on SocketException catch (e) {
+      throw Exception(e);
+    }         
   }  
 
   Future findLoginIdByUsername(String userName) async{

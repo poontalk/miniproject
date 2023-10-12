@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_session_manager/flutter_session_manager.dart';
-import 'package:miniproject/main.dart';
 import 'package:miniproject/views/user/login_page.dart';
 
 class DashboardScreen extends StatefulWidget {
@@ -20,12 +19,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
   void _fetchData() async {
     firstname = await SessionManager().get("firstname");
     lastname = await SessionManager().get("lastname");
-    username = await SessionManager().get("username");
-    if (mounted) {
+    username = await SessionManager().get("username");    
       setState(() {
         isLoaded = true;
-      });
-    }
+      });    
   }
 
   @override
@@ -49,6 +46,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
               onPressed: () async {
                 firstname = await SessionManager().remove("firstname");
                 username = await SessionManager().remove("username");
+                await SessionManager().remove("lastname");
+                await SessionManager().remove("roles");
                 if (context.mounted) {
                   Navigator.of(context).pushReplacement(
                       MaterialPageRoute(builder: (bui) => LoginPage()));
