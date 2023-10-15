@@ -140,9 +140,11 @@ class _MyAppState extends State<MyApp> {
             ],
             selectedIndex: _selectedIndex,
             onTabChange: (index) {
-              setState(() {
+              if(mounted){
+                setState(() {
                 _selectedIndex = index;
               });
+              }              
             },
           );
   } 
@@ -177,9 +179,11 @@ class _MyAppState extends State<MyApp> {
             ],
             selectedIndex: _selectedIndex,
             onTabChange: (index) {
-              setState(() {
+              if(mounted){
+                 setState(() {
                 _selectedIndex = index;
               });
+              }             
             },
           );
   } 
@@ -215,9 +219,11 @@ class _MyAppState extends State<MyApp> {
             ],
             selectedIndex: _selectedIndex,
             onTabChange: (index) {
-              setState(() {
+              if(mounted){
+                setState(() {
                 _selectedIndex = index;
               });
+              }              
             },
           );
   } 

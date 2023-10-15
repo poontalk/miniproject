@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:miniproject/controller/barberController.dart';
 import 'package:miniproject/controller/userController.dart';
+import 'package:miniproject/main.dart';
 import 'package:miniproject/model/barber.dart';
 import 'package:miniproject/model/user.dart';
 import 'package:miniproject/views/admin/addBarber.dart';
@@ -39,27 +40,38 @@ class _ListAllMembersScreenState extends State<ListAllMembersScreen> {
     fetchData();
   }
 
-  void showSureToBarberAlert(String barberId) {
-    QuickAlert.show(
-        context: context,
-        title: "ลบช่างตัดผม",
-        text: "ท่านต้องการลบช่างตัดผมหรือไม่",
-        type: QuickAlertType.warning,
-        confirmBtnText: "ลบ",
-        confirmBtnColor: Colors.red,
-        onConfirmBtnTap: () async {
-          http.Response response =
-              await barberController.deleteAuthorityLoginBarber(barberId);
-
-          if (response.statusCode == 200) {
-            await barberController.deleteBarber(barberId);            
+  Future<void> _checkDeleteBarber(String barberId) async{
+    http.Response response =
+              await barberController.deleteAuthorityLoginBarber(barberId);         
+          if (response.statusCode == 200) {    
+            await barberController.deleteBarber(barberId);        
             showDeleteBarberSuccessAlert();
           } else {
             showFailToDeleteBarberAlert();
           }
-        },
-        cancelBtnText: "ยกเลิก",
-        showCancelBtn: true);
+  }
+
+  void showSureToBarberAlert(String barberId) {  
+        showDialog(context: context, 
+        builder: (BuildContext context) =>
+         AlertDialog(
+          title: Text('ลบช่างตัดผม'),
+          content: Text('ท่านต้องการลบช่างตัดผมหรือไม่'),
+          actions:<Widget> [
+               TextButton(
+              onPressed: () => Navigator.pop(context, 'Cancel'),
+              child: const Text('Cancel'),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context, 'ลบ'); 
+                _checkDeleteBarber(barberId);
+              } ,
+              child: const Text('ลบ'),
+            ),
+          ],
+        )
+        ); 
   }
 
   void showFailToDeleteBarberAlert() {
@@ -71,13 +83,26 @@ class _ListAllMembersScreenState extends State<ListAllMembersScreen> {
   }
 
   void showDeleteBarberSuccessAlert() {
-    QuickAlert.show(
-        context: context,
-        title: "สำเร็จ",
-        text: "ลบช่างตัดผมเสร็จสิ้น",
-        type: QuickAlertType.success,
-        confirmBtnText: "ตกลง",
-        onConfirmBtnTap: () => Navigator.pop(context));
+      showDialog(context: context, 
+        builder: (BuildContext context) =>
+         AlertDialog(
+          title: Text('สำเร็จ'),
+          content: Text('ลบข้อมูลเสร็จสิ้น'),
+          actions:<Widget> [           
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context, 'ตกลง'); 
+                Navigator.pushReplacement(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) =>
+                                    const MyApp()));                 
+              } ,
+              child: const Text('ตกลง'),
+            ),
+          ],
+        )
+        );  
   }
 
   @override

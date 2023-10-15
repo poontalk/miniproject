@@ -15,9 +15,11 @@ class ReserveSerivePage extends StatefulWidget {
 }
 
 class _ReserveSerivePageState extends State<ReserveSerivePage> {
+  final ServiceController serviceController = ServiceController();
+  final _formKey = GlobalKey<FormState>();
   TextEditingController reserveDateController = TextEditingController();
   TextEditingController reserveTimeController = TextEditingController();
-  final ServiceController serviceController = ServiceController();
+  
   bool isDateCorrect = false;
   bool isTimeCorrect = false;
   bool isLoaded = false;
@@ -27,9 +29,11 @@ class _ReserveSerivePageState extends State<ReserveSerivePage> {
 
   void fetchData() async {
     serviceModels = await serviceController.listAllService();
-    setState(() {
+    if(mounted){
+      setState(() {
       isLoaded = true;
     });
+    }    
   }
 
   @override
@@ -44,75 +48,77 @@ class _ReserveSerivePageState extends State<ReserveSerivePage> {
   Widget build(BuildContext context) {    
     return Scaffold(
       body: SingleChildScrollView(
-        child: Column(
-          children: [
-            const SizedBox(height: 25),
-            //Header
-            const Text('จองคิว',
-                style: TextStyle(
-                    decoration: TextDecoration.underline, fontSize: 30)),
-
-            //วันที่จอง
-            const SizedBox(height: 35),
-            textFieldReserveDate(),
-
-            //เวลาที่จอง
-            const SizedBox(height: 35),
-            textFieldReserveTime(),
-
-            //บริการ
-            const SizedBox(height: 35),
-            //ส่วนชื่อหัวข้อ บริการ
-            Row(mainAxisAlignment: MainAxisAlignment.start,
-            children: const[
-              Padding(
-                padding:  EdgeInsets.only(left: 25.0),
-                child: Text('บริการ',style: TextStyle(fontSize: 20),),
-              )
-            ],            
-            ),
-            const SizedBox(height: 15),
-            //ส่วนชื่อหัวข้อ รายการบริการ
-            Row(mainAxisAlignment: MainAxisAlignment.start,
+        child: Form(
+          key: _formKey,
+          child: Column(
             children: [
-              Padding(
-                padding:  EdgeInsets.only(left: 30.0),
-                child: dropdownService(),
-              )
-            ],            
-            ),
-            
-            //ปุ่มกดเพิ่ม
-            Row(
-              mainAxisAlignment: MainAxisAlignment.end,
+              const SizedBox(height: 25),
+              //Header
+              const Text('จองคิว',
+                  style: TextStyle(
+                      decoration: TextDecoration.underline, fontSize: 30)),
+        
+              //วันที่จอง
+              const SizedBox(height: 35),
+              textFieldReserveDate(),
+        
+              //เวลาที่จอง
+              const SizedBox(height: 35),
+              textFieldReserveTime(),
+        
+              //บริการ
+              const SizedBox(height: 35),
+              //ส่วนชื่อหัวข้อ บริการ
+             const Row(mainAxisAlignment: MainAxisAlignment.start,
               children: [
                 Padding(
-                  padding: const EdgeInsets.only(right: 20.0),
-                  child: ElevatedButton(
-                   style: ElevatedButton.styleFrom(
-                    foregroundColor: Colors.black,
-                    backgroundColor: Colors.yellow,
-                    side: const BorderSide(color: Colors.black,width: 2))          
-                              ,
-                              onPressed: (){
-                
-                              }, child:const Text('เพิ่ม')),
+                  padding:  EdgeInsets.only(left: 25.0),
+                  child: Text('บริการ',style: TextStyle(fontSize: 20),),
                 )
-              ],
-            ),
-            const SizedBox(height: 20,),
-
-            Container(     
-              //alignment: ,                      
-               decoration: BoxDecoration(
-               border: Border.all(),
+              ],            
               ),
-              height: MediaQuery.of(context).size.height*0.3,
-              width:  MediaQuery.of(context).size.width*1,
-              child: const Text('รายการจอง'),
-             )
-          ],
+              const SizedBox(height: 15),
+              //ส่วนชื่อหัวข้อ รายการบริการ
+              Row(mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                Padding(
+                  padding:  EdgeInsets.only(left: 30.0),
+                  child: dropdownService(),
+                )
+              ],            
+              ),
+              
+              //ปุ่มกดเพิ่ม
+              Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.only(right: 20.0),
+                    child: ElevatedButton(
+                     style: ElevatedButton.styleFrom(
+                      foregroundColor: Colors.black,
+                      backgroundColor: Colors.yellow,
+                      side: const BorderSide(color: Colors.black,width: 2)),      
+                      onPressed: (){
                   
+                    }, child:const Text('เพิ่ม')),
+                  )
+                ],
+              ),
+              const SizedBox(height: 20,),
+        
+              Container(     
+                //alignment: ,                      
+                 decoration: BoxDecoration(
+                 border: Border.all(),
+                ),
+                height: MediaQuery.of(context).size.height*0.3,
+                width:  MediaQuery.of(context).size.width*1,
+                child: const Text('รายการจอง'),
+               )
+            ],
+                    
+          ),
         ),
       ),
     );
@@ -137,9 +143,11 @@ class _ReserveSerivePageState extends State<ReserveSerivePage> {
                         );
                     }).toList(),
                     onChanged: (value) {
-                      setState(() {
+                      if(mounted){
+                          setState(() {
                         selectedValue = value;
                       });
+                      }                      
                     });
                 }else if (snapshot.hasError){
                   return Text("Error: ${snapshot.error}");
@@ -154,13 +162,8 @@ class _ReserveSerivePageState extends State<ReserveSerivePage> {
   Padding textFieldReserveDate() {
     return Padding(
       padding: const EdgeInsets.only(left: 20.0, right: 20.0),
-      child: TextField(
-        controller: reserveDateController,
-        onChanged: (val) {
-          setState(() {
-            //isDateCorrect = validateUserName(val);
-          });
-        },
+      child: TextFormField(
+        controller: reserveDateController,        
         showCursor: true,
         style: const TextStyle(color: Colors.black),
         decoration: InputDecoration(
@@ -170,19 +173,12 @@ class _ReserveSerivePageState extends State<ReserveSerivePage> {
             fontSize: 16,
             fontWeight: FontWeight.w300,
           ),
-          suffixIcon: isDateCorrect == false
-              ? const Icon(null)
-              : const Icon(Icons.done, color: Colors.green),
-          enabledBorder: OutlineInputBorder(
-              borderSide: BorderSide(color: Colors.grey.shade700, width: 2),
-              borderRadius: BorderRadius.circular(10.0)),
+          hintStyle: const TextStyle(color: Colors.grey, fontSize: 15), border: const OutlineInputBorder(
+              borderRadius: BorderRadius.all(Radius.circular(10.0))),
           floatingLabelStyle: const TextStyle(
               color: Colors.black, fontSize: 18, fontWeight: FontWeight.w300),
-          focusedBorder: OutlineInputBorder(
-              borderSide: BorderSide(
-                  color: isDateCorrect == false ? Colors.red : Colors.green,
-                  width: 2),
-              borderRadius: BorderRadius.circular(15)),
+          focusedBorder:
+              OutlineInputBorder(borderRadius: BorderRadius.circular(15)),
         ),
       ),
     );
@@ -192,38 +188,23 @@ class _ReserveSerivePageState extends State<ReserveSerivePage> {
   Padding textFieldReserveTime() {
     return Padding(
       padding: const EdgeInsets.only(left: 20.0, right: 20.0),
-      child: TextField(
-        controller: reserveTimeController,
-        onChanged: (val) {
-          setState(() {
-            //isTimeCorrect = validateUserName(val);
-          });
-        },
+      child: TextFormField(
+        controller: reserveTimeController,        
         showCursor: true,
-        style: const TextStyle(color: Colors.black),
+       style: const TextStyle(color: Colors.black),
         decoration: InputDecoration(
-          labelText: "เวลาที่จอง",
+          labelText: "เวลาจอง",
           labelStyle: const TextStyle(
             color: Colors.black,
             fontSize: 16,
             fontWeight: FontWeight.w300,
           ),
-          suffixIcon: isTimeCorrect == false
-              ? const Icon(
-                  Icons.close_sharp,
-                  color: Colors.red,
-                )
-              : const Icon(Icons.done, color: Colors.green),
-          enabledBorder: OutlineInputBorder(
-              borderSide: BorderSide(color: Colors.grey.shade700, width: 2),
-              borderRadius: BorderRadius.circular(10.0)),
+          hintStyle: const TextStyle(color: Colors.grey, fontSize: 15), border: const OutlineInputBorder(
+              borderRadius: BorderRadius.all(Radius.circular(10.0))),
           floatingLabelStyle: const TextStyle(
               color: Colors.black, fontSize: 18, fontWeight: FontWeight.w300),
-          focusedBorder: OutlineInputBorder(
-              borderSide: BorderSide(
-                  color: isTimeCorrect == false ? Colors.red : Colors.green,
-                  width: 2),
-              borderRadius: BorderRadius.circular(15)),
+          focusedBorder:
+              OutlineInputBorder(borderRadius: BorderRadius.circular(15)),
         ),
       ),
     );

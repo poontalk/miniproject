@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:miniproject/controller/service_controller.dart';
 import 'package:http/http.dart' as http;
+import 'package:miniproject/main.dart';
 import '../../components/validator.dart';
-import 'deleteService.dart';
+
 
 class AddService extends StatefulWidget {
   const AddService({super.key});
@@ -19,6 +20,8 @@ class _AddServiceState extends State<AddService> {
   TextEditingController serviceNameController = TextEditingController();
   TextEditingController priceController = TextEditingController();
   TextEditingController timespendController = TextEditingController();
+
+ 
  
   @override
   Widget build(BuildContext context) {
@@ -70,12 +73,12 @@ class _AddServiceState extends State<AddService> {
                       print(priceController.text);
                       print(timespendController.text);
                       print("Service was added successfully");
-                      if (context.mounted) {
-                        Navigator.pushReplacement(
+                      if (context.mounted) {                       
+                         Navigator.pushReplacement(
                             context,
                             MaterialPageRoute(
                                 builder: (context) =>
-                                    const DeleteServiceScreen()));
+                                    const MyApp())); 
                       }
                     }
                     print('success');

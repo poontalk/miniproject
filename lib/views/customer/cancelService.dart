@@ -10,6 +10,8 @@ class CancelServicePage extends StatefulWidget {
 class _CancelServicePageState extends State<CancelServicePage> {
   @override
   Widget build(BuildContext context) {
-    return const Placeholder();
+    return Scaffold(
+      
+    );
   }
 }

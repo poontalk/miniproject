@@ -3,9 +3,6 @@ import 'package:miniproject/controller/service_controller.dart';
 import 'package:http/http.dart' as http;
 import 'package:miniproject/main.dart';
 import 'package:miniproject/model/service.dart';
-import 'package:miniproject/views/user/listService.dart';
-import 'package:quickalert/quickalert.dart';
-
 import '../../components/validator.dart';
 
 class EditService extends StatefulWidget {
@@ -53,34 +50,58 @@ class _EditServiceState extends State<EditService> {
     fetchData(widget.serviceId);
   }
 
-  void showSureToUpdateServiceAlert(ServiceModel uService) {
-    QuickAlert.show(
-        context: context,
-        title: "แก้ไขสำเร็จ",
-        text: "แก้ไขข้อมูลการบริการเสร็จสิ้น",
-        type: QuickAlertType.warning,                
-        onConfirmBtnTap: () async {
-          http.Response response =
+   Future<void> _checkUpdateService(ServiceModel uService) async{
+    http.Response response =
               await serviceController.updateService(uService);
           if (response.statusCode == 200) {             
               showUpdateServiceSuccessAlert();                                
-          }        
-        },
-        confirmBtnText: "แก้ไข",
-        cancelBtnText: "ยกเลิก",
-        showCancelBtn: true
+          }   
+  }
+
+  void showSureToUpdateServiceAlert(ServiceModel uService) {
+
+          showDialog(context: context, 
+        builder: (BuildContext context) =>
+         AlertDialog(
+          title: Text('แก้ไขสำเร็จ'),
+          content: Text('แก้ไขข้อมูลการบริการเสร็จสิ้น'),
+          actions:<Widget> [
+               TextButton(
+              onPressed: () => Navigator.pop(context, 'ยกเลิก'),
+              child: const Text('ยกเลิก'),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context, 'แก้ไข'); 
+                _checkUpdateService(uService); 
+              } ,
+              child: const Text('แก้ไข'),
+            ),
+          ],
+        )
         );
   }
 
-  void showUpdateServiceSuccessAlert() {    
-      QuickAlert.show(
-        context: context,
-        title: "สำเร็จ",
-        text: "แก้ไขข้อมูลเสร็จสิ้น",
-        type: QuickAlertType.success, 
-        confirmBtnText: "ตกลง",             
-        onConfirmBtnTap: () => Navigator.of(context).pop(),                 
-        );        
+  void showUpdateServiceSuccessAlert() {  
+       showDialog(context: context, 
+        builder: (BuildContext context) =>
+         AlertDialog(
+          title: Text('สำเร็จ'),
+          content: Text('แก้ไขข้อมูลเสร็จสิ้น'),
+          actions:<Widget> [           
+            TextButton(
+              onPressed: () {                
+                 Navigator.pushReplacement(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) =>
+                                    const MyApp()));                  
+              } ,
+              child: const Text('ตกลง'),
+            ),
+          ],
+        )
+        );      
   }
 
   @override

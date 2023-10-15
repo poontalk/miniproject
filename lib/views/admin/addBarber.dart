@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_session_manager/flutter_session_manager.dart';
 import 'package:http/http.dart' as http;
 import 'package:miniproject/controller/barberController.dart';
+import 'package:miniproject/main.dart';
 import '../../controller/userController.dart';
 import '../../model/user.dart';
 import 'package:quickalert/quickalert.dart';
-import 'listallmember.dart';
+
 
 class AddBarber extends StatefulWidget {
   const AddBarber({super.key});
@@ -15,25 +15,24 @@ class AddBarber extends StatefulWidget {
 }
 
 class _AddBarberState extends State<AddBarber> {
-
   final UserController userController = UserController();
   final BarberController barberController = BarberController();
-
   
-    bool? isLoaded = false;
-    List<UserModel>? user;
+  bool? isLoaded = false;
+  List<UserModel>? user; 
 
-  // void addBarber(String userId) async{
-  //   http.Response response = await barberController.addBarber(userId);
-  //   if(response.statusCode == 200){
-  //     print("success insert");
-  //   }else{
-  //     print("Failed insert");
-  //   }
-  // }
+  Future<void> _checkAddBarber(String userId) async{
+    http.Response response =
+              await barberController.addBarber(userId);        
+          if (response.statusCode == 200) {    
+            showAddBarberSuccessAlert();
+          } else {
+            showFailToAddBarberAlert();
+          }
+  }
 
    void showSureToAddBarberAlert(String userId) {
-    QuickAlert.show(
+   /*  QuickAlert.show(
       context: context ,
       title: "เพิ่มช่างตัดผม",
       text: "ท่านต้องการเพิ่มช่างตัดผมหรือไม่",
@@ -50,7 +49,28 @@ class _AddBarberState extends State<AddBarber> {
     },
     cancelBtnText: "ยกเลิก",
     showCancelBtn: true
-    );
+    ); */
+
+    showDialog(context: context, 
+        builder: (BuildContext context) =>
+         AlertDialog(
+          title: Text('เพิ่มช่างตัดผม'),
+          content: Text('ท่านต้องการเพิ่มช่างตัดผมหรือไม่'),
+          actions:<Widget> [
+               TextButton(
+              onPressed: () => Navigator.pop(context, 'ยกเลิก'),
+              child: const Text('ยกเลิก'),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context, 'เพิ่ม'); 
+                _checkAddBarber(userId);
+              } ,
+              child: const Text('เพิ่ม'),
+            ),
+          ],
+        )
+        );
   }
 
   void showFailToAddBarberAlert () {
@@ -63,13 +83,39 @@ class _AddBarberState extends State<AddBarber> {
   }
 
   void showAddBarberSuccessAlert () {
-    QuickAlert.show(
+   /*  QuickAlert.show(
       context: context,
       title: "สำเร็จ",
       text: "เพิ่มช่างตัดผมเสร็จสิ้น",
      type: QuickAlertType.success,
      confirmBtnText: "ตกลง",
-     onConfirmBtnTap: () => Navigator.pop(context));
+     onConfirmBtnTap: () => Navigator.pushReplacement(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) =>
+                                    const MyApp()))
+    ); */
+
+    showDialog(context: context, 
+        builder: (BuildContext context) =>
+         AlertDialog(
+          title: Text('สำเร็จ'),
+          content: Text('เพิ่มช่างตัดผมเสร็จสิ้น'),
+          actions:<Widget> [           
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context, 'ตกลง'); 
+                Navigator.pushReplacement(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) =>
+                                    const MyApp()));                 
+              } ,
+              child: const Text('ตกลง'),
+            ),
+          ],
+        )
+        ); 
   }
 
   void fetchData () async {

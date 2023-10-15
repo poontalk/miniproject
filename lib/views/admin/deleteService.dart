@@ -3,9 +3,9 @@ import 'package:miniproject/controller/service_controller.dart';
 import 'package:miniproject/model/service.dart';
 import 'package:miniproject/views/admin/addService.dart';
 import 'package:miniproject/views/admin/editService.dart';
-import 'package:miniproject/views/user/listService.dart';
 import 'package:quickalert/quickalert.dart';
 import 'package:http/http.dart' as http;
+
 import '../../main.dart';
 
 class DeleteServiceScreen extends StatefulWidget {
@@ -34,30 +34,40 @@ class _DeleteServiceScreenState extends State<DeleteServiceScreen> {
     fetchData();
   }
 
-  void showSureToDeleteServiceAlert(String serviceId) {
-    QuickAlert.show(
-        context: context,
-        title: "ลบข้อมูลบริการ",
-        text: "ท่านต้องการลบข้อมูลบริการหรือไม่",
-        type: QuickAlertType.warning,
-        confirmBtnText: "ลบ",
-        confirmBtnColor: Colors.red,
-        onConfirmBtnTap: () async {
-          http.Response response =
-              await serviceController.deleteService(serviceId);
-
-          if (response.statusCode == 200) {
-            if (mounted) {
-              Navigator.pop(context);
-            }
+  Future<void> _checkDeleteService(String serviceId) async{
+    http.Response response =
+              await serviceController.deleteService(serviceId);          
+          if (response.statusCode == 200) {            
             showDeleteServiceSuccessAlert();
           } else {
             showFailToDeleteServiceAlert();
           }
-        },
-        cancelBtnText: "ยกเลิก",
-        showCancelBtn: true);
   }
+
+  void showSureToDeleteServiceAlert(String serviceId) {     
+        showDialog(context: context, 
+        builder: (BuildContext context) =>
+         AlertDialog(
+          title: Text('ลบข้อมูลบริการ'),
+          content: Text('ท่านต้องการลบข้อมูลบริการหรือไม่'),
+          actions:<Widget> [
+               TextButton(
+              onPressed: () => Navigator.pop(context, 'Cancel'),
+              child: const Text('Cancel'),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context, 'OK'); 
+                _checkDeleteService(serviceId);
+              } ,
+              child: const Text('OK'),
+            ),
+          ],
+        )
+        );     
+     
+  }
+
   //ส่วน method การลบผิดพลาด
   void showFailToDeleteServiceAlert() {
     QuickAlert.show(
@@ -66,16 +76,29 @@ class _DeleteServiceScreenState extends State<DeleteServiceScreen> {
         text: "ไม่สามารถลบข้อมูลบริการได้",
         type: QuickAlertType.error);
   }
+  
   //ส่วน method การลบสำเร็จ
-  void showDeleteServiceSuccessAlert() {
-    QuickAlert.show(
-        context: context,
-        title: "สำเร็จ",
-        text: "ลบข้อมูลเสร็จสิ้น",
-        type: QuickAlertType.success,
-        confirmBtnText: "ตกลง",
-        onConfirmBtnTap: () => Navigator.of(context).pushReplacement(
-            MaterialPageRoute(builder: (bui) => const ListServiceScreen())));
+  void showDeleteServiceSuccessAlert() { 
+      showDialog(context: context, 
+        builder: (BuildContext context) =>
+         AlertDialog(
+          title: Text('สำเร็จ'),
+          content: Text('ลบข้อมูลเสร็จสิ้น'),
+          actions:<Widget> [           
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context, 'ตกลง'); 
+                Navigator.pushReplacement(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) =>
+                                    const MyApp()));                 
+              } ,
+              child: const Text('ตกลง'),
+            ),
+          ],
+        )
+        );  
   }
 
   @override
@@ -134,7 +157,7 @@ class _DeleteServiceScreenState extends State<DeleteServiceScreen> {
                                       )));
                         },
                         trailing: GestureDetector(
-                          onTap: () {
+                          onTap: () {                            
                             showSureToDeleteServiceAlert(
                                 serviceModels?[index].serviceId ?? "");
                             print("Delete");
