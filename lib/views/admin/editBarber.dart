@@ -3,7 +3,6 @@ import 'package:miniproject/controller/barberController.dart';
 import 'package:miniproject/main.dart';
 import 'package:miniproject/model/barber.dart';
 import 'package:miniproject/model/user.dart';
-import 'package:miniproject/views/admin/listallmember.dart';
 import 'package:http/http.dart' as http;
 
 class EditBarberScreen extends StatefulWidget {

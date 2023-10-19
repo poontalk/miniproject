@@ -10,8 +10,6 @@ import 'package:miniproject/main.dart';
 import 'package:miniproject/model/authority.dart';
 import 'package:miniproject/model/login.dart';
 import 'package:miniproject/model/user.dart';
-import 'package:miniproject/views/barber/listReserve.dart';
-import 'package:miniproject/views/customer/dashboard.dart';
 import 'package:miniproject/views/user/register_page.dart';
 import 'package:http/http.dart' as http;
 
@@ -170,6 +168,7 @@ class _LoginPageState extends State<LoginPage> {
     await sessionManager.set("userId", userModel?.userId);
     await sessionManager.set("loginId", loginModel?.loginId);
     print("Success Login");
+    print(loginModel?.loginId);
   }
 
   //Text field Username

@@ -53,12 +53,44 @@ class UserController {
     return userModel;
   }
 
-  Future doEditProfile(UserModel userModel) async {
-    Map<String, dynamic> data = userModel.fromUserToJson();
+   Future doEditProfile(String userId, String firstname ,String lastname
+            , String address ,String email , String tel, String loginId,
+            String username,String password) async {
+     Map<String, String> data = {  
+      "userId": userId,    
+      "firstName": firstname,
+      "lastName": lastname,
+      "address": address,
+      "email": email,
+      "mobileNo": tel,
+      "loginId": loginId,
+      "userName": username,
+      "password": password
+    };
 
     var body = json.encode(data);
 
     var url = Uri.parse(baseURL + '/user/update');
+
+    http.Response response = await http.put(url, headers: headers, body: body);
+
+    return response;
+  }
+
+  Future doEditProfileNoChangePassword(String userId, String firstname ,String lastname
+            , String address ,String email , String tel) async {
+    Map<String, String> data = {  
+      "userId": userId,    
+      "firstName": firstname,
+      "lastName": lastname,
+      "address": address,
+      "email": email,
+      "mobileNo": tel,
+    };
+
+    var body = json.encode(data);
+
+    var url = Uri.parse(baseURL + '/user/updateNoPassword');
 
     http.Response response = await http.put(url, headers: headers, body: body);
 

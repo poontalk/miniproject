@@ -3,8 +3,9 @@ import 'package:flutter_session_manager/flutter_session_manager.dart';
 import 'package:miniproject/components/validator.dart';
 import 'package:miniproject/controller/loginController.dart';
 import 'package:miniproject/controller/userController.dart';
+import 'package:miniproject/main.dart';
 import 'package:miniproject/model/login.dart';
-
+import 'package:http/http.dart' as http;
 import '../../model/user.dart';
 
 class EditProfile extends StatefulWidget {
@@ -42,6 +43,7 @@ class _EditProfileState extends State<EditProfile> {
 
   String? userId;
   String? userName;
+  int? loginId;
 
   //ส่วนการใส่ข้อมูล
   void setDataToText() {
@@ -57,8 +59,9 @@ class _EditProfileState extends State<EditProfile> {
   void fetchData() async {
     userId = await SessionManager().get("userId");
     userModel = await userController.doProfileDetail(userId!);
-    userName = await SessionManager().get("username");
+    userName = await SessionManager().get("username");    
     loginModel = await loginController.findLoginIdByUsername(userName!);
+     loginId = await SessionManager().get("loginId");
     setDataToText();
     setState(() {
       isLoaded = true;
@@ -125,9 +128,46 @@ class _EditProfileState extends State<EditProfile> {
               ElevatedButton(
                   style:
                       ElevatedButton.styleFrom(backgroundColor: Colors.green),
-                  onPressed: () {
+                  onPressed: () async {
                     if (_formKey.currentState!.validate()) {
-
+                        if(passwordController.text.isEmpty){
+                          http.Response response = await userController.doEditProfileNoChangePassword(
+                            userId!, 
+                            fNameController.text,
+                            lNameController.text,
+                            addressController.text, 
+                            emailController.text, 
+                            phonenumberController.text);
+                        if(response.statusCode == 500){
+                          print("failed");
+                        }else{   
+                          print("success");  
+                          if (context.mounted) {                     
+                          Navigator.of(context).pushReplacement(
+                      MaterialPageRoute(builder: (bui) => MyApp()));
+                          }
+                        }
+                        }else{
+                          http.Response response = await userController.doEditProfile(
+                            userId!, 
+                            fNameController.text,
+                            lNameController.text,
+                            addressController.text, 
+                            emailController.text, 
+                            phonenumberController.text,
+                            loginId!.toString(),
+                            userNameController.text,
+                            passwordController.text
+                          );
+                          if(response.statusCode == 500){
+                            print("failed");
+                          }
+                           print("success");  
+                          if (context.mounted) {                     
+                          Navigator.of(context).pushReplacement(
+                      MaterialPageRoute(builder: (bui) => MyApp()));
+                          }
+                        }
                     }
                   },
                   child: const Text('แก้ไข')),
@@ -309,7 +349,7 @@ class _EditProfileState extends State<EditProfile> {
       padding: const EdgeInsets.only(left: 20.0, right: 20.0),
       child: TextFormField(
         controller: passwordController,
-        validator: validatePassword,
+        //validator: validatePassword,
         autovalidateMode: AutovalidateMode.onUserInteraction,
         showCursor: true,
         style: const TextStyle(color: Colors.black),

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_session_manager/flutter_session_manager.dart';
+import 'package:miniproject/views/customer/editProfile.dart';
 import 'package:miniproject/views/user/login_page.dart';
 
 class DashboardScreen extends StatefulWidget {
@@ -19,10 +20,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
   void _fetchData() async {
     firstname = await SessionManager().get("firstname");
     lastname = await SessionManager().get("lastname");
-    username = await SessionManager().get("username");    
-      setState(() {
-        isLoaded = true;
-      });    
+    username = await SessionManager().get("username");
+    setState(() {
+      isLoaded = true;
+    });
   }
 
   @override
@@ -37,11 +38,17 @@ class _DashboardScreenState extends State<DashboardScreen> {
       appBar: AppBar(title: Text('I am suratan')),
       body: Column(
         children: [
-          Container(           
-            child: (
-              Text('$firstname   $lastname')
-            )
-          ),
+          Container(child: (Text('$firstname   $lastname'))),
+          InkWell(
+            onTap: (() => Navigator.of(context).push(
+                              MaterialPageRoute(builder: (bui) => EditProfile()))),
+            child: Container(
+              height: 30,
+              decoration: BoxDecoration(color: Colors.grey),
+              child: const Text("แก้ไขข้อมูลส่วนตัว" ),
+            ),
+            
+          ),         
           ElevatedButton.icon(
               onPressed: () async {
                 firstname = await SessionManager().remove("firstname");
