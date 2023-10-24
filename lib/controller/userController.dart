@@ -6,17 +6,13 @@ import 'package:miniproject/ws_config.dart';
 
 class UserController {
 
-    Future listAllUser() async{
-    
+    Future listAllUser() async{    
     var url = Uri.parse(baseURL + '/user/list');
-
     http.Response response = await http.get(url);
-
     final utf8body = utf8.decode(response.bodyBytes);
     List<dynamic> jsonResponse = json.decode(utf8body);
     List<UserModel> list = jsonResponse.map((e) => UserModel.fromJsonToUser(e)).toList();
     return list;
-
   }
 
   Future listAllBarbers() async{
@@ -27,6 +23,16 @@ class UserController {
 
     final utf8body = utf8.decode(response.bodyBytes);
     List<dynamic> jsonResponse = json.decode(utf8body);
+    List<UserModel> list = jsonResponse.map((e) => UserModel.fromJsonToUser(e)).toList();
+    return list;
+  }
+
+  Future listAllCustomer(String role,String role2) async{
+    var url = Uri.parse(baseURL + '/user/getRolebyrole/' + role +'/' + role2);
+
+    http.Response response = await http.get(url);
+    final utf8body = utf8.decode(response.bodyBytes);
+    List<dynamic> jsonResponse = json.decode(utf8body);        
     List<UserModel> list = jsonResponse.map((e) => UserModel.fromJsonToUser(e)).toList();
     return list;
   }

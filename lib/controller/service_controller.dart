@@ -83,4 +83,16 @@ class ServiceController {
     }
     throw Exception("Fetch Data Error");
   }
+
+  
+  Future getServiceByName(String serviceName) async {
+    var url = Uri.parse(baseURL + '/service/getbyName/' + serviceName);
+
+    http.Response response = await http.get(url);
+
+    final utf8body = utf8.decode(response.bodyBytes);
+    var jsonResponse = json.decode(utf8body);
+    ServiceModel serviceModel = ServiceModel.fromJsonToService(jsonResponse);
+    return serviceModel;
+  }
 }

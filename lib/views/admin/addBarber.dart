@@ -32,26 +32,7 @@ class _AddBarberState extends State<AddBarber> {
   }
 
    void showSureToAddBarberAlert(String userId) {
-   /*  QuickAlert.show(
-      context: context ,
-      title: "เพิ่มช่างตัดผม",
-      text: "ท่านต้องการเพิ่มช่างตัดผมหรือไม่",
-      type: QuickAlertType.warning,
-      confirmBtnText: "ตกลง",
-      confirmBtnColor: Colors.green,
-      onConfirmBtnTap: () async{
-      http.Response response = await barberController.addBarber(userId);
-        if(response.statusCode == 200){                 
-          showAddBarberSuccessAlert();
-        }else {
-          showFailToAddBarberAlert();
-        }
-    },
-    cancelBtnText: "ยกเลิก",
-    showCancelBtn: true
-    ); */
-
-    showDialog(context: context, 
+        showDialog(context: context, 
         builder: (BuildContext context) =>
          AlertDialog(
           title: Text('เพิ่มช่างตัดผม'),
@@ -82,20 +63,7 @@ class _AddBarberState extends State<AddBarber> {
     );
   }
 
-  void showAddBarberSuccessAlert () {
-   /*  QuickAlert.show(
-      context: context,
-      title: "สำเร็จ",
-      text: "เพิ่มช่างตัดผมเสร็จสิ้น",
-     type: QuickAlertType.success,
-     confirmBtnText: "ตกลง",
-     onConfirmBtnTap: () => Navigator.pushReplacement(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) =>
-                                    const MyApp()))
-    ); */
-
+  void showAddBarberSuccessAlert () {  
     showDialog(context: context, 
         builder: (BuildContext context) =>
          AlertDialog(
@@ -119,7 +87,9 @@ class _AddBarberState extends State<AddBarber> {
   }
 
   void fetchData () async {
-    user = await userController.listAllUser();   
+    String role = "barber";
+    String role2 = "admin";
+    user = await userController.listAllCustomer(role,role2);   
        setState(() {
       isLoaded = true;
     });       

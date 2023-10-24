@@ -112,3 +112,17 @@ String? validateUserName(String? username){
     }    
     return null;
  }
+
+ String? validateReservedate(String? reserveDate){    
+     if (reserveDate!.isEmpty) {
+    return 'ห้ามว่าง';
+  }      
+    return null;
+ }
+
+  String? validateReserveTime(String? reserveTime){    
+     if (reserveTime!.isEmpty) {
+    return 'ห้ามว่าง';
+  }      
+    return null;
+ }

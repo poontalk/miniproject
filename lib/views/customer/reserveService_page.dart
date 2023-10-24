@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_session_manager/flutter_session_manager.dart';
+import 'package:http/http.dart' as http;
+import 'package:miniproject/components/validator.dart';
+import 'package:miniproject/controller/customerController.dart';
+import 'package:miniproject/controller/reserveController.dart';
+import 'package:miniproject/controller/reserveDetailController.dart';
+import 'package:miniproject/model/customer.dart';
 import 'package:miniproject/model/service.dart';
-
-import '../../components/validator.dart';
 import '../../controller/service_controller.dart';
-
-final reserveDateController = TextEditingController();
-final scheduleTimeController = TextEditingController();
+import '../../model/reserve.dart';
 
 class ReserveSerivePage extends StatefulWidget {
   ReserveSerivePage({super.key});
@@ -16,30 +19,46 @@ class ReserveSerivePage extends StatefulWidget {
 
 class _ReserveSerivePageState extends State<ReserveSerivePage> {
   final ServiceController serviceController = ServiceController();
+  final CustomerController customerController = CustomerController();
+  final ReserveDetailController reserveDetailController = ReserveDetailController();
   final _formKey = GlobalKey<FormState>();
-  TextEditingController reserveDateController = TextEditingController();
-  TextEditingController reserveTimeController = TextEditingController();
+  final ReserveController reserveController = ReserveController();
+  final TextEditingController _reserveDateController = TextEditingController();
+  final TextEditingController _reserveTimeController = TextEditingController();
+  DateTime dateTime = DateTime.now();
   
   bool isDateCorrect = false;
   bool isTimeCorrect = false;
   bool isLoaded = false;
+  DateTime? pickedDate;
+  TimeOfDay? pickedTime;  
+  String? userId;
+  ServiceModel? serviceModel;
+  Customer? customer;
+  double heightScore = 100.0;
   List<ServiceModel>? serviceModels;
   var selectedValue;
+  Reserve? reserve;
+  double totalPrice = 0.0;
+  List<Reserve>? listReserves = []; 
 
 
   void fetchData() async {
     serviceModels = await serviceController.listAllService();
-    if(mounted){
+    userId = await SessionManager().get("userId");
+    customer = await customerController.findCustomerIdByuserId(userId!);
+    if(mounted){      
       setState(() {
       isLoaded = true;
     });
-    }    
+    }  
+    heightScore = 80.0 * listReserves!.length;  
   }
 
   @override
   void initState() {
     super.initState();
-    fetchData();
+    fetchData();    
   }
 
 
@@ -99,29 +118,137 @@ class _ReserveSerivePageState extends State<ReserveSerivePage> {
                       foregroundColor: Colors.black,
                       backgroundColor: Colors.yellow,
                       side: const BorderSide(color: Colors.black,width: 2)),      
-                      onPressed: (){
-                  
-                    }, child:const Text('เพิ่ม')),
+                      onPressed: () {    
+                        if (_formKey.currentState!.validate()) {                                       
+                      Reserve newReserve = Reserve.addReserve(
+                        serviceName: selectedValue,                        
+                        reserveDate: pickedDate,
+                        scheduleTime: pickedTime,
+                        price: serviceModel?.price
+                      );
+                      listReserves?.add(newReserve);  
+                      double servicePrice = serviceModel?.price ?? 0.0;
+                      for (var item in listReserves!) {                        
+                       print(
+                        "วันที่: ${item.reserveDate.toString().split(" ")[0]}, "
+                              "${item.price} บาท  "
+                            "เวลา: ${item.scheduleTime?.format(context).toString()} "
+                            "บริการ: ${item.serviceName}"
+                            );                                                       
+                      }   
+                      totalPrice += servicePrice; 
+                      print("${totalPrice}");                                        
+                       fetchData();
+                        }else{
+                          _errorInputData("กรุณากรอกข้อมูลทั้งหมด");
+                        }
+                    }, child:const Text('เพิ่ม')),  
                   )
                 ],
               ),
               const SizedBox(height: 20,),
         
               Container(     
-                //alignment: ,                      
+                                      
                  decoration: BoxDecoration(
                  border: Border.all(),
                 ),
-                height: MediaQuery.of(context).size.height*0.3,
+                height: heightScore,
                 width:  MediaQuery.of(context).size.width*1,
-                child: const Text('รายการจอง'),
-               )
+                child:
+                ListView.builder(
+                  itemCount: listReserves?.length,
+                  itemBuilder: ((context,index){
+                      return ListTile(
+                        title: Text(
+                        "${listReserves?[index].serviceName.toString()}       " 
+                        "${listReserves?[index].price}   บาท       "
+                        "${listReserves?[index].reserveDate.toString().split(" ")[0]}       "
+                        "${listReserves?[index].scheduleTime!.format(context).toString()}"),
+                      );
+                    }
+                   )
+                  ),
+                 ),
+
+                 const SizedBox(height: 20),
+
+              //Confirm Reserve Service Buttom
+              ElevatedButton(
+                  style:
+                      ElevatedButton.styleFrom(backgroundColor: Colors.green),
+                  onPressed: () async {
+                    if (_formKey.currentState!.validate()) { 
+                        http.Response response = await reserveController.addReserve(                          
+                          pickedDate.toString().split(" ")[0],
+                          pickedTime!.format(context),
+                          totalPrice,
+                          userId
+                        );
+                        if(response.statusCode == 200){                         
+                           for (var item in listReserves!) { 
+                            http.Response response2 = await reserveDetailController.addReserveDetail(
+                              item.serviceName ,
+                              item.reserveDate.toString().split(" ")[0]
+                               );   
+                               if(response2.statusCode != 200){
+                                 _errorInputData("ไม่สามารถบันทึกคำขอสั่งจองการบริการได้");
+                               }                             
+                          }   
+                          _successInputData();
+                        }else{
+                         _errorInputData("ไม่สามารถบันทึกคำขอสั่งจองการบริการได้");
+                        }                                         
+                                         
+                    }
+                  },
+                  child: const Text('ยืนยัน')),
             ],
                     
           ),
         ),
       ),
     );
+  }
+
+  void _errorInputData(String details){
+      showDialog(context: context, 
+        builder: (BuildContext context) =>
+         AlertDialog(
+          title: Text('แจ้งเตือน'),
+          content: Text(details),
+          actions:<Widget> [            
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context, 'ตกลง');                 
+              } ,
+              child: const Text('ตกลง'),
+            ),
+          ],
+        )
+        );
+  }
+
+  void _successInputData(){
+      showDialog(context: context, 
+        builder: (BuildContext context) =>
+         AlertDialog(
+          title: Text('แจ้งเตือน'),
+          content: Text('จองบริการช่างตัดผมสำเร็จ!'),
+          actions:<Widget> [            
+            TextButton(
+              onPressed: () {
+                listReserves!.clear();
+                _reserveDateController.clear();
+                _reserveTimeController.clear();
+                selectedValue = "";
+                Navigator.pop(context, 'ตกลง');                 
+              } ,
+              child: const Text('ตกลง'),
+            ),
+          ],
+        )
+        );
   }
   
   //DropdownService
@@ -146,6 +273,7 @@ class _ReserveSerivePageState extends State<ReserveSerivePage> {
                       if(mounted){
                           setState(() {
                         selectedValue = value;
+                        _findPriceByServiceName(value);                                               
                       });
                       }                      
                     });
@@ -154,8 +282,12 @@ class _ReserveSerivePageState extends State<ReserveSerivePage> {
                 }else{
                   return const CircularProgressIndicator();
                 }
-            }
+              }
             );
+  }
+
+  Future<void> _findPriceByServiceName(Object? value) async {
+    serviceModel = await serviceController.getServiceByName(value.toString()); 
   }
 
   //Text field Reserve Date
@@ -163,8 +295,10 @@ class _ReserveSerivePageState extends State<ReserveSerivePage> {
     return Padding(
       padding: const EdgeInsets.only(left: 20.0, right: 20.0),
       child: TextFormField(
-        controller: reserveDateController,        
+        controller: _reserveDateController, 
+        validator: validateReservedate,       
         showCursor: true,
+        readOnly: true,
         style: const TextStyle(color: Colors.black),
         decoration: InputDecoration(
           labelText: "วันที่จอง",
@@ -180,6 +314,7 @@ class _ReserveSerivePageState extends State<ReserveSerivePage> {
           focusedBorder:
               OutlineInputBorder(borderRadius: BorderRadius.circular(15)),
         ),
+        onTap: _selectDate,
       ),
     );
   }
@@ -189,7 +324,9 @@ class _ReserveSerivePageState extends State<ReserveSerivePage> {
     return Padding(
       padding: const EdgeInsets.only(left: 20.0, right: 20.0),
       child: TextFormField(
-        controller: reserveTimeController,        
+        controller: _reserveTimeController, 
+        validator: validateReserveTime,      
+        readOnly: true, 
         showCursor: true,
        style: const TextStyle(color: Colors.black),
         decoration: InputDecoration(
@@ -206,7 +343,36 @@ class _ReserveSerivePageState extends State<ReserveSerivePage> {
           focusedBorder:
               OutlineInputBorder(borderRadius: BorderRadius.circular(15)),
         ),
+        onTap: _selectTime,
       ),
     );
+  }
+
+  Future<void> _selectDate() async{
+    pickedDate = await showDatePicker(
+      context: context, 
+      initialDate: DateTime.now(), 
+      firstDate: DateTime(2000), 
+      lastDate: DateTime(2100)
+      );
+
+      if(pickedDate != null  ){
+        setState(() {
+          _reserveDateController.text  = pickedDate.toString().split(" ")[0];
+        });
+      }
+  }
+
+  Future<void> _selectTime() async{
+    pickedTime = await showTimePicker(
+      context: context, 
+      initialTime: TimeOfDay.now()
+      );
+
+      if(pickedTime != null){
+        setState(() {
+          _reserveTimeController.text = pickedTime!.format(context).toString();
+        });
+      }
   }
 }
