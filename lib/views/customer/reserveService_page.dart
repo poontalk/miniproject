@@ -5,6 +5,7 @@ import 'package:miniproject/components/validator.dart';
 import 'package:miniproject/controller/customerController.dart';
 import 'package:miniproject/controller/reserveController.dart';
 import 'package:miniproject/controller/reserveDetailController.dart';
+import 'package:miniproject/main.dart';
 import 'package:miniproject/model/customer.dart';
 import 'package:miniproject/model/service.dart';
 import '../../controller/service_controller.dart';
@@ -21,8 +22,8 @@ class _ReserveSerivePageState extends State<ReserveSerivePage> {
   final ServiceController serviceController = ServiceController();
   final CustomerController customerController = CustomerController();
   final ReserveDetailController reserveDetailController = ReserveDetailController();
-  final _formKey = GlobalKey<FormState>();
   final ReserveController reserveController = ReserveController();
+  final _formKey = GlobalKey<FormState>();  
   final TextEditingController _reserveDateController = TextEditingController();
   final TextEditingController _reserveTimeController = TextEditingController();
   DateTime dateTime = DateTime.now();
@@ -31,11 +32,11 @@ class _ReserveSerivePageState extends State<ReserveSerivePage> {
   bool isTimeCorrect = false;
   bool isLoaded = false;
   DateTime? pickedDate;
-  TimeOfDay? pickedTime;  
-  String? userId;
+  TimeOfDay? pickedTime;    
   ServiceModel? serviceModel;
   Customer? customer;
   double heightScore = 100.0;
+  String? userId;
   List<ServiceModel>? serviceModels;
   var selectedValue;
   Reserve? reserve;
@@ -45,8 +46,9 @@ class _ReserveSerivePageState extends State<ReserveSerivePage> {
 
   void fetchData() async {
     serviceModels = await serviceController.listAllService();
-    userId = await SessionManager().get("userId");
+    userId = await SessionManager().get("userId");   
     customer = await customerController.findCustomerIdByuserId(userId!);
+    
     if(mounted){      
       setState(() {
       isLoaded = true;
@@ -183,13 +185,14 @@ class _ReserveSerivePageState extends State<ReserveSerivePage> {
                           pickedDate.toString().split(" ")[0],
                           pickedTime!.format(context),
                           totalPrice,
-                          userId
+                          userId 
                         );
                         if(response.statusCode == 200){                         
                            for (var item in listReserves!) { 
                             http.Response response2 = await reserveDetailController.addReserveDetail(
                               item.serviceName ,
-                              item.reserveDate.toString().split(" ")[0]
+                              item.reserveDate.toString().split(" ")[0],
+                              item.scheduleTime!.format(context).toString()
                                );   
                                if(response2.statusCode != 200){
                                  _errorInputData("ไม่สามารถบันทึกคำขอสั่งจองการบริการได้");
@@ -242,7 +245,12 @@ class _ReserveSerivePageState extends State<ReserveSerivePage> {
                 _reserveDateController.clear();
                 _reserveTimeController.clear();
                 selectedValue = "";
-                Navigator.pop(context, 'ตกลง');                 
+                Navigator.pop(context, 'ตกลง'); 
+                Navigator.pushReplacement(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) =>
+                                    const MyApp()));                  
               } ,
               child: const Text('ตกลง'),
             ),

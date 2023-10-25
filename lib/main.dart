@@ -89,8 +89,8 @@ class _MyAppState extends State<MyApp> {
         body: Center(
             child: 
                  role.toString() == "barber" ? _widgetBarber.elementAt(_selectedIndex) : 
-                 role.toString() == "admin" ? _widgetAdmin.elementAt(_selectedIndex) :
-                  _widgetCustomer.elementAt(_selectedIndex)
+                 role.toString() == "customer" ? _widgetCustomer.elementAt(_selectedIndex) :
+                  _widgetAdmin.elementAt(_selectedIndex)
         ),
         bottomNavigationBar: Container(
           decoration: BoxDecoration(
