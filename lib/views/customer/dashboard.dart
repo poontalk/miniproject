@@ -55,6 +55,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 username = await SessionManager().remove("username");
                 await SessionManager().remove("lastname");
                 await SessionManager().remove("roles");
+                await SessionManager().remove("userId");
                 if (context.mounted) {
                   Navigator.of(context).pushReplacement(
                       MaterialPageRoute(builder: (bui) => LoginPage()));
