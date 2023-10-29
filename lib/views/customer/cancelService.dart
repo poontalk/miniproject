@@ -158,7 +158,9 @@ class _CancelServicePageState extends State<CancelServicePage> {
 
   Container _boxCancelReserve(BuildContext context, Reserve reserve,
       {required List<ReserveDetail> listreserveDetails}) {
-    heightScore = 70.0 * listreserveDetails.length;
+    heightScore = 70.0 * listreserveDetails.length;    
+    DateTime? reserveDate = reserve.scheduleDate;
+    String formattedDate = DateFormat('dd-MM-yyyy').format(reserveDate!);
     return Container(
       child: Column(
         children: [
@@ -174,7 +176,7 @@ class _CancelServicePageState extends State<CancelServicePage> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text("รายการ", style: TextStyle(fontSize: 20)),
-                  Text("วันที่ ${reserve.scheduleDate ?? "ไม่มี"}",
+                  Text("วันที่  ${formattedDate}",
                       style: TextStyle(fontSize: 20))
                 ],
               )),

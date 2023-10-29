@@ -2,7 +2,6 @@ import 'dart:convert';
 import 'dart:ffi';
 
 import 'package:http/http.dart' as http;
-import 'package:miniproject/model/authority.dart';
 import 'package:miniproject/ws_config.dart';
 
 class AuthorityLoginController {
