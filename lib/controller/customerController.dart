@@ -11,7 +11,7 @@ class CustomerController {
      http.Response response = await http.get(url);
      final utf8body = utf8.decode(response.bodyBytes);
      var  jsonResponse = json.decode(utf8body);        
-    Customer customer = Customer.fromJsonToCustomer(jsonResponse);
+    Customer customer = Customer.fromJsonToCustomer2(jsonResponse);
     return customer;
   }
 }

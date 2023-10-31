@@ -35,17 +35,20 @@ class _DashboardScreenState extends State<DashboardScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('I am suratan')),
+      appBar: AppBar(title: Text('Dashboard')),
       body: Column(
         children: [
-          Container(child: (Text('$firstname   $lastname'))),
+          const SizedBox(height: 20,), 
+          Container(child: (Text('$firstname   $lastname' ,style: const TextStyle(fontSize: 20)))),    
+          const SizedBox(height: 20,),      
           InkWell(
             onTap: (() => Navigator.of(context).push(
-                              MaterialPageRoute(builder: (bui) => EditProfile()))),
+                              MaterialPageRoute(builder: (bui) => const EditProfile()))),
             child: Container(
-              height: 30,
-              decoration: BoxDecoration(color: Colors.grey),
-              child: const Text("แก้ไขข้อมูลส่วนตัว" ),
+              height: 40,
+              width: MediaQuery.of(context).size.width * 1,
+              decoration: const BoxDecoration(color: Colors.grey),
+              child: const Text("แก้ไขข้อมูลส่วนตัว" ,style: TextStyle(fontSize: 20)),
             ),
             
           ),         

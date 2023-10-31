@@ -54,4 +54,16 @@ class ReserveController {
 
     return response;
   }
+
+  Future listReserveForBarber() async{
+      var url = Uri.parse(baseURL + '/reserve/listforbarber');
+
+    http.Response response = await http.get(url);
+
+    final utf8body = utf8.decode(response.bodyBytes);
+    List<dynamic> jsonResponse = json.decode(utf8body);
+     List<Reserve> list =
+        jsonResponse.map((e) => Reserve.fromJsonToReserve2(e)).toList(); 
+    return list;
+  }
 }

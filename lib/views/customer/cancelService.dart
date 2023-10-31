@@ -215,7 +215,7 @@ class _CancelServicePageState extends State<CancelServicePage> {
                 })),
           ),
           Text(
-              " ช่างตัดผม:  ${reserve.barberModel!.userModel!.firstName ?? "ไม่มี"} ${reserve.barberModel!.userModel!.lastName}"),
+              " ช่างตัดผม:  ${reserve.barberModel?.userModel?.firstName ?? "ไม่มี"} ${reserve.barberModel?.userModel?.lastName ?? ''} "),
 
           Text(" ราคารวม:  ${reserve.price}"),
 
