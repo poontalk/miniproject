@@ -56,10 +56,10 @@ class _MyAppState extends State<MyApp> {
       const DashboardScreen(),
     ];
 
-     final List<Widget> _widgetCustomer = <Widget>[       
+     final List<Widget> _widgetCustomer = <Widget>[ 
+      const ListReserveCustomer(), 
       ReserveSerivePage(),  
-      CancelServicePage(),  
-      ListReserveCustomer(),             
+      CancelServicePage(),                   
       const DashboardScreen(),
     ];
 

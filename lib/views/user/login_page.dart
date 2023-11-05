@@ -151,6 +151,7 @@ class _LoginPageState extends State<LoginPage> {
         break;
       }else if(roleName == "owner"){
         await sessionManager.set("roles", roleName);
+        print(roleName);
         break;
       }
       await sessionManager.set("roles", "customer");

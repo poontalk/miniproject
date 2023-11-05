@@ -66,4 +66,27 @@ class ReserveController {
         jsonResponse.map((e) => Reserve.fromJsonToReserve2(e)).toList(); 
     return list;
   }
+
+  Future listReservesForCustomer(String customerId) async {
+    var url = Uri.parse(baseURL + '/reserve/listforcustomer/' +customerId);
+
+    http.Response response = await http.get(url);
+
+    final utf8body = utf8.decode(response.bodyBytes);
+    List<dynamic> jsonResponse = json.decode(utf8body);
+     List<Reserve> list =
+        jsonResponse.map((e) => Reserve.fromJsonToReserve3(e)).toList(); 
+    return list;
+  }
+
+   Future getReceipt(String receiptId) async {
+    var url = Uri.parse(baseURL + '/reserve/getReceipt/' + receiptId);
+
+    http.Response response = await http.get(url);
+
+    final utf8body = utf8.decode(response.bodyBytes);
+    var jsonResponse = json.decode(utf8body);
+    Reserve reserve = Reserve.fromJsonToReserve4(jsonResponse);
+    return reserve;
+  }
 }

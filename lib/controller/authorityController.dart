@@ -11,11 +11,11 @@ class AuthorityLoginController {
       "authorityId": 4,
     };
 
-    // var jsonData = json.encode(data);
+     var jsonData = json.encode(data);
     var url = Uri.parse(baseURL + '/{loginId}/authority/{authorityId}');
 
     http.Response response =
-        await http.put(url, headers: headers, body: json.encode(data));
+        await http.put(url, headers: headers, body: jsonData);
 
     return response;
   }
