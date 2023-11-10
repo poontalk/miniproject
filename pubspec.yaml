@@ -20,6 +20,8 @@ dependencies:
   flutter_session_manager: ^1.0.3
   fluttertoast: ^8.2.2  
   intl: ^0.18.0
+  group_button: ^5.3.3
+  table_calendar: ^3.0.9
 
 dev_dependencies:
   flutter_test:

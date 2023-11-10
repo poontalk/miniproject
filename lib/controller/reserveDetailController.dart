@@ -26,11 +26,14 @@ class ReserveDetailController {
 
     http.Response response = await http.get(url);
 
-    final utf8body = utf8.decode(response.bodyBytes);
+    
+      final utf8body = utf8.decode(response.bodyBytes);
     List<dynamic> jsonResponse = json.decode(utf8body);
     List<ReserveDetail> list =
         jsonResponse.map((e) => ReserveDetail.fromJsonToReserveDetail(e)).toList();
     return list;
+    
+    
   }  
 
     Future listReserveDetailByStatus() async{    

@@ -10,16 +10,15 @@ import 'package:miniproject/views/customer/cancelService.dart';
 import 'package:miniproject/views/customer/dashboard.dart';
 import 'package:miniproject/views/customer/editProfile.dart';
 import 'package:miniproject/views/customer/listReserve.dart';
+import 'package:miniproject/views/customer/reserveService.dart';
 import 'package:miniproject/views/user/login_page.dart';
-import 'package:miniproject/views/customer/reserveService_page.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();   
   runApp(MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: _openUserName().toString() != ' ' ? LoginPage() : MyApp()));
-  // runApp(MyApp());
+      home: _openUserName().toString() != ' ' ? LoginPage() : MyApp()));  
 }
 
 Future<dynamic> _openUserName() async {
@@ -58,7 +57,7 @@ class _MyAppState extends State<MyApp> {
 
      final List<Widget> _widgetCustomer = <Widget>[ 
       const ListReserveCustomer(), 
-      ReserveSerivePage(),  
+      ReserveService(),  
       CancelServicePage(),                   
       const DashboardScreen(),
     ];
