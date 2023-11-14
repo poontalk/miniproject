@@ -4,8 +4,8 @@ import 'package:miniproject/model/user.dart';
 class Owner {
   String? ownerId;
   String? shopName;
-  TimeOfDay? openTime;
-  TimeOfDay? closeTime;
+  DateTime? openTime;
+  DateTime? closeTime;
   DateTime? dayOff;
   DateTime? weekend;
   UserModel? userModel;
@@ -20,7 +20,7 @@ class Owner {
       'closeTime': closeTime,
       'dayOff': dayOff,
       'weekend': weekend,
-      'user' : userModel?.fromUserToJson()  
+      'userId' : userModel?.fromUserToJson()  
     };
   }
 
@@ -28,11 +28,9 @@ class Owner {
     return Owner(      
       ownerId: json["ownerId"],
       shopName: json["shopName"],  
-      openTime: json["openTime"],
-      closeTime: json["closeTime"],
-      dayOff: json["dayOff"],
-      weekend: json["weekend"],
-      userModel: UserModel.fromJsonToUser(json["user"])               
+      openTime: DateTime.parse(json["openTime"]),
+      closeTime: DateTime.parse(json["closeTime"]),
+      //userModel: UserModel.fromJsonToUser(json["userId"])               
     );
   }
 }

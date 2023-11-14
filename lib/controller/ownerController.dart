@@ -17,4 +17,22 @@ class OwnerCotroller{
         jsonResponse.map((e) => Owner.fromJsonToOwner(e)).toList();
     return list;
   }
+
+  Future addOwner(
+       String shopName, String openTime,String closeTime,String dayOff) async {
+    Map<String, dynamic> data = {      
+      "shopName": shopName,
+      "openTime": openTime,
+      "closeTime": closeTime,
+      "dayOff": dayOff
+    };
+
+    var jsonData = json.encode(data);
+    var url = Uri.parse(baseURL + '/owner/add');
+
+    http.Response response =
+        await http.post(url, headers: headers, body: jsonData);
+
+    return response;
+  }
 }
