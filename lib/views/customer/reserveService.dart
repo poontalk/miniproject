@@ -15,7 +15,7 @@ class ReserveService extends StatefulWidget {
   State<ReserveService> createState() => _ReserveServiceState();
 }
 
-class _ReserveServiceState extends State<ReserveService> {  
+class _ReserveServiceState extends State<ReserveService> {
   final ServiceController serviceController = ServiceController();
   final CustomerController customerController = CustomerController();
   CalendarFormat _format = CalendarFormat.month;
@@ -37,54 +37,54 @@ class _ReserveServiceState extends State<ReserveService> {
   int? _calOpenTime = 0;
   int? _calCloseTime = 0;
   int? unit = 0;
- 
 
   void fetchData() async {
-    serviceModels = await serviceController.listAllService();    
-    userId = await SessionManager().get("userId");   
+    serviceModels = await serviceController.listAllService();
+    userId = await SessionManager().get("userId");
     customer = await customerController.findCustomerIdByuserId(userId!);
     _openTime = await SessionManager().get("openTime");
     _closeTime = await SessionManager().get("closeTime");
     print(_closeTime!.split(":")[0]);
     print(_openTime!.split(":")[0]);
-    if(_openTime != null){
+    if (_openTime != null) {
       _calOpenTime = int.parse(_openTime!.split(":")[0]);
-      _calCloseTime = int.parse(_closeTime!.split(":")[0]);        
-    }     
-    
-    if(mounted){      
+      _calCloseTime = int.parse(_closeTime!.split(":")[0]);
+    }
+
+    if (mounted) {
       setState(() {
-      isLoaded = true;
-    });
-    }      
+        isLoaded = true;
+      });
+    }
   }
 
-  void _calculateCloseTime(Object? object) async{   
+  void _calculateCloseTime(Object? object) async {
     _serviceModel = await serviceController.getServiceByName(object.toString());
-   unit = _serviceModel!.timespend! ~/ 60;    
-   //print(unit);  
+    unit = _serviceModel!.timespend! ~/ 60;
+    print("unit: $unit" "  service ${_serviceModel?.serviceName}");
   }
 
   int _calculateUnitGrid() {
     int calGrid = 0;
-    if(unit == 0){
-      calGrid = (_calCloseTime! - _calOpenTime!) ~/ 1;
-    }else{
+    if (unit == 0) {
+      calGrid = (_calCloseTime! - _calOpenTime!);
+      print('calGrid: $calGrid');
+      return calGrid;
+    } else {
       calGrid = (_calCloseTime! - _calOpenTime!) ~/ unit!;
-    }    
-    print('calGrid: $calGrid');
-    return calGrid;
+      print('calGrid: $calGrid');
+      return calGrid;
+    }
   }
 
-  @override 
-  void initState() {    
-    super.initState();
-    fetchData();    
-  }
-
- 
   @override
-  Widget build(BuildContext context) {   
+  void initState() {
+    super.initState();
+    fetchData();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
           title: Text("Reserve Service"),
@@ -99,8 +99,7 @@ class _ReserveServiceState extends State<ReserveService> {
                   const Padding(
                     padding: EdgeInsets.symmetric(horizontal: 10, vertical: 25),
                     child: Center(
-                      child:                
-                       Text(
+                      child: Text(
                         'เลือกเวลาจอง',
                         style: TextStyle(
                             fontWeight: FontWeight.bold, fontSize: 20),
@@ -110,8 +109,8 @@ class _ReserveServiceState extends State<ReserveService> {
                 ],
               ),
             ),
-            _isWeekend 
-              ? SliverToBoxAdapter(
+            _isWeekend
+                ? SliverToBoxAdapter(
                     child: Container(
                       padding: const EdgeInsets.symmetric(
                           horizontal: 10, vertical: 30),
@@ -124,72 +123,91 @@ class _ReserveServiceState extends State<ReserveService> {
                             color: Colors.grey),
                       ),
                     ),
-                  ) :   
-                 _serviceSelected ?               
-                 SliverGrid(delegate: SliverChildBuilderDelegate(
-                (context, index){                  
-                  int adjustedIndex =  _calOpenTime! + index;
-                  return InkWell(
-                    splashColor: Colors.black,
-                    onTap: () {
-                      setState(() {                        
-                      _currentIndex = index;
-                      _timeSelected = true;                                 
-                      });                     
-                    },
-                    child: Container(
-                      margin: const EdgeInsets.all(5),
-                      decoration: BoxDecoration(
-                        border: Border.all(
-                          color: _currentIndex == index 
-                          ? Colors.white 
-                          : Colors.black,
+                  )
+                : _serviceSelected
+                    ? SliverGrid(
+                        delegate: SliverChildBuilderDelegate(
+                          (context, index) {
+                            index = index * unit!;
+                            return InkWell(
+                              splashColor: Colors.black,
+                              onTap: () {
+                                setState(() {
+                                  _currentIndex = index;
+                                  _timeSelected = true;
+                                });
+                              },
+                              child: Container(
+                                margin: const EdgeInsets.all(5),
+                                decoration: BoxDecoration(
+                                  border: Border.all(
+                                    color: _currentIndex == index
+                                        ? Colors.white
+                                        : Colors.black,
+                                  ),
+                                  borderRadius: BorderRadius.circular(10),
+                                  color: _currentIndex == index
+                                      ? Colors.green
+                                      : null,
+                                ),
+                                alignment: Alignment.center,
+                                child: index == 0
+                                    ? Text(
+                                        '${_calOpenTime!}:00 ${index > 11 ? "PM" : "AM"}', //ข้างหน้าสุดเป็นเวลาเริ่มต้น ส่วนข้างหลังเป็นการปรับเวลาถ้า index > 11 เป็น PM
+                                        style: TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          color: _currentIndex == index
+                                              ? Colors.white
+                                              : null,
+                                        ),
+                                      )
+                                    : Text(
+                                        '${index + _calOpenTime!}:00 ${index + _calOpenTime! > 11 ? "PM" : "AM"}', //ข้างหน้าสุดเป็นเวลาเริ่มต้น ส่วนข้างหลังเป็นการปรับเวลาถ้า index > 11 เป็น PM
+                                        style: TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          color: _currentIndex == index
+                                              ? Colors.white
+                                              : null,
+                                        ),
+                                      ),
+                              ),
+                            );
+                          },
+                          childCount: _calculateUnitGrid(), //จำนวนแถว
                         ),
-                        borderRadius: BorderRadius.circular(10),
-                        color: _currentIndex == index
-                        ? Colors.green
-                        : null,
-                      ),
-                      alignment: Alignment.center,
-                      child: Text(
-                        '${adjustedIndex }:00 ${adjustedIndex > 11 ? "PM" : "AM"}', //ข้างหน้าสุดเป็นเวลาเริ่มต้น ส่วนข้างหลังเป็นการปรับเวลาถ้า index > 11 เป็น PM
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          color: _currentIndex == index ? Colors.white : null,
-                        ), 
-                      ),                      
-                    ),
-                  );
-                },
-                childCount: _calculateUnitGrid(), //จำนวนแถว
-                ), gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 4, childAspectRatio: 1.5),
-                ) : 
-                SliverToBoxAdapter(
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 10, vertical: 30),
-                      alignment: Alignment.center,
-                      child: const Text(
-                        'กรุณาเลือกบริการ',
-                        style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.grey),
-                      ),
-                    ),
-                  ),
-                SliverToBoxAdapter(
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 10 ,vertical: 80),
-                    child: ButtonReserve(
-                      width: double.infinity, 
-                      title: 'ยืนยันการจอง', 
-                      onPressed: () {}, 
-                      disable: _timeSelected && _dateSelected && _serviceSelected ? false : true
+                        gridDelegate:
+                            const SliverGridDelegateWithFixedCrossAxisCount(
+                                crossAxisCount: 4, childAspectRatio: 1.5),
                       )
-                  ),
-                )
+                    : SliverToBoxAdapter(
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 10, vertical: 30),
+                          alignment: Alignment.center,
+                          child: const Text(
+                            'กรุณาเลือกบริการ',
+                            style: TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.grey),
+                          ),
+                        ),
+                      ),
+            SliverToBoxAdapter(
+              child: Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 10, vertical: 80),
+                  child: ButtonReserve(
+                      width: double.infinity,
+                      title: 'ยืนยันการจอง',
+                      onPressed: () async{
+                        print("${_currentIndex! + _calOpenTime!}   ${_currentDay.weekday} $_currentDay");
+                      },
+                      disable:
+                          _dateSelected && _timeSelected && _serviceSelected
+                              ? false
+                              : true)),
+            )
           ],
         ));
   }
@@ -201,9 +219,11 @@ class _ReserveServiceState extends State<ReserveService> {
       lastDay: DateTime(2024, 12, 31),
       calendarFormat: _format,
       currentDay: _currentDay,
-      calendarStyle: const CalendarStyle(
+      calendarStyle:  CalendarStyle(
           todayDecoration:
-              BoxDecoration(color: Colors.green, shape: BoxShape.circle)),
+              BoxDecoration(
+                color: _dateSelected ? Colors.green
+                                        : Colors.grey, shape: BoxShape.circle)),
       availableCalendarFormats: const {
         CalendarFormat.month: 'Month',
       },
@@ -212,57 +232,52 @@ class _ReserveServiceState extends State<ReserveService> {
           _format = format;
         });
       },
-      onDaySelected: (selectedDay, focusedDay) {
+      onDaySelected: ((selectedDay, focusedDay) {
         setState(() {
           _currentDay = selectedDay;
           _focusDay = focusedDay;
           _dateSelected = true;
-          //check วันหยุดประจำสัปดาห์
-          if (selectedDay.weekday == 6 || selectedDay.weekday == 7 && selectedValue != null) {
+          if(selectedDay.weekday == 3 || selectedDay.weekday == 7){
             _isWeekend = true;
             _timeSelected = false;
             _currentIndex = null;
-          } else {
+          }else{
             _isWeekend = false;
           }
         });
-      },
+      }),
     );
   }
 
   //DropdownService
   FutureBuilder<List<ServiceModel>> dropdownService() {
     return FutureBuilder<List<ServiceModel>>(
-            future: serviceController.getService(),
-            builder: (context,snapshot){
-                if(snapshot.hasData){
-                  return DropdownButton(
-                    borderRadius: BorderRadius.circular(10),
-                    hint: Text('กรุณาเลือกบริการ'),
-                    value: selectedValue,
-                    items: snapshot.data!.map((e){
-                      return DropdownMenuItem(
-                        value: e.serviceName,
-                        child: Text(
-                            e.serviceName.toString()
-                        )
-                        );
-                    }).toList(),
-                    onChanged: (value) {
-                      if(mounted){
-                          setState(() {
-                        selectedValue = value;
-                        _serviceSelected = true;
-                        _calculateCloseTime(value);                                              
-                      });
-                      }                      
+        future: serviceController.getService(),
+        builder: (context, snapshot) {
+          if (snapshot.hasData) {
+            return DropdownButton(
+                borderRadius: BorderRadius.circular(10),
+                hint: Text('กรุณาเลือกบริการ'),
+                value: selectedValue,
+                items: snapshot.data!.map((e) {
+                  return DropdownMenuItem(
+                      value: e.serviceName,
+                      child: Text(e.serviceName.toString()));
+                }).toList(),
+                onChanged: (value) {
+                  if (mounted) {
+                    setState(() {
+                      selectedValue = value;
+                      _serviceSelected = true;
+                      _calculateCloseTime(value);
                     });
-                }else if (snapshot.hasError){
-                  return Text("Error: ${snapshot.error}");
-                }else{
-                  return const CircularProgressIndicator();
-                }
-              }
-            );
+                  }
+                });
+          } else if (snapshot.hasError) {
+            return Text("Error: ${snapshot.error}");
+          } else {
+            return const CircularProgressIndicator();
+          }
+        });
   }
 }
