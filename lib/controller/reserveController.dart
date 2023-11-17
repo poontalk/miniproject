@@ -7,11 +7,10 @@ import 'package:miniproject/ws_config.dart';
 class ReserveController {
 
    Future addReserve(
-       String reserveDate, String scheduleTime,double price,String? userId) async {
+       String scheduleDate,double? price,String? userId) async {
     Map<String, dynamic> data = {      
-      "reserveDate": reserveDate,
-      "scheduleTime": scheduleTime,
-      "price": price,
+      "scheduleDate": scheduleDate,      
+      "totalPrice": price,
       "userId": userId
     };
 

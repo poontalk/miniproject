@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_session_manager/flutter_session_manager.dart';
 import 'package:miniproject/components/buttonReserve.dart';
+import 'package:miniproject/controller/reserveController.dart';
 import 'package:table_calendar/table_calendar.dart';
-
+import 'package:http/http.dart' as http;
 import '../../controller/customerController.dart';
+import '../../controller/reserveDetailController.dart';
 import '../../controller/service_controller.dart';
+import '../../main.dart';
 import '../../model/customer.dart';
 import '../../model/service.dart';
 
@@ -18,6 +21,8 @@ class ReserveService extends StatefulWidget {
 class _ReserveServiceState extends State<ReserveService> {
   final ServiceController serviceController = ServiceController();
   final CustomerController customerController = CustomerController();
+  final ReserveController reserveController = ReserveController();
+  final ReserveDetailController reserveDetailController = ReserveDetailController();
   CalendarFormat _format = CalendarFormat.month;
   DateTime _focusDay = DateTime.now();
   DateTime _currentDay = DateTime.now();
@@ -34,9 +39,9 @@ class _ReserveServiceState extends State<ReserveService> {
   Customer? customer;
   String? _openTime;
   String? _closeTime;
-  int? _calOpenTime = 0;
-  int? _calCloseTime = 0;
-  int? unit = 0;
+  int? _calOpenTime;
+  int? _calCloseTime;
+  int? unit;
 
   void fetchData() async {
     serviceModels = await serviceController.listAllService();
@@ -56,26 +61,7 @@ class _ReserveServiceState extends State<ReserveService> {
         isLoaded = true;
       });
     }
-  }
-
-  void _calculateCloseTime(Object? object) async {
-    _serviceModel = await serviceController.getServiceByName(object.toString());
-    unit = _serviceModel!.timespend! ~/ 60;
-    print("unit: $unit" "  service ${_serviceModel?.serviceName}");
-  }
-
-  int _calculateUnitGrid() {
-    int calGrid = 0;
-    if (unit == 0) {
-      calGrid = (_calCloseTime! - _calOpenTime!);
-      print('calGrid: $calGrid');
-      return calGrid;
-    } else {
-      calGrid = (_calCloseTime! - _calOpenTime!) ~/ unit!;
-      print('calGrid: $calGrid');
-      return calGrid;
-    }
-  }
+  }  
 
   @override
   void initState() {
@@ -129,6 +115,8 @@ class _ReserveServiceState extends State<ReserveService> {
                         delegate: SliverChildBuilderDelegate(
                           (context, index) {
                             index = index * unit!;
+                           int timeBooking = index + _calOpenTime!;
+                           print("timeBooking: $timeBooking");
                             return InkWell(
                               splashColor: Colors.black,
                               onTap: () {
@@ -162,7 +150,7 @@ class _ReserveServiceState extends State<ReserveService> {
                                         ),
                                       )
                                     : Text(
-                                        '${index + _calOpenTime!}:00 ${index + _calOpenTime! > 11 ? "PM" : "AM"}', //ข้างหน้าสุดเป็นเวลาเริ่มต้น ส่วนข้างหลังเป็นการปรับเวลาถ้า index > 11 เป็น PM
+                                        '$timeBooking:00 ${timeBooking > 11 ? "PM" : "AM"}', //ข้างหน้าสุดเป็นเวลาเริ่มต้น ส่วนข้างหลังเป็นการปรับเวลาถ้า index > 11 เป็น PM
                                         style: TextStyle(
                                           fontWeight: FontWeight.bold,
                                           color: _currentIndex == index
@@ -201,7 +189,27 @@ class _ReserveServiceState extends State<ReserveService> {
                       width: double.infinity,
                       title: 'ยืนยันการจอง',
                       onPressed: () async{
-                        print("${_currentIndex! + _calOpenTime!}   ${_currentDay.weekday} $_currentDay");
+                        int timeBooking = _currentIndex! + _calOpenTime!;
+                         http.Response response = await reserveController.addReserve(
+                          _currentDay.toString().split(" ")[0],                         
+                          _serviceModel?.price,
+                          userId
+                        ); 
+                        if(response.statusCode == 200){
+                          http.Response response2 = await reserveDetailController.addReserveDetail(
+                            selectedValue.toString(), 
+                            _currentDay.toString().split(" ")[0],
+                             timeBooking.toString()
+                            ); 
+                             if(response2.statusCode != 200){
+                                 _errorInputData("ไม่สามารถบันทึกคำขอสั่งจองการบริการได้");
+                               }else{
+                                _successInputData();
+                               }    
+                        }else{
+                         _errorInputData("ไม่สามารถบันทึกคำขอสั่งจองการบริการได้");
+                        }  
+                        print("$timeBooking  $_currentDay");
                       },
                       disable:
                           _dateSelected && _timeSelected && _serviceSelected
@@ -211,7 +219,7 @@ class _ReserveServiceState extends State<ReserveService> {
           ],
         ));
   }
-
+  
   Widget _tableCalendar() {
     return TableCalendar(
       focusedDay: _focusDay,
@@ -249,6 +257,67 @@ class _ReserveServiceState extends State<ReserveService> {
     );
   }
 
+  void _calculateCloseTime(Object? object) async {
+    _serviceModel = await serviceController.getServiceByName(object.toString());
+    unit = _serviceModel!.timespend! ~/ 60;
+    print("unit: $unit" "  service ${_serviceModel?.serviceName}");
+  }
+
+  void _errorInputData(String details){
+      showDialog(context: context, 
+        builder: (BuildContext context) =>
+         AlertDialog(
+          title: Text('แจ้งเตือน'),
+          content: Text(details),
+          actions:<Widget> [            
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context, 'ตกลง');                 
+              } ,
+              child: const Text('ตกลง'),
+            ),
+          ],
+        )
+        );
+  }
+
+   void _successInputData(){
+      showDialog(context: context, 
+        builder: (BuildContext context) =>
+         AlertDialog(
+          title: Text('แจ้งเตือน'),
+          content: Text('จองบริการช่างตัดผมสำเร็จ!'),
+          actions:<Widget> [            
+            TextButton(
+              onPressed: () {        
+                Navigator.pop(context, 'ตกลง'); 
+                Navigator.pushReplacement(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) =>
+                                    const MyApp()));                  
+              } ,
+              child: const Text('ตกลง'),
+            ),
+          ],
+        )
+        );
+  }
+
+
+  int _calculateUnitGrid() {
+    int calGrid = 0;
+    if (unit == 0) {
+      calGrid = (_calCloseTime! - _calOpenTime!);
+      print('calGrid: $calGrid');
+      return calGrid;
+    } else {
+      calGrid = (_calCloseTime! - _calOpenTime!) ~/ unit!;
+      print('calGrid: $calGrid');
+      return calGrid;
+    }
+  }
+
   //DropdownService
   FutureBuilder<List<ServiceModel>> dropdownService() {
     return FutureBuilder<List<ServiceModel>>(
@@ -270,6 +339,7 @@ class _ReserveServiceState extends State<ReserveService> {
                       selectedValue = value;
                       _serviceSelected = true;
                       _calculateCloseTime(value);
+                      _findPriceByServiceName(value);
                     });
                   }
                 });
@@ -279,5 +349,9 @@ class _ReserveServiceState extends State<ReserveService> {
             return const CircularProgressIndicator();
           }
         });
+  }
+
+  Future<void> _findPriceByServiceName(Object? value) async {
+    _serviceModel = await serviceController.getServiceByName(value.toString()); 
   }
 }

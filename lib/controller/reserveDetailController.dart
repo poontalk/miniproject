@@ -9,7 +9,7 @@ class ReserveDetailController {
     Map<String, dynamic> data = {
       "serviceName": serviceName,
       "scheduleDate": scheduleDate,
-      "time": scheduleTime
+      "scheduleTime": scheduleTime
     };
 
     var jsonData = json.encode(data);

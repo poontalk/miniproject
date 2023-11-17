@@ -203,9 +203,9 @@ class _CancelServicePageState extends State<CancelServicePage> {
                   } else {
                     formattedTime = 'ไม่มีข้อมูล';
                   }
-                  print("${listreserveDetails[index].service?.serviceName}   "
+                /*   print("${listreserveDetails[index].service?.serviceName}   "
                       "${listreserveDetails[index].service?.price}   บาท    "
-                      "เวลา ${formattedTime}");
+                      "เวลา ${formattedTime}"); */
                   return ListTile(
                     title: Text(
                         "${listreserveDetails[index].service?.serviceName}   "

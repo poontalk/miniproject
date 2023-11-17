@@ -44,7 +44,7 @@ class _ListReserveCustomerState extends State<ListReserveCustomer> {
           children: [
             const SizedBox(height: 25),
             //Header
-            const Text('รายการการจองของฉัน',
+            const Text('ประวัติการจองของฉัน',
                 style: TextStyle(
                     decoration: TextDecoration.underline, fontSize: 30)),
 
