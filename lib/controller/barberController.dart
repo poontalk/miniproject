@@ -68,4 +68,13 @@ class BarberController {
         jsonResponse.map((e) => BarberModel.fromJsonToBarber(e)).toList();
     return list;
   }
+
+  Future getCountBarber() async{
+     var url = Uri.parse(baseURL + '/barber/getcountbarber'); 
+     http.Response response = await http.get(url);
+     final utf8body = utf8.decode(response.bodyBytes);
+     var  jsonResponse = json.decode(utf8body);        
+    int countBarber = jsonResponse;
+    return countBarber;
+  }
 }

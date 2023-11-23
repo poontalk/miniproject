@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import 'package:miniproject/model/user.dart';
 
 class Owner {
@@ -7,12 +6,12 @@ class Owner {
   DateTime? openTime;
   DateTime? closeTime;
   DateTime? dayOff;
-  DateTime? weekend;
+  String? weekend;
   UserModel? userModel;
 
   Owner({this.ownerId,this.shopName,this.openTime,this.closeTime,this.dayOff,this.weekend,this.userModel});
 
-  Map<String,dynamic> fromBarberToJson(){
+  Map<String,dynamic> fromOwnerToJson(){
     return<String,dynamic> {
       'ownerId' : ownerId,      
       'shopName' : shopName,    
@@ -30,6 +29,7 @@ class Owner {
       shopName: json["shopName"],  
       openTime: DateTime.parse(json["openTime"]),
       closeTime: DateTime.parse(json["closeTime"]),
+      weekend: json["weekend"]
       //userModel: UserModel.fromJsonToUser(json["userId"])               
     );
   }

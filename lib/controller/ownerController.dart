@@ -4,8 +4,7 @@ import '../ws_config.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
-class OwnerCotroller{
-
+class OwnerCotroller {
   Future showShopProfile() async {
     var url = Uri.parse(baseURL + '/owner/list');
 
@@ -19,8 +18,8 @@ class OwnerCotroller{
   }
 
   Future addOwner(
-       String shopName, String openTime,String closeTime,String dayOff) async {
-    Map<String, dynamic> data = {      
+      String shopName, String openTime, String closeTime, String dayOff) async {
+    Map<String, dynamic> data = {
       "shopName": shopName,
       "openTime": openTime,
       "closeTime": closeTime,
@@ -33,6 +32,34 @@ class OwnerCotroller{
     http.Response response =
         await http.post(url, headers: headers, body: jsonData);
 
+    return response;
+  } 
+
+    Future editOwner(
+      String shopName, String openTime, String closeTime, String dayOff) async {
+    Map<String, dynamic> data = {
+      "shopName": shopName,
+      "openTime": openTime,
+      "closeTime": closeTime,
+      "dayOff": dayOff
+    };
+
+    var jsonData = json.encode(data);
+    var url = Uri.parse(baseURL + '/owner/update');
+
+    http.Response response =
+        await http.patch(url, headers: headers, body: jsonData);
+
+    return response;
+  } 
+
+
+  Future addWeekend(String weekend) async {
+    
+    var url = Uri.parse(baseURL + '/owner/addweekend');
+    http.Response response =
+        await http.patch(url, headers: headers, body: weekend);
+        //print("Response body: $weekend");
     return response;
   }
 }

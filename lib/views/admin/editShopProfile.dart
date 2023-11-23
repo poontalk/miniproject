@@ -1,8 +1,9 @@
+// ignore_for_file: unnecessary_null_comparison
+
 import 'package:flutter/material.dart';
 import 'package:flutter_session_manager/flutter_session_manager.dart';
-import 'package:group_button/group_button.dart';
 import 'package:intl/intl.dart';
-
+import 'package:http/http.dart' as http;
 import 'package:miniproject/controller/ownerController.dart';
 import 'package:miniproject/model/owner.dart';
 import 'package:line_icons/line_icons.dart';
@@ -18,14 +19,28 @@ class _EditShopProfileState extends State<EditShopProfile> {
   List<Owner>? owners;
   DateTime? pickedDayOff;
   TimeOfDay? pickedOpenTime;
-  TimeOfDay? pickedCloseTime;  
+  TimeOfDay? pickedCloseTime;
+  List<int> addDay = [];
+  List<int> showDay = [];
+  int maxSelected = 3;
+  List<String> listWeekend = [
+    'จันทร์',
+    'อังคาร',
+    'พุธ',
+    'พฤหัสบดี',
+    'ศุกร์',
+    'เสาร์',
+    'อาทิตย์',
+  ];
+  List<String> selectedDays = [];
+  List<bool> checkedList = List.filled(7, false);
   final OwnerCotroller ownerController = OwnerCotroller();
   TextEditingController shopNameController = TextEditingController();
   TextEditingController openTimeController = TextEditingController();
   TextEditingController closeTimeController = TextEditingController();
   TextEditingController textWeekendController = TextEditingController();
   TextEditingController textDayOffController = TextEditingController();
-   var sessionManager = SessionManager();
+  var sessionManager = SessionManager();
   final _formKey = GlobalKey<FormState>();
   //ส่วนการรับค่าข้อมูล
   void _fetchData() async {
@@ -33,6 +48,12 @@ class _EditShopProfileState extends State<EditShopProfile> {
     _setDataToText();
     await sessionManager.set("openTime", openTimeController.text);
     await sessionManager.set("closeTime", closeTimeController.text);
+    List<String> numbers = textWeekendController.text.split(",");
+    for (int i = 0; i < numbers.length; i++) {
+      int numbersInt = int.parse(numbers[i]);
+      showDay.add(numbersInt);
+    } 
+    //print("$showDay");
     setState(() {
       isLoaded = true;
     });
@@ -40,7 +61,7 @@ class _EditShopProfileState extends State<EditShopProfile> {
 
   void _setDataToText() {
     if (owners != null) {
-      for (var item in owners!) {      
+      for (var item in owners!) {
         shopNameController.text = item.shopName.toString();
         openTimeController.text = DateFormat('HH:mm').format(item.openTime!);
         closeTimeController.text = DateFormat('HH:mm').format(item.closeTime!);
@@ -86,23 +107,17 @@ class _EditShopProfileState extends State<EditShopProfile> {
 
                 Row(
                   children: [
-                    textFieldWeekEnd(),                  
-                      IconButton(
-                        onPressed: () {                         
-                      _selectWeekend();
-                     }, icon: Icon(LineIcons.calendar, size: 50)
-                     ),
-                   const SizedBox(width: 30,),
-                    ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.yellow,
-                            foregroundColor: Colors.black,
-                            shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(30.0)),
-                            side: const BorderSide(
-                                width: 2, color: Colors.black)),
-                        onPressed: () async {},
-                        child: const Text('แก้ไข'))
+                    textFieldWeekEnd(),
+                    IconButton(
+                        onPressed: () {
+                          setState(() {
+                            _selectWeekend();
+                          });
+                        },
+                        icon: Icon(LineIcons.calendar, size: 50)),
+                    const SizedBox(
+                      width: 30,
+                    ),
                   ],
                 ),
 
@@ -112,11 +127,13 @@ class _EditShopProfileState extends State<EditShopProfile> {
                   children: [
                     textFieldDayOff(),
                     InkWell(
-                      onTap: () {
-                        _selectDate();
-                      },
-                      child: const Icon(LineIcons.calendar, size: 50)),
-                     const SizedBox(width: 30,),
+                        onTap: () {
+                          _selectDate();
+                        },
+                        child: const Icon(LineIcons.calendar, size: 50)),
+                    const SizedBox(
+                      width: 30,
+                    ),
                     ElevatedButton(
                         style: ElevatedButton.styleFrom(
                             backgroundColor: Colors.red,
@@ -125,9 +142,11 @@ class _EditShopProfileState extends State<EditShopProfile> {
                                 borderRadius: BorderRadius.circular(30.0)),
                             side: const BorderSide(
                                 width: 2, color: Colors.black)),
-                        onPressed: () async {
-                          textDayOffController.clear();
-                        },
+                        onPressed: isCheckTextDayOff()
+                            ? null
+                            : () => setState(() {
+                                  textDayOffController.clear();
+                                }),
                         child: const Text('ลบ'))
                   ],
                 ),
@@ -140,7 +159,15 @@ class _EditShopProfileState extends State<EditShopProfile> {
                         ElevatedButton.styleFrom(backgroundColor: Colors.green),
                     onPressed: () async {
                       if (_formKey.currentState!.validate()) {
-
+                        http.Response response = await ownerController.editOwner(
+                           shopNameController.text, 
+                           openTimeController.text, 
+                          closeTimeController.text, 
+                          textDayOffController.text);
+                          if(response.statusCode == 200){
+                            print("success edit owner");
+                            _fetchData();
+                          }
                       }
                     },
                     child: const Text('แก้ไข'))
@@ -148,6 +175,14 @@ class _EditShopProfileState extends State<EditShopProfile> {
             ),
           )),
     );
+  }
+
+  bool isCheckTextDayOff() {
+    if (textDayOffController.text != "") {
+      return false;
+    } else {
+      return true;
+    }
   }
 
   //ชื่อร้าน
@@ -234,8 +269,8 @@ class _EditShopProfileState extends State<EditShopProfile> {
           focusedBorder:
               OutlineInputBorder(borderRadius: BorderRadius.circular(15)),
         ),
-      onTap: _selectCloseTime,
-      ),      
+        onTap: _selectCloseTime,
+      ),
     );
   }
 
@@ -303,93 +338,109 @@ class _EditShopProfileState extends State<EditShopProfile> {
     );
   }
 
-   Future<void> _selectDate() async{
-     pickedDayOff = await showDatePicker(
-      context: context, 
-      initialDate: DateTime.now(), 
-      firstDate: DateTime(2000), 
-      lastDate: DateTime(2100)
-      );
+  Future<void> _selectDate() async {
+    pickedDayOff = await showDatePicker(
+        context: context,
+        initialDate: DateTime.now(),
+        firstDate: DateTime(2000),
+        lastDate: DateTime(2100));
 
-      if(pickedDayOff != null  ){
-        setState(() {
-          textDayOffController.text  = pickedDayOff.toString().split(" ")[0];
-        });
-      }
+    if (pickedDayOff != null) {
+      setState(() {
+        textDayOffController.text = pickedDayOff.toString().split(" ")[0];
+      });
+    }
   }
 
-  void _selectWeekend(){
+  _selectWeekend() {
     showDialog(
-    context: context, 
-    builder: (context) => AlertDialog(
-        title: Text("เลือกเวลา"),
-        content: Column(
-          children: [             
-             Center(
-             child:  GroupButton(              
-              buttons: 
-               [
-                "จ.",
-                "อ.",
-                "พ.",
-                "พฤ.",
-                "ศ.",
-                "ส.",
-                "อา."                
-              ],
-              maxSelected: 3,
-              isRadio: false,
-              onSelected: (value, index, isSelected) => print('$value is selected'),
-              options: GroupButtonOptions(
-                direction: Axis.horizontal,
-                borderRadius: BorderRadius.circular(10),
-                spacing: 15,               
-                mainGroupAlignment: MainGroupAlignment.center,
-                crossGroupAlignment: CrossGroupAlignment.center,
-                groupRunAlignment: GroupRunAlignment.center
+      context: context,
+      builder: (BuildContext context) {
+        return StatefulBuilder(
+          builder: (context, setState) {
+            return AlertDialog(
+              title: Text('เลือกวันหยุดประจำสัปดาห์'),
+              content: Container(
+                height: 380,
+                width: double.maxFinite,
+                child: ListView.builder(
+                  itemCount: listWeekend.length,
+                  itemBuilder: (context, index) {
+                    final day = listWeekend[index];
+                    return CheckboxListTile(
+                      title: Text(day),
+                      value: showDay.contains(index),
+                      onChanged: (bool? value) {
+                        setState(() {
+                          if (value != null) {                      
+                           if (value && showDay.length < maxSelected) {
+                              showDay.add(index);
+                              selectedDays.add(listWeekend[index]);
+                            } else if(!value) {
+                              showDay.remove(index);
+                              selectedDays.remove(listWeekend[index]);
+                            }  
+                            // Update checkedList to match showDay
+                            checkedList =
+                                List.generate(7, (i) => showDay.contains(i));                        
+                          }
+                        });
+                      },                      
+                    );
+                  },
+                ),
               ),
-             ) 
-             
-             )
-          ],
-        ),
-        actions: [
-          ElevatedButton(
-            onPressed: () {
-              // ทำสิ่งที่คุณต้องการเมื่อปุ่ม OK ถูกคลิก
-              Navigator.of(context).pop();
-            },
-            child: Text('ยืนยัน'),
-          ),
-        ],
-      ),
-     );
-  } 
-
-    Future<void> _selectOpenTime() async{
-    pickedOpenTime = await showTimePicker(
-      context: context, 
-      initialTime: TimeOfDay.now()
-      );
-
-      if(pickedOpenTime != null){
-        setState(() {
-          openTimeController.text = pickedOpenTime!.format(context).toString();
-        });
-      }
+              actions: <Widget>[
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                  child: Text('Cancel'),
+                ),
+                TextButton(
+                  onPressed: () async {
+                    String position = "";
+                    // Do something with checkedList
+                    for (var item in showDay) {
+                      position += "$item,";
+                    }                   
+                    http.Response response = await ownerController
+                        .addWeekend(position.substring(0, position.length - 1));
+                    if (response.statusCode == 200) {
+                      print("add weeekend success");
+                      _fetchData();
+                      Navigator.pop(context, "ยืนยัน");
+                    }
+                  },
+                  child: Text('OK'),
+                ),
+              ],
+            );
+          },
+        );
+      },
+    );
   }
 
-     Future<void> _selectCloseTime() async{
-    pickedCloseTime = await showTimePicker(
-      context: context, 
-      initialTime: TimeOfDay.now()
-      );
+  Future<void> _selectOpenTime() async {
+    pickedOpenTime =
+        await showTimePicker(context: context, initialTime: TimeOfDay.now());
 
-      if(pickedCloseTime != null){
-        setState(() {
-          closeTimeController.text = pickedCloseTime!.format(context).toString();
-        });
-      }
+    if (pickedOpenTime != null) {
+      setState(() {
+        openTimeController.text = pickedOpenTime!.format(context).toString();
+      });
+    }
   }
-    
+
+  Future<void> _selectCloseTime() async {
+    pickedCloseTime =
+        await showTimePicker(context: context, initialTime: TimeOfDay.now());
+
+    if (pickedCloseTime != null) {
+      setState(() {
+        closeTimeController.text = pickedCloseTime!.format(context).toString();
+      });
+    }
+  }
 }

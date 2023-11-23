@@ -10,6 +10,7 @@ class ReserveDetail {
   Reserve? reserve;
   String? serviceId;
   ServiceModel? service;
+  int? count;
   
 
   ReserveDetail.addReserveDetail({this.reserveDetailId,this.sumPrice,this.scheduleTime});
@@ -17,6 +18,8 @@ class ReserveDetail {
   ReserveDetail.getReserveDetail({this.scheduleTime,this.service,this.sumPrice});
 
   ReserveDetail.getReserveDetail2({this.scheduleTime,this.service,this.sumPrice,this.reserve});
+
+  ReserveDetail.getCountReserveDetail({this.scheduleTime,this.count});
   
   factory ReserveDetail.fromJsonToReserveDetail(Map<String, dynamic> json) {    
   return ReserveDetail.getReserveDetail(      
@@ -32,6 +35,13 @@ class ReserveDetail {
       reserve: Reserve.fromJsonToReserve2(json["reserve"]),
       sumPrice: json["sumPrice"],
       service: ServiceModel.fromJsonToService(json["service"])          
+    );
+  }
+
+    factory ReserveDetail.fromJsonToGetCountScheduleTime(Map<String, dynamic> json) {    
+  return ReserveDetail.getCountReserveDetail(      
+      scheduleTime: DateTime.parse(json["scheduleTime"]),   
+      count: json["count"]         
     );
   }
 }

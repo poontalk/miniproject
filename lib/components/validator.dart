@@ -31,13 +31,13 @@ bool validateRegister(String input) {
 }
 
 String? validateServicTimespend(String? input) {
-  RegExp servicTimespend = RegExp(r"^[\d]") ;
+  RegExp servicTimespend = RegExp(r"^[\d]{1}") ;
    final isServicTimespendValid = servicTimespend.hasMatch(input ?? '');
    if (input!.isEmpty) {
     return 'ห้ามว่าง';
   }
   if (!isServicTimespendValid) {
-    return 'กรุณากรอกจำนวนเวลาเป็นตัวเลขนาทีเท่านั้น';
+    return 'กรุณากรอกจำนวนเวลาเป็นชั่วโมงเท่านั้น';
   } 
    return null;
 }

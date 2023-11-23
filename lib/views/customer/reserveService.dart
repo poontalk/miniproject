@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_session_manager/flutter_session_manager.dart';
+import 'package:intl/intl.dart';
 import 'package:miniproject/components/buttonReserve.dart';
+import 'package:miniproject/controller/barberController.dart';
+import 'package:miniproject/controller/ownerController.dart';
 import 'package:miniproject/controller/reserveController.dart';
+import 'package:miniproject/model/reserveDetail.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:http/http.dart' as http;
 import '../../controller/customerController.dart';
@@ -9,6 +13,7 @@ import '../../controller/reserveDetailController.dart';
 import '../../controller/service_controller.dart';
 import '../../main.dart';
 import '../../model/customer.dart';
+import '../../model/owner.dart';
 import '../../model/service.dart';
 
 class ReserveService extends StatefulWidget {
@@ -22,7 +27,10 @@ class _ReserveServiceState extends State<ReserveService> {
   final ServiceController serviceController = ServiceController();
   final CustomerController customerController = CustomerController();
   final ReserveController reserveController = ReserveController();
-  final ReserveDetailController reserveDetailController = ReserveDetailController();
+  final BarberController barberController = BarberController();
+  final ReserveDetailController reserveDetailController =
+      ReserveDetailController();
+  final OwnerCotroller ownerCotroller = OwnerCotroller();
   CalendarFormat _format = CalendarFormat.month;
   DateTime _focusDay = DateTime.now();
   DateTime _currentDay = DateTime.now();
@@ -33,6 +41,9 @@ class _ReserveServiceState extends State<ReserveService> {
   bool _timeSelected = false;
   bool _serviceSelected = false;
   List<ServiceModel>? serviceModels;
+  List<ReserveDetail>? listReserveDetails;
+  List<Owner>? owners;
+  List<int> showDay = [];
   ServiceModel? _serviceModel;
   var selectedValue;
   String? userId;
@@ -41,27 +52,38 @@ class _ReserveServiceState extends State<ReserveService> {
   String? _closeTime;
   int? _calOpenTime;
   int? _calCloseTime;
-  int? unit;
+  int? unit; //แปลงค่านาที เป็น ค่าชั่วโมง
+  int? barberCount;
 
   void fetchData() async {
     serviceModels = await serviceController.listAllService();
+    listReserveDetails = await reserveDetailController.getCountScheduleTime();
+    owners = await ownerCotroller.showShopProfile();
     userId = await SessionManager().get("userId");
     customer = await customerController.findCustomerIdByuserId(userId!);
     _openTime = await SessionManager().get("openTime");
     _closeTime = await SessionManager().get("closeTime");
-    print(_closeTime!.split(":")[0]);
-    print(_openTime!.split(":")[0]);
+    barberCount = await barberController.getCountBarber();
+    print("จำนวนช่างตัดผมตอนนี้ $barberCount");
+    for (var item in owners!) {
+      List<String> numbers = item.weekend.toString().split(",");
+      for (int i = 0; i < numbers.length; i++) {
+        int numbersInt = int.parse(numbers[i]);
+        showDay.add(numbersInt);
+      }
+    }
+    //print("ShowDay: $showDay");
+
     if (_openTime != null) {
       _calOpenTime = int.parse(_openTime!.split(":")[0]);
       _calCloseTime = int.parse(_closeTime!.split(":")[0]);
     }
-
     if (mounted) {
       setState(() {
         isLoaded = true;
       });
     }
-  }  
+  }
 
   @override
   void initState() {
@@ -115,11 +137,16 @@ class _ReserveServiceState extends State<ReserveService> {
                         delegate: SliverChildBuilderDelegate(
                           (context, index) {
                             index = index * unit!;
-                           int timeBooking = index + _calOpenTime!;
-                           print("timeBooking: $timeBooking");
+                            int timeBooking = index + _calOpenTime!;
+
+                            bool isDisable = _checkDisable(timeBooking);
+
                             return InkWell(
                               splashColor: Colors.black,
                               onTap: () {
+                                if (isDisable) {
+                                  return;
+                                }
                                 setState(() {
                                   _currentIndex = index;
                                   _timeSelected = true;
@@ -131,12 +158,16 @@ class _ReserveServiceState extends State<ReserveService> {
                                   border: Border.all(
                                     color: _currentIndex == index
                                         ? Colors.white
-                                        : Colors.black,
+                                        : isDisable
+                                            ? Colors.grey
+                                            : Colors.black,
                                   ),
                                   borderRadius: BorderRadius.circular(10),
                                   color: _currentIndex == index
                                       ? Colors.green
-                                      : null,
+                                      : isDisable
+                                          ? Colors.grey
+                                          : null,
                                 ),
                                 alignment: Alignment.center,
                                 child: index == 0
@@ -146,7 +177,9 @@ class _ReserveServiceState extends State<ReserveService> {
                                           fontWeight: FontWeight.bold,
                                           color: _currentIndex == index
                                               ? Colors.white
-                                              : null,
+                                              : isDisable
+                                                  ? Colors.grey
+                                                  : null,
                                         ),
                                       )
                                     : Text(
@@ -155,7 +188,9 @@ class _ReserveServiceState extends State<ReserveService> {
                                           fontWeight: FontWeight.bold,
                                           color: _currentIndex == index
                                               ? Colors.white
-                                              : null,
+                                              : isDisable
+                                                  ? Colors.grey
+                                                  : null,
                                         ),
                                       ),
                               ),
@@ -188,27 +223,29 @@ class _ReserveServiceState extends State<ReserveService> {
                   child: ButtonReserve(
                       width: double.infinity,
                       title: 'ยืนยันการจอง',
-                      onPressed: () async{
+                      onPressed: () async {
                         int timeBooking = _currentIndex! + _calOpenTime!;
-                         http.Response response = await reserveController.addReserve(
-                          _currentDay.toString().split(" ")[0],                         
-                          _serviceModel?.price,
-                          userId
-                        ); 
-                        if(response.statusCode == 200){
-                          http.Response response2 = await reserveDetailController.addReserveDetail(
-                            selectedValue.toString(), 
-                            _currentDay.toString().split(" ")[0],
-                             timeBooking.toString()
-                            ); 
-                             if(response2.statusCode != 200){
-                                 _errorInputData("ไม่สามารถบันทึกคำขอสั่งจองการบริการได้");
-                               }else{
-                                _successInputData();
-                               }    
-                        }else{
-                         _errorInputData("ไม่สามารถบันทึกคำขอสั่งจองการบริการได้");
-                        }  
+                        http.Response response =
+                            await reserveController.addReserve(
+                                _currentDay.toString().split(" ")[0],
+                                _serviceModel?.price,
+                                userId);
+                        if (response.statusCode == 200) {
+                          http.Response response2 =
+                              await reserveDetailController.addReserveDetail(
+                                  selectedValue.toString(),
+                                  _currentDay.toString().split(" ")[0],
+                                  timeBooking.toString());
+                          if (response2.statusCode != 200) {
+                            _errorInputData(
+                                "ไม่สามารถบันทึกคำขอสั่งจองการบริการได้");
+                          } else {
+                            _successInputData();
+                          }
+                        } else {
+                          _errorInputData(
+                              "ไม่สามารถบันทึกคำขอสั่งจองการบริการได้");
+                        }
                         print("$timeBooking  $_currentDay");
                       },
                       disable:
@@ -219,7 +256,7 @@ class _ReserveServiceState extends State<ReserveService> {
           ],
         ));
   }
-  
+
   Widget _tableCalendar() {
     return TableCalendar(
       focusedDay: _focusDay,
@@ -227,11 +264,10 @@ class _ReserveServiceState extends State<ReserveService> {
       lastDay: DateTime(2024, 12, 31),
       calendarFormat: _format,
       currentDay: _currentDay,
-      calendarStyle:  CalendarStyle(
-          todayDecoration:
-              BoxDecoration(
-                color: _dateSelected ? Colors.green
-                                        : Colors.grey, shape: BoxShape.circle)),
+      calendarStyle: CalendarStyle(
+          todayDecoration: BoxDecoration(
+              color: _dateSelected ? Colors.green : Colors.grey,
+              shape: BoxShape.circle)),
       availableCalendarFormats: const {
         CalendarFormat.month: 'Month',
       },
@@ -245,77 +281,95 @@ class _ReserveServiceState extends State<ReserveService> {
           _currentDay = selectedDay;
           _focusDay = focusedDay;
           _dateSelected = true;
-          if(selectedDay.weekday == 3 || selectedDay.weekday == 7){
-            _isWeekend = true;
+          // ให้ _isWeekend เป็น true เมื่อ selectedDay.weekday อยู่ใน showDay
+          _isWeekend = showDay.contains(selectedDay.weekday);
+
+          if (_isWeekend) {
             _timeSelected = false;
             _currentIndex = null;
-          }else{
+          } else {
             _isWeekend = false;
-          }
+            //print("Number of SelectedDay: ${selectedDay.weekday}");
+          }          
         });
       }),
     );
   }
 
-  void _calculateCloseTime(Object? object) async {
-    _serviceModel = await serviceController.getServiceByName(object.toString());
-    unit = _serviceModel!.timespend! ~/ 60;
-    print("unit: $unit" "  service ${_serviceModel?.serviceName}");
-  }
-
-  void _errorInputData(String details){
-      showDialog(context: context, 
-        builder: (BuildContext context) =>
-         AlertDialog(
-          title: Text('แจ้งเตือน'),
-          content: Text(details),
-          actions:<Widget> [            
-            TextButton(
-              onPressed: () {
-                Navigator.pop(context, 'ตกลง');                 
-              } ,
-              child: const Text('ตกลง'),
-            ),
-          ],
-        )
-        );
-  }
-
-   void _successInputData(){
-      showDialog(context: context, 
-        builder: (BuildContext context) =>
-         AlertDialog(
-          title: Text('แจ้งเตือน'),
-          content: Text('จองบริการช่างตัดผมสำเร็จ!'),
-          actions:<Widget> [            
-            TextButton(
-              onPressed: () {        
-                Navigator.pop(context, 'ตกลง'); 
-                Navigator.pushReplacement(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) =>
-                                    const MyApp()));                  
-              } ,
-              child: const Text('ตกลง'),
-            ),
-          ],
-        )
-        );
-  }
-
-
-  int _calculateUnitGrid() {
-    int calGrid = 0;
-    if (unit == 0) {
-      calGrid = (_calCloseTime! - _calOpenTime!);
-      print('calGrid: $calGrid');
-      return calGrid;
-    } else {
-      calGrid = (_calCloseTime! - _calOpenTime!) ~/ unit!;
-      print('calGrid: $calGrid');
-      return calGrid;
+  bool _checkDisable(int timeBooking) {
+    // กำหนดเวลาปิด
+    List<int> fullScheduleTimes = [];
+    String? chooseDay = DateFormat('yyyy-MM-dd').format(_currentDay);
+    for (var item in listReserveDetails!) {
+      String? scheduleTime =
+          DateFormat('yyyy-MM-dd').format(item.scheduleTime!);
+      if (chooseDay == scheduleTime) {
+        if (item.count! > barberCount!) {
+          fullScheduleTimes
+              .add(int.parse(DateFormat('HH').format(item.scheduleTime!)));
+          //print("เวลาที่เข้าเงื่อนไขการจองซ้ำ: $closeTime โมง  วันที่ ${DateFormat('yyyy-MM-dd').format(item.scheduleTime!)}");
+        }
+      }
     }
+    // เช็คว่า timeBooking นั้นเกินเวลาปิดหรือไม่
+    for (int closeTime in fullScheduleTimes) {
+      if (timeBooking == closeTime) {
+        return true;
+      }
+    }
+
+    // เช็คว่า timeBooking นั้นไม่เกิน 2 ชั่วโมงก่อนเวลาปิดหรือไม่
+    int? closeTime = fullScheduleTimes.isNotEmpty
+        ? fullScheduleTimes.reduce((a, b) => a < b ? a : b)
+        : null;
+    if (closeTime != null && timeBooking >= closeTime - 2) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  void _calculateCloseTime() {
+    setState(() {
+      unit = _serviceModel!.timespend! ~/ 60;
+    });
+    //print("unit: $unit" "  service ${_serviceModel?.serviceName}");
+  }
+
+  void _errorInputData(String details) {
+    showDialog(
+        context: context,
+        builder: (BuildContext context) => AlertDialog(
+              title: Text('แจ้งเตือน'),
+              content: Text(details),
+              actions: <Widget>[
+                TextButton(
+                  onPressed: () {
+                    Navigator.pop(context, 'ตกลง');
+                  },
+                  child: const Text('ตกลง'),
+                ),
+              ],
+            ));
+  }
+
+  void _successInputData() {
+    showDialog(
+        context: context,
+        builder: (BuildContext context) => AlertDialog(
+              title: Text('แจ้งเตือน'),
+              content: Text('จองบริการช่างตัดผมสำเร็จ!'),
+              actions: <Widget>[
+                TextButton(
+                  onPressed: () {
+                    Navigator.pop(context, 'ตกลง');
+                    Navigator.pushReplacement(context,
+                        MaterialPageRoute(builder: (context) => const MyApp()));
+                  },
+                  child: const Text('ตกลง'),
+                ),
+              ],
+            ));
   }
 
   //DropdownService
@@ -334,14 +388,11 @@ class _ReserveServiceState extends State<ReserveService> {
                       child: Text(e.serviceName.toString()));
                 }).toList(),
                 onChanged: (value) {
-                  if (mounted) {
-                    setState(() {
-                      selectedValue = value;
-                      _serviceSelected = true;
-                      _calculateCloseTime(value);
-                      _findPriceByServiceName(value);
-                    });
-                  }
+                  setState(() {
+                    _findPriceByServiceName(value);
+                    selectedValue = value;
+                    _serviceSelected = true;
+                  });
                 });
           } else if (snapshot.hasError) {
             return Text("Error: ${snapshot.error}");
@@ -351,7 +402,27 @@ class _ReserveServiceState extends State<ReserveService> {
         });
   }
 
+  int _calculateUnitGrid() {
+    //print("unit $unit");
+    int calGrid = 0;
+    if (unit != null) {
+      if (unit == 0) {
+        calGrid = (_calCloseTime! - _calOpenTime!);
+        print('calGrid: $calGrid');
+        return calGrid;
+      } else {
+        setState(() {
+          calGrid = (_calCloseTime! - _calOpenTime!) ~/ unit!;
+        });
+        print('calGrid: $calGrid');
+        return calGrid;
+      }
+    }
+    return calGrid;
+  }
+
   Future<void> _findPriceByServiceName(Object? value) async {
-    _serviceModel = await serviceController.getServiceByName(value.toString()); 
+    _serviceModel = await serviceController.getServiceByName(value.toString());
+    _calculateCloseTime();
   }
 }
