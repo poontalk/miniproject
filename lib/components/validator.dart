@@ -126,3 +126,29 @@ String? validateUserName(String? username){
   }      
     return null;
  }
+
+  String? validateOpenTime(String? openTime){    
+     if (openTime!.isEmpty) {
+    return 'ห้ามว่าง';
+  }      
+    return null;
+ }
+
+  String? validateCloseTime(String? closeTime){    
+     if (closeTime!.isEmpty) {
+    return 'ห้ามว่าง';
+  }      
+    return null;
+ }
+
+ String? validateShopName(String? input) {
+  RegExp shopNameRegex = RegExp(r"^[ก-๙a-zA-Z\s*]+$");
+  final isShopNameValid = shopNameRegex.hasMatch(input ?? '');
+  if (input!.isEmpty) {
+    return 'ห้ามว่าง';
+  }
+  if (!isShopNameValid) {
+    return 'กรุณากรอกชื่อร้านให้ถูกต้อง';
+  }
+  return null;
+}

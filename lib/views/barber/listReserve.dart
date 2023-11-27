@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_session_manager/flutter_session_manager.dart';
 import 'package:intl/intl.dart';
+import 'package:miniproject/controller/barberController.dart';
 import 'package:miniproject/controller/reserveController.dart';
 import 'package:miniproject/controller/reserveDetailController.dart';
+import 'package:miniproject/model/barber.dart';
 import 'package:miniproject/model/reserve.dart';
 import 'package:miniproject/model/reserveDetail.dart';
 import 'package:http/http.dart' as http;
@@ -18,17 +21,24 @@ class _ListReserveBarberState extends State<ListReserveBarber> {
   final ReserveDetailController _reserveDetailController =
       ReserveDetailController();
   final ReserveController _reserveController = ReserveController();
+  final BarberController _barberController = BarberController();
   List<Reserve>? _listReserveBarber;
   String? _name;
   double? _totalPrice;
+  BarberModel? barber;
+  String? userId;
 
   String? reserveId;
 
   void _fetchData() async {
-    _listReserveBarber = await _reserveController.listReserveForBarber();
-    for (var item in _listReserveBarber!) {
-      reserveId = item.reserveId;
-    }
+    userId = await SessionManager().get("userId");
+    barber = await _barberController.getBarberByUserId(userId!);
+    _listReserveBarber =
+        await _reserveController.listReserveForBarber(barber!.barberId!);
+    if (_listReserveBarber != null)
+      for (var item in _listReserveBarber!) {
+        reserveId = item.reserveId;
+      }
     setState(() {
       isLoaded = true;
     });
@@ -52,13 +62,20 @@ class _ListReserveBarberState extends State<ListReserveBarber> {
 
           const Padding(
             padding: EdgeInsets.all(8.0),
-            child: Row(             
+            child: Row(
               children: [
-                Text("ชื่อลูกค้า",style: TextStyle(fontSize: 15),),
-                SizedBox(width: 75,),
-                Text(" \t \t \t เวลา",style: TextStyle(fontSize: 15)),
-                SizedBox(width: 35,),
-                Text("\t \t \t บริการ",style: TextStyle(fontSize: 15))
+                Text(
+                  "ชื่อลูกค้า",
+                  style: TextStyle(fontSize: 15),
+                ),
+                SizedBox(
+                  width: 75,
+                ),
+                Text(" \t \t \t เวลา", style: TextStyle(fontSize: 15)),
+                SizedBox(
+                  width: 35,
+                ),
+                Text("\t \t \t บริการ", style: TextStyle(fontSize: 15))
               ],
             ),
           ),
@@ -96,12 +113,13 @@ class _ListReserveBarberState extends State<ListReserveBarber> {
                                   SizedBox(
                                       height: listReserveDetailsBarber.length *
                                           60.0,
-                                      width: 180,
+                                      width: 200,
                                       child: ListView.builder(
                                           itemCount:
                                               listReserveDetailsBarber.length,
                                           itemBuilder: ((context, index) {
                                             String formattedTime = '';
+                                            String formattedDate = '';
                                             if (listReserveDetailsBarber[index]
                                                     .scheduleTime !=
                                                 null) {
@@ -112,6 +130,7 @@ class _ListReserveBarberState extends State<ListReserveBarber> {
                                                 formattedTime =
                                                     DateFormat('HH:mm')
                                                         .format(parsedTime);
+                                                formattedDate = DateFormat('dd/MM/yyyy').format(parsedTime);        
                                               } catch (e) {
                                                 formattedTime =
                                                     'เวลาไม่ถูกต้อง';
@@ -121,8 +140,8 @@ class _ListReserveBarberState extends State<ListReserveBarber> {
                                             }
                                             return ListTile(
                                               title: Text(
-                                                  "${formattedTime}      "
-                                                  "      ${listReserveDetailsBarber[index].service?.serviceName}   "),
+                                                  "$formattedDate \n $formattedTime   "
+                                                  "            ${listReserveDetailsBarber[index].service?.serviceName}"),
                                             );
                                           }))),
                                   Column(
@@ -160,7 +179,8 @@ class _ListReserveBarberState extends State<ListReserveBarber> {
                                               backgroundColor:
                                                   Colors.redAccent),
                                           onPressed: (() {
-                                            _showCancelJob( _listReserveBarber?[index]
+                                            _showCancelJob(
+                                                _listReserveBarber?[index]
                                                     .reserveId);
                                           }),
                                           child: Text("ยกเลิก"))
@@ -186,8 +206,7 @@ class _ListReserveBarberState extends State<ListReserveBarber> {
         context: context,
         builder: (BuildContext context) => AlertDialog(
               title: Text('แจ้งเตือน'),
-              content: Text(
-                  'ท่านต้องการยกเลิกงานหรือไม่'),
+              content: Text('ท่านต้องการยกเลิกงานหรือไม่'),
               actions: <Widget>[
                 TextButton(
                   onPressed: () => Navigator.pop(context, 'ไม่'),
@@ -203,13 +222,14 @@ class _ListReserveBarberState extends State<ListReserveBarber> {
               ],
             ));
   }
-  void _checkCancelJob(String? reserveId) async{
-     http.Response response = await _reserveController.cancelJob(reserveId);
-    if(response.statusCode == 200){
+
+  void _checkCancelJob(String? reserveId) async {
+    http.Response response = await _reserveController.cancelJob(reserveId);
+    if (response.statusCode == 200) {
       _showSucessCancel();
-    }else{
+    } else {
       _showFailCancel();
-    } 
+    }
   }
 
   void _showFailCancel() {
@@ -221,7 +241,7 @@ class _ListReserveBarberState extends State<ListReserveBarber> {
               actions: <Widget>[
                 TextButton(
                   onPressed: () {
-                    Navigator.pop(context, 'ตกลง');                    
+                    Navigator.pop(context, 'ตกลง');
                   },
                   child: const Text('ตกลง'),
                 ),

@@ -77,4 +77,15 @@ class BarberController {
     int countBarber = jsonResponse;
     return countBarber;
   }
+
+  Future getBarberByUserId(String userId) async {
+    var url = Uri.parse(baseURL + '/barber/getbyUserid/' + userId);
+
+    http.Response response = await http.get(url);
+
+    final utf8body = utf8.decode(response.bodyBytes);
+    var jsonResponse = json.decode(utf8body);
+    BarberModel barberModel = BarberModel.fromJsonToBarber(jsonResponse);
+    return barberModel;
+  }
 }

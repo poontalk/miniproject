@@ -8,6 +8,8 @@ import 'package:miniproject/controller/ownerController.dart';
 import 'package:miniproject/model/owner.dart';
 import 'package:line_icons/line_icons.dart';
 
+import '../../components/validator.dart';
+
 class EditShopProfile extends StatefulWidget {
   const EditShopProfile({super.key});
   @override
@@ -191,7 +193,7 @@ class _EditShopProfileState extends State<EditShopProfile> {
       padding: const EdgeInsets.only(left: 20.0, right: 20.0),
       child: TextFormField(
         controller: shopNameController,
-        //validator: validateServiceName,
+        validator: validateShopName,
         autovalidateMode: AutovalidateMode.onUserInteraction,
         showCursor: true,
         style: const TextStyle(color: Colors.black),
@@ -220,7 +222,8 @@ class _EditShopProfileState extends State<EditShopProfile> {
       padding: const EdgeInsets.only(left: 20.0, right: 20.0),
       child: TextFormField(
         controller: openTimeController,
-        //validator: validateServiceName,
+         readOnly: true,
+        validator: validateOpenTime,
         autovalidateMode: AutovalidateMode.onUserInteraction,
         showCursor: true,
         style: const TextStyle(color: Colors.black),
@@ -250,7 +253,8 @@ class _EditShopProfileState extends State<EditShopProfile> {
       padding: const EdgeInsets.only(left: 20.0, right: 20.0),
       child: TextFormField(
         controller: closeTimeController,
-        //validator: validateServiceName,
+        readOnly: true,
+        validator: validateCloseTime,
         autovalidateMode: AutovalidateMode.onUserInteraction,
         showCursor: true,
         style: const TextStyle(color: Colors.black),
@@ -282,6 +286,7 @@ class _EditShopProfileState extends State<EditShopProfile> {
         width: 155,
         child: TextFormField(
           controller: textWeekendController,
+           readOnly: true,
           //validator: validateServiceName,
           autovalidateMode: AutovalidateMode.onUserInteraction,
           showCursor: true,
@@ -314,6 +319,7 @@ class _EditShopProfileState extends State<EditShopProfile> {
         width: 155,
         child: TextFormField(
           controller: textDayOffController,
+           readOnly: true,
           //validator: validateServiceName,
           autovalidateMode: AutovalidateMode.onUserInteraction,
           showCursor: true,

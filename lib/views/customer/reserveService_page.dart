@@ -180,7 +180,7 @@ class _ReserveSerivePageState extends State<ReserveSerivePage> {
                   style:
                       ElevatedButton.styleFrom(backgroundColor: Colors.green),
                   onPressed: () async {
-                    if (_formKey.currentState!.validate()) { 
+                  /*   if (_formKey.currentState!.validate()) { 
                         http.Response response = await reserveController.addReserve(                          
                           pickedDate.toString().split(" ")[0],
                           pickedTime!.format(context),
@@ -203,7 +203,7 @@ class _ReserveSerivePageState extends State<ReserveSerivePage> {
                          _errorInputData("ไม่สามารถบันทึกคำขอสั่งจองการบริการได้");
                         }                                         
                                          
-                    }
+                    } */
                   },
                   child: const Text('ยืนยัน')),
             ],

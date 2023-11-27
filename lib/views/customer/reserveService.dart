@@ -63,7 +63,7 @@ class _ReserveServiceState extends State<ReserveService> {
     customer = await customerController.findCustomerIdByuserId(userId!);
     _openTime = await SessionManager().get("openTime");
     _closeTime = await SessionManager().get("closeTime");
-    barberCount = await barberController.getCountBarber();
+    barberCount = await barberController.getCountBarber();    
     print("จำนวนช่างตัดผมตอนนี้ $barberCount");
     for (var item in owners!) {
       List<String> numbers = item.weekend.toString().split(",");
@@ -296,38 +296,58 @@ class _ReserveServiceState extends State<ReserveService> {
     );
   }
 
-  bool _checkDisable(int timeBooking) {
+  /* bool _checkDisable(int timeBooking) {
     // กำหนดเวลาปิด
-    List<int> fullScheduleTimes = [];
+    List<int> closeTimes = [];
     String? chooseDay = DateFormat('yyyy-MM-dd').format(_currentDay);
-    for (var item in listReserveDetails!) {
+    for (var item in listReserveDetails!) {      
       String? scheduleTime =
           DateFormat('yyyy-MM-dd').format(item.scheduleTime!);
       if (chooseDay == scheduleTime) {
-        if (item.count! > barberCount!) {
-          fullScheduleTimes
-              .add(int.parse(DateFormat('HH').format(item.scheduleTime!)));
+        if (item.count! == barberCount!) {
+          if(item.count! > 1){                     
+            closeTimes.add(int.parse(DateFormat('HH').format(item.scheduleTime!)));
+          }                          
           //print("เวลาที่เข้าเงื่อนไขการจองซ้ำ: $closeTime โมง  วันที่ ${DateFormat('yyyy-MM-dd').format(item.scheduleTime!)}");
         }
       }
     }
+    
     // เช็คว่า timeBooking นั้นเกินเวลาปิดหรือไม่
-    for (int closeTime in fullScheduleTimes) {
+    for(int closeTime in closeTimes){
       if (timeBooking == closeTime) {
-        return true;
+      return true;
+      }    
+    }   
+     return false; 
+  } 
+ */
+
+   bool _checkDisable(int timeBooking) {
+  List<int> closeTimes = [];
+  String? chooseDay = DateFormat('yyyy-MM-dd').format(_currentDay);
+
+  for (var item in listReserveDetails!) {      
+    String? scheduleTime = DateFormat('yyyy-MM-dd').format(item.scheduleTime!);
+    if (chooseDay == scheduleTime) {
+      if (item.count! == barberCount!) {
+        if (item.count! > 1) {                     
+          closeTimes.add(int.parse(DateFormat('HH').format(item.scheduleTime!)));
+        }
       }
     }
-
-    // เช็คว่า timeBooking นั้นไม่เกิน 2 ชั่วโมงก่อนเวลาปิดหรือไม่
-    int? closeTime = fullScheduleTimes.isNotEmpty
-        ? fullScheduleTimes.reduce((a, b) => a < b ? a : b)
-        : null;
-    if (closeTime != null && timeBooking >= closeTime - 2) {
-      return true;
-    } else {
-      return false;
-    }
   }
+  
+  // เช็คว่า timeBooking นั้นเกินเวลาปิดหรือไม่
+  for (int closeTime in closeTimes) {
+    // ตรวจสอบว่า timeBooking อยู่ในช่วงเวลาที่มีการจองครบ capacity
+    if (timeBooking >= closeTime && timeBooking < closeTime + barberCount!) {
+      return true;
+    }    
+  }   
+  return false; 
+} 
+
 
   void _calculateCloseTime() {
     setState(() {

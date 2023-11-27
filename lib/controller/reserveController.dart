@@ -54,8 +54,8 @@ class ReserveController {
     return response;
   }
 
-  Future listReserveForBarber() async{
-      var url = Uri.parse(baseURL + '/reserve/listforbarber');
+  Future listReserveForBarber(String barberId) async{
+      var url = Uri.parse(baseURL + '/reserve/listforbarber/$barberId' );
 
     http.Response response = await http.get(url);
 
