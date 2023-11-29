@@ -28,13 +28,16 @@ class _ReserveServiceState extends State<ReserveService> {
   final CustomerController customerController = CustomerController();
   final ReserveController reserveController = ReserveController();
   final BarberController barberController = BarberController();
-  final ReserveDetailController reserveDetailController =
-      ReserveDetailController();
+  final ReserveDetailController reserveDetailController = ReserveDetailController();
   final OwnerCotroller ownerCotroller = OwnerCotroller();
   CalendarFormat _format = CalendarFormat.month;
   DateTime _focusDay = DateTime.now();
   DateTime _currentDay = DateTime.now();
   int? _currentIndex;
+  int? _calOpenTime;
+  int? _calCloseTime;
+  int? unit; //แปลงค่านาที เป็น ค่าชั่วโมง
+  int? barberCount;
   bool isLoaded = false;
   bool _isWeekend = false;
   bool _dateSelected = false;
@@ -45,15 +48,11 @@ class _ReserveServiceState extends State<ReserveService> {
   List<Owner>? owners;
   List<int> showDay = [];
   ServiceModel? _serviceModel;
-  var selectedValue;
-  String? userId;
   Customer? customer;
+  var selectedValue;
+  String? userId;  
   String? _openTime;
-  String? _closeTime;
-  int? _calOpenTime;
-  int? _calCloseTime;
-  int? unit; //แปลงค่านาที เป็น ค่าชั่วโมง
-  int? barberCount;
+  String? _closeTime; 
 
   void fetchData() async {
     serviceModels = await serviceController.listAllService();
@@ -72,7 +71,6 @@ class _ReserveServiceState extends State<ReserveService> {
         showDay.add(numbersInt);
       }
     }
-    //print("ShowDay: $showDay");
 
     if (_openTime != null) {
       _calOpenTime = int.parse(_openTime!.split(":")[0]);
@@ -283,45 +281,16 @@ class _ReserveServiceState extends State<ReserveService> {
           _dateSelected = true;
           // ให้ _isWeekend เป็น true เมื่อ selectedDay.weekday อยู่ใน showDay
           _isWeekend = showDay.contains(selectedDay.weekday);
-
           if (_isWeekend) {
             _timeSelected = false;
-            _currentIndex = null;
+            _currentIndex = null;            
           } else {
-            _isWeekend = false;
-            //print("Number of SelectedDay: ${selectedDay.weekday}");
+            _isWeekend = false;            
           }          
         });
       }),
     );
-  }
-
-  /* bool _checkDisable(int timeBooking) {
-    // กำหนดเวลาปิด
-    List<int> closeTimes = [];
-    String? chooseDay = DateFormat('yyyy-MM-dd').format(_currentDay);
-    for (var item in listReserveDetails!) {      
-      String? scheduleTime =
-          DateFormat('yyyy-MM-dd').format(item.scheduleTime!);
-      if (chooseDay == scheduleTime) {
-        if (item.count! == barberCount!) {
-          if(item.count! > 1){                     
-            closeTimes.add(int.parse(DateFormat('HH').format(item.scheduleTime!)));
-          }                          
-          //print("เวลาที่เข้าเงื่อนไขการจองซ้ำ: $closeTime โมง  วันที่ ${DateFormat('yyyy-MM-dd').format(item.scheduleTime!)}");
-        }
-      }
-    }
-    
-    // เช็คว่า timeBooking นั้นเกินเวลาปิดหรือไม่
-    for(int closeTime in closeTimes){
-      if (timeBooking == closeTime) {
-      return true;
-      }    
-    }   
-     return false; 
   } 
- */
 
    bool _checkDisable(int timeBooking) {
   List<int> closeTimes = [];
@@ -351,9 +320,8 @@ class _ReserveServiceState extends State<ReserveService> {
 
   void _calculateCloseTime() {
     setState(() {
-      unit = _serviceModel!.timespend! ~/ 60;
-    });
-    //print("unit: $unit" "  service ${_serviceModel?.serviceName}");
+      unit = _serviceModel!.timespend!;
+    });    
   }
 
   void _errorInputData(String details) {
@@ -423,21 +391,10 @@ class _ReserveServiceState extends State<ReserveService> {
   }
 
   int _calculateUnitGrid() {
-    //print("unit $unit");
     int calGrid = 0;
-    if (unit != null) {
-      if (unit == 0) {
-        calGrid = (_calCloseTime! - _calOpenTime!);
-        print('calGrid: $calGrid');
-        return calGrid;
-      } else {
-        setState(() {
+    setState(() {
           calGrid = (_calCloseTime! - _calOpenTime!) ~/ unit!;
         });
-        print('calGrid: $calGrid');
-        return calGrid;
-      }
-    }
     return calGrid;
   }
 

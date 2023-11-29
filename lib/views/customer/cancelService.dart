@@ -19,13 +19,12 @@ class _CancelServicePageState extends State<CancelServicePage> {
   final ReserveDetailController _reserveDetailController = ReserveDetailController();
 
   List<Reserve>? _listReserve;
-  DateTime? pickedDate;
-  TimeOfDay? pickedTime;
-  String? userId;
+  DateTime? pickedDate;    
   double heightScore = 0.0;
   bool isLoaded = false;
   String? scheduleDate;
   String? reserveId;
+  String? userId;
 
   void fetchData() async {
     userId = await SessionManager().get("userId");
@@ -94,12 +93,12 @@ class _CancelServicePageState extends State<CancelServicePage> {
             ));
   }
 
-  void _showReserveNullAlert() {
+  void _showFailCancelReserve() {
     showDialog(
         context: context,
         builder: (BuildContext context) => AlertDialog(
               title: Text('แจ้งแตือน'),
-              content: Text('ไม่มีการจอง'),
+              content: Text('สามารถยกเลิกเวลานัดก่อน 1 ชั่วโมงเท่านั้น!'),
               actions: <Widget>[
                 TextButton(
                   onPressed: () {
@@ -191,21 +190,19 @@ class _CancelServicePageState extends State<CancelServicePage> {
             child: ListView.builder(
                 itemCount: listreserveDetails.length,
                 itemBuilder: ((context, index) {
-                  String formattedTime = '';
-                  if (listreserveDetails[index].scheduleTime != null) {
-                    try {
+                  String formattedTime = '';                    
+                  if (listreserveDetails[index].scheduleTime != null) {   
+                    pickedDate = listreserveDetails[index].scheduleTime;                                                          
+                    try {                         
                       DateTime parsedTime = DateTime.parse(
-                          "${listreserveDetails[index].scheduleTime!}");
-                      formattedTime = DateFormat('HH:mm').format(parsedTime);
+                          "${listreserveDetails[index].scheduleTime!}");                                                  
+                      formattedTime = DateFormat('HH:mm').format(parsedTime);                         
                     } catch (e) {
                       formattedTime = 'เวลาไม่ถูกต้อง';
-                    }
+                    }                                         
                   } else {
                     formattedTime = 'ไม่มีข้อมูล';
-                  }
-                /*   print("${listreserveDetails[index].service?.serviceName}   "
-                      "${listreserveDetails[index].service?.price}   บาท    "
-                      "เวลา ${formattedTime}"); */
+                  }                   
                   return ListTile(
                     title: Text(
                         "${listreserveDetails[index].service?.serviceName}   "
@@ -238,10 +235,14 @@ class _CancelServicePageState extends State<CancelServicePage> {
                                 borderRadius: BorderRadius.circular(20)),
                             backgroundColor: Colors.redAccent),
                         onPressed: () {
-                          if (reserveId == null) {
-                            _showReserveNullAlert();
-                          } else {
-                            _showSureToDeleteReserveAlert(reserve.reserveId);
+                          DateTime? scheduleTime;
+                          for(var item in listreserveDetails){
+                            scheduleTime =  item.scheduleTime ;
+                          }                         
+                          if (isCheckTimeCancel(scheduleTime!)) {                            
+                            _showSureToDeleteReserveAlert(reserve.reserveId);                            
+                          } else {                           
+                            _showFailCancelReserve();
                           }
                         },
                         child: const Text(
@@ -255,4 +256,19 @@ class _CancelServicePageState extends State<CancelServicePage> {
       ),
     );
   }
-}
+
+    bool isCheckTimeCancel(DateTime scheduleTime) {    
+      try {
+        DateTime parsedTime = scheduleTime;
+        DateTime currentTime = DateTime.now();
+        Duration difference = parsedTime.difference(currentTime);        
+        // Check if the scheduled time is more than 1 hour before the current time
+        return difference.inHours >= 1;
+      } catch (e) {
+        // Handle parsing error
+        return false;
+      }
+      
+    }
+
+  }

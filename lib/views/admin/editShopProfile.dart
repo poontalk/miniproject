@@ -51,14 +51,33 @@ class _EditShopProfileState extends State<EditShopProfile> {
     await sessionManager.set("openTime", openTimeController.text);
     await sessionManager.set("closeTime", closeTimeController.text);
     List<String> numbers = textWeekendController.text.split(",");
+    textWeekendController.clear();
+    String formattedDay = "";
     for (int i = 0; i < numbers.length; i++) {
       int numbersInt = int.parse(numbers[i]);
+      formattedDay += "${getDays(numbersInt)}";
       showDay.add(numbersInt);
-    } 
-    //print("$showDay");
+    }    
+    textWeekendController.text = formattedDay.substring(0, formattedDay.length - 1);
+    
     setState(() {
       isLoaded = true;
     });
+  }
+
+  String getDays(day){
+    String days;
+    const map = {
+      0 : "จันทร์,",
+      1 : "อังคาร,",
+      2 : "พุธ,",
+      3 : "พฤหัสบดี,",
+      4 : "ศุกร์,",
+      5 : "เสาร์,",
+      6 : "อาทิตย์,",      
+    };
+    days = map[day] ?? 'Not found';
+    return days;
   }
 
   void _setDataToText() {
