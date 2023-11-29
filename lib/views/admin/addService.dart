@@ -53,7 +53,13 @@ class _AddServiceState extends State<AddService> {
       
             //Text field timespend
             const SizedBox(height: 10),
-            textFieldTimespend(),
+            Row(
+              children: [
+                textFieldTimespend(),
+                const Text("ชั่วโมง")
+              ],
+            )
+            ,
             const SizedBox(height: 10),
       
             //Button Submit
@@ -151,27 +157,31 @@ class _AddServiceState extends State<AddService> {
   Padding textFieldTimespend() {
     return Padding(
       padding: const EdgeInsets.only(left: 20.0, right: 20.0),
-      child: TextFormField(
-        keyboardType: TextInputType.number,
-        controller: timespendController,
-        validator: validateServicTimespend,
-        autovalidateMode: AutovalidateMode.onUserInteraction,
-        showCursor: true,
-        style: const TextStyle(color: Colors.black),
-        decoration: InputDecoration(
-          labelText: "เวลาที่ใช้",
-          labelStyle: const TextStyle(
-            color: Colors.black,
-            fontSize: 16,
-            fontWeight: FontWeight.w300,
+      child: SizedBox(
+         width: 155,
+        child: TextFormField(
+          keyboardType: TextInputType.number,
+          maxLength: 1,
+          controller: timespendController,
+          validator: validateServicTimespend,
+          autovalidateMode: AutovalidateMode.onUserInteraction,
+          showCursor: true,
+          style: const TextStyle(color: Colors.black),
+          decoration: InputDecoration(
+            labelText: "เวลาที่ใช้",
+            labelStyle: const TextStyle(
+              color: Colors.black,
+              fontSize: 16,
+              fontWeight: FontWeight.w300,
+            ),
+            hintStyle: const TextStyle(color: Colors.grey, fontSize: 15),
+            border: const OutlineInputBorder(
+                borderRadius: BorderRadius.all(Radius.circular(10.0))),
+            floatingLabelStyle: const TextStyle(
+                color: Colors.black, fontSize: 18, fontWeight: FontWeight.w300),
+            focusedBorder:
+                OutlineInputBorder(borderRadius: BorderRadius.circular(15)),
           ),
-          hintStyle: const TextStyle(color: Colors.grey, fontSize: 15),
-          border: const OutlineInputBorder(
-              borderRadius: BorderRadius.all(Radius.circular(10.0))),
-          floatingLabelStyle: const TextStyle(
-              color: Colors.black, fontSize: 18, fontWeight: FontWeight.w300),
-          focusedBorder:
-              OutlineInputBorder(borderRadius: BorderRadius.circular(15)),
         ),
       ),
     );
