@@ -30,13 +30,13 @@ class _ReserveServiceState extends State<ReserveService> {
   final BarberController barberController = BarberController();
   final ReserveDetailController reserveDetailController = ReserveDetailController();
   final OwnerCotroller ownerCotroller = OwnerCotroller();
-  CalendarFormat _format = CalendarFormat.month;
+  CalendarFormat _format = CalendarFormat.month; // รูปแแบบปฎิทิน
   DateTime _focusDay = DateTime.now();
   DateTime _currentDay = DateTime.now();
   int? _currentIndex;
-  int? _calOpenTime;
+  int? _calOpenTime; 
   int? _calCloseTime;
-  int? unit; //แปลงค่านาที เป็น ค่าชั่วโมง
+  int? unit; //จำนวน TimeSpend
   int? barberCount;
   bool isLoaded = false;
   bool _isWeekend = false;
@@ -50,9 +50,10 @@ class _ReserveServiceState extends State<ReserveService> {
   ServiceModel? _serviceModel;
   Customer? customer;
   var selectedValue;
-  String? userId;  
+  String? userId;
   String? _openTime;
-  String? _closeTime; 
+  String? _closeTime;
+  String? dayOff;
 
   void fetchData() async {
     serviceModels = await serviceController.listAllService();
@@ -62,13 +63,16 @@ class _ReserveServiceState extends State<ReserveService> {
     customer = await customerController.findCustomerIdByuserId(userId!);
     _openTime = await SessionManager().get("openTime");
     _closeTime = await SessionManager().get("closeTime");
-    barberCount = await barberController.getCountBarber();    
+    barberCount = await barberController.getCountBarber();
     print("จำนวนช่างตัดผมตอนนี้ $barberCount");
     for (var item in owners!) {
-      List<String> numbers = item.weekend.toString().split(",");
-      for (int i = 0; i < numbers.length; i++) {
-        int numbersInt = int.parse(numbers[i]);
+      List<String> numbersWeekend = item.weekend.toString().split(",");
+      for (int i = 0; i < numbersWeekend.length; i++) {
+        int numbersInt = int.parse(numbersWeekend[i]);
         showDay.add(numbersInt);
+      }
+      if (item.dayOff != null) {
+        dayOff = DateFormat("dd-MM-yyyy").format(item.dayOff!);
       }
     }
 
@@ -247,7 +251,7 @@ class _ReserveServiceState extends State<ReserveService> {
                         print("$timeBooking  $_currentDay");
                       },
                       disable:
-                          _dateSelected && _timeSelected && _serviceSelected
+                          _dateSelected && _timeSelected && _serviceSelected //Check Select date time and service
                               ? false
                               : true)),
             )
@@ -255,6 +259,7 @@ class _ReserveServiceState extends State<ReserveService> {
         ));
   }
 
+  //Calendar for Reserve service
   Widget _tableCalendar() {
     return TableCalendar(
       focusedDay: _focusDay,
@@ -278,50 +283,70 @@ class _ReserveServiceState extends State<ReserveService> {
         setState(() {
           _currentDay = selectedDay;
           _focusDay = focusedDay;
-          _dateSelected = true;
+          _dateSelected = true;        
           // ให้ _isWeekend เป็น true เมื่อ selectedDay.weekday อยู่ใน showDay
           _isWeekend = showDay.contains(selectedDay.weekday);
           if (_isWeekend) {
             _timeSelected = false;
-            _currentIndex = null;            
-          } else {
-            _isWeekend = false;            
-          }          
+            _currentIndex = null;
+          }else{
+            _isWeekend = false;
+          }
+
+          String _chooseDay = DateFormat("dd-MM-yyyy").format(selectedDay); // เปลี่ยน datetime to String
+          if (_chooseDay == dayOff) {
+            _isWeekend = true;
+            _timeSelected = false;
+            _currentIndex = null;
+          } 
         });
       }),
     );
-  } 
+  }
 
-   bool _checkDisable(int timeBooking) {
-  List<int> closeTimes = [];
-  String? chooseDay = DateFormat('yyyy-MM-dd').format(_currentDay);
-
-  for (var item in listReserveDetails!) {      
-    String? scheduleTime = DateFormat('yyyy-MM-dd').format(item.scheduleTime!);
-    if (chooseDay == scheduleTime) {
-      if (item.count! == barberCount!) {
-        if (item.count! > 1) {                     
-          closeTimes.add(int.parse(DateFormat('HH').format(item.scheduleTime!)));
+  //check เวลา open and close shop from database
+  bool _checkDisable(int timeBooking) {
+    List<int> closeTimes = [];
+    String? chooseDay = DateFormat('yyyy-MM-dd').format(_currentDay);
+    DateTime currentTime = DateTime.now();
+    String? presentDate = DateFormat('yyyy-MM-dd').format(currentTime);
+    if (listReserveDetails != null) {
+      for (var item in listReserveDetails!) {
+        String? scheduleTime =
+            DateFormat('yyyy-MM-dd').format(item.scheduleTime!);
+        if (chooseDay == scheduleTime) {
+          if (item.count == barberCount) {
+            if (item.count! > 1) {
+              closeTimes
+                  .add(int.parse(DateFormat('HH').format(item.scheduleTime!)));
+            }
+          }
         }
       }
     }
+
+// เช็คว่า timeBooking น้อยกว่า currentTime
+    if (chooseDay == presentDate) {
+      if (timeBooking < currentTime.hour) {
+        return true;
+      }
+    }
+
+    // เช็คว่า timeBooking นั้นเกินเวลาปิดหรือไม่
+    for (int closeTime in closeTimes) {
+      // ตรวจสอบว่า timeBooking อยู่ในช่วงเวลาที่มีการจองครบ capacity
+      if (timeBooking >= closeTime && timeBooking < closeTime + barberCount!) {
+        return true;
+      }
+    }
+    return false;
   }
-  
-  // เช็คว่า timeBooking นั้นเกินเวลาปิดหรือไม่
-  for (int closeTime in closeTimes) {
-    // ตรวจสอบว่า timeBooking อยู่ในช่วงเวลาที่มีการจองครบ capacity
-    if (timeBooking >= closeTime && timeBooking < closeTime + barberCount!) {
-      return true;
-    }    
-  }   
-  return false; 
-} 
 
-
+  //คำนวณ เวลาปิด
   void _calculateCloseTime() {
     setState(() {
       unit = _serviceModel!.timespend!;
-    });    
+    });
   }
 
   void _errorInputData(String details) {
@@ -393,8 +418,10 @@ class _ReserveServiceState extends State<ReserveService> {
   int _calculateUnitGrid() {
     int calGrid = 0;
     setState(() {
-          calGrid = (_calCloseTime! - _calOpenTime!) ~/ unit!;
-        });
+      if (unit != null) {
+        calGrid = (_calCloseTime! - _calOpenTime!) ~/ unit!;
+      }
+    });
     return calGrid;
   }
 

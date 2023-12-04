@@ -48,7 +48,7 @@ class OwnerCotroller {
     var url = Uri.parse(baseURL + '/owner/update');
 
     http.Response response =
-        await http.patch(url, headers: headers, body: jsonData);
+        await http.put(url, headers: headers, body: jsonData);
 
     return response;
   } 

@@ -26,13 +26,13 @@ class _EditShopProfileState extends State<EditShopProfile> {
   List<int> showDay = [];
   int maxSelected = 3;
   List<String> listWeekend = [
+    'อาทิตย์',
     'จันทร์',
     'อังคาร',
     'พุธ',
     'พฤหัสบดี',
     'ศุกร์',
-    'เสาร์',
-    'อาทิตย์',
+    'เสาร์'    
   ];
   List<String> selectedDays = [];
   List<bool> checkedList = List.filled(7, false);
@@ -68,13 +68,13 @@ class _EditShopProfileState extends State<EditShopProfile> {
   String getDays(day){
     String days;
     const map = {
-      0 : "จันทร์,",
-      1 : "อังคาร,",
-      2 : "พุธ,",
-      3 : "พฤหัสบดี,",
-      4 : "ศุกร์,",
-      5 : "เสาร์,",
-      6 : "อาทิตย์,",      
+      0 : "อาทิตย์,",
+      1 : "จันทร์,",
+      2 : "อังคาร,",
+      3 : "พุธ,",
+      4 : "พฤหัสบดี,",
+      5 : "ศุกร์,",
+      6 : "เสาร์,",          
     };
     days = map[day] ?? 'Not found';
     return days;
@@ -86,9 +86,9 @@ class _EditShopProfileState extends State<EditShopProfile> {
         shopNameController.text = item.shopName.toString();
         openTimeController.text = DateFormat('HH:mm').format(item.openTime!);
         closeTimeController.text = DateFormat('HH:mm').format(item.closeTime!);
-        textDayOffController.text = item.dayOff.toString();
+        textDayOffController.text = DateFormat('dd/MM/yyyy').format(item.dayOff!);
         textWeekendController.text = item.weekend.toString();
-      }
+      }      
     }
   }
 
@@ -187,8 +187,10 @@ class _EditShopProfileState extends State<EditShopProfile> {
                           textDayOffController.text);
                           if(response.statusCode == 200){
                             print("success edit owner");
-                            _fetchData();
+                            _fetchData();                            
                           }
+                      }else{
+                        print("validate ");
                       }
                     },
                     child: const Text('แก้ไข'))
@@ -306,7 +308,8 @@ class _EditShopProfileState extends State<EditShopProfile> {
         child: TextFormField(
           controller: textWeekendController,
            readOnly: true,
-          //validator: validateServiceName,
+           enabled: false,
+          validator: validateServiceName,
           autovalidateMode: AutovalidateMode.onUserInteraction,
           showCursor: true,
           style: const TextStyle(color: Colors.black),
@@ -338,10 +341,9 @@ class _EditShopProfileState extends State<EditShopProfile> {
         width: 155,
         child: TextFormField(
           controller: textDayOffController,
-           readOnly: true,
-          //validator: validateServiceName,
-          autovalidateMode: AutovalidateMode.onUserInteraction,
+           readOnly: true,             
           showCursor: true,
+          enabled: false,
           style: const TextStyle(color: Colors.black),
           decoration: InputDecoration(
             labelText: "วันหยุดพิเศษ",

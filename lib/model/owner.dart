@@ -29,8 +29,8 @@ class Owner {
       shopName: json["shopName"],  
       openTime: DateTime.parse(json["openTime"]),
       closeTime: DateTime.parse(json["closeTime"]),
-      weekend: json["weekend"]
-      //userModel: UserModel.fromJsonToUser(json["userId"])               
+      dayOff: DateTime.parse(json["dayOff"]),
+      weekend: json["weekend"]              
     );
   }
 }
