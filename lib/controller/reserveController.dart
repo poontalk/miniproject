@@ -116,4 +116,40 @@ class ReserveController {
 
     return response;
   }
+
+   Future getDailyIncome() async {
+     var url = Uri.parse(baseURL + '/reserve/getdailytotal');
+
+    http.Response response = await http.get(url);
+
+    final utf8body = utf8.decode(response.bodyBytes);
+    List<dynamic> jsonResponse = json.decode(utf8body);
+     List<Reserve> list =
+        jsonResponse.map((e) => Reserve.fromJsonToDaily(e)).toList(); 
+    return list;
+  }
+
+    Future getWeeklyIncome() async {
+     var url = Uri.parse(baseURL + '/reserve/getweeklytotal');
+
+    http.Response response = await http.get(url);
+
+    final utf8body = utf8.decode(response.bodyBytes);
+    List<dynamic> jsonResponse = json.decode(utf8body);
+     List<Reserve> list =
+        jsonResponse.map((e) => Reserve.fromJsonToWeekly(e)).toList(); 
+    return list;
+  }
+
+    Future getMonthlyIncome() async {
+     var url = Uri.parse(baseURL + '/reserve/totalMonthlySales');
+
+    http.Response response = await http.get(url);
+
+    final utf8body = utf8.decode(response.bodyBytes);
+    List<dynamic> jsonResponse = json.decode(utf8body);
+     List<Reserve> list =
+        jsonResponse.map((e) => Reserve.fromJsonToMonthly(e)).toList(); 
+    return list;
+  }
 }

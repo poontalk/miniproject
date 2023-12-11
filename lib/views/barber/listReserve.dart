@@ -98,18 +98,16 @@ class _ListReserveBarberState extends State<ListReserveBarber> {
                               snapshot.data; // นำข้อมูลมาใส่ใน list
                           _name =
                               "${_listReserveBarber?[index].customer?.firstName} ${_listReserveBarber?[index].customer?.lastName}";
-                          _totalPrice = _listReserveBarber?[index].price;
+                        
                           return Card(
                             elevation: 50,
                             child: Padding(
                               padding: const EdgeInsets.all(8.0),
                               child: Row(
                                 mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
+                                    MainAxisAlignment.spaceAround,
                                 children: [
-                                  Text(
-                                      "${_listReserveBarber?[index].customer?.firstName}"
-                                      " ${_listReserveBarber?[index].customer?.lastName}"),
+                                  Text(_name!),
                                   SizedBox(
                                       height: listReserveDetailsBarber.length *
                                           60.0,
@@ -130,7 +128,9 @@ class _ListReserveBarberState extends State<ListReserveBarber> {
                                                 formattedTime =
                                                     DateFormat('HH:mm')
                                                         .format(parsedTime);
-                                                formattedDate = DateFormat('dd/MM/yyyy').format(parsedTime);        
+                                                formattedDate =
+                                                    DateFormat('dd/MM/yyyy')
+                                                        .format(parsedTime);
                                               } catch (e) {
                                                 formattedTime =
                                                     'เวลาไม่ถูกต้อง';
@@ -138,50 +138,45 @@ class _ListReserveBarberState extends State<ListReserveBarber> {
                                             } else {
                                               formattedTime = 'ไม่มีข้อมูล';
                                             }
-                                            return ListTile(
-                                              title: Text(
+                                            return/*  ListTile(
+                                              leading: Text(
                                                   "$formattedDate \n $formattedTime   "
-                                                  "            ${listReserveDetailsBarber[index].service?.serviceName}"),
+                                                  "                    ${listReserveDetailsBarber[index].service?.serviceName}",style: TextStyle(fontSize: 12),),
+                                            ); */
+                                            SizedBox(
+                                              height: 50,
+                                              child: Row(
+                                                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                                                children: [
+                                                  Text("$formattedDate \n $formattedTime"),                                                  
+                                                  Text("${listReserveDetailsBarber[index].service?.serviceName}" ,style: TextStyle(fontSize: 20),)
+                                                ],
+                                              ),
                                             );
                                           }))),
                                   Column(
                                     children: [
                                       ElevatedButton(
                                           style: ElevatedButton.styleFrom(
-                                              side: BorderSide(
-                                                  color: Colors.black,
-                                                  width: 2),
+                                              side: BorderSide(color: Colors.black, width: 1),
                                               shape: RoundedRectangleBorder(
-                                                  borderRadius:
-                                                      BorderRadius.circular(
-                                                          20)),
-                                              backgroundColor:
-                                                  Colors.greenAccent),
+                                                      borderRadius: BorderRadius.circular(20)),
+                                              backgroundColor:Colors.green ,foregroundColor: Colors.white),
                                           onPressed: (() async {
-                                            _showConfirmPayment(
-                                                _listReserveBarber?[index]
-                                                    .reserveId);
-                                          }),
-                                          child: const Text(
-                                            "สำเร็จ",
-                                            style:
-                                                TextStyle(color: Colors.black),
-                                          )),
+                                            _showConfirmPayment(_listReserveBarber?[index].reserveId);
+                                              }
+                                            ),
+                                          child: const Text( "สำเร็จ",
+                                          )
+                                        ),
                                       ElevatedButton(
                                           style: ElevatedButton.styleFrom(
-                                              side: BorderSide(
-                                                  color: Colors.black,
-                                                  width: 2),
+                                              side: BorderSide(color: Colors.black, width: 1),
                                               shape: RoundedRectangleBorder(
-                                                  borderRadius:
-                                                      BorderRadius.circular(
-                                                          20)),
-                                              backgroundColor:
-                                                  Colors.redAccent),
+                                                  borderRadius:BorderRadius.circular(20)),
+                                              backgroundColor:Colors.redAccent , foregroundColor: Colors.white),
                                           onPressed: (() {
-                                            _showCancelJob(
-                                                _listReserveBarber?[index]
-                                                    .reserveId);
+                                            _showCancelJob(_listReserveBarber?[index].reserveId);
                                           }),
                                           child: Text("ยกเลิก"))
                                     ],

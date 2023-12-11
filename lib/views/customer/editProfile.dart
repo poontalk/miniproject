@@ -77,9 +77,6 @@ class _EditProfileState extends State<EditProfile> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Edit Profile'),
-      ),
       body: SingleChildScrollView(
         child: Form(
           key: _formKey,
@@ -127,7 +124,7 @@ class _EditProfileState extends State<EditProfile> {
               //ปุ่มกดแก้ไข
               ElevatedButton(
                   style:
-                      ElevatedButton.styleFrom(backgroundColor: Colors.green),
+                      ElevatedButton.styleFrom(backgroundColor: Colors.green ,foregroundColor: Colors.white),
                   onPressed: () async {
                     if (_formKey.currentState!.validate()) {
                         if(passwordController.text.isEmpty){

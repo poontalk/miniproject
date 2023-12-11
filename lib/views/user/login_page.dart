@@ -79,7 +79,7 @@ class _LoginPageState extends State<LoginPage> {
               //sign in button
               ElevatedButton(
                   style:
-                      ElevatedButton.styleFrom(backgroundColor: Colors.green),
+                      ElevatedButton.styleFrom(backgroundColor: Colors.green, foregroundColor: Colors.white),
                   onPressed: () async {
                     if (_formKey.currentState!.validate()) {
                       http.Response response = await loginController.loginId(
@@ -114,8 +114,7 @@ class _LoginPageState extends State<LoginPage> {
                   const SizedBox(width: 4),
                   TextButton(
                     style: TextButton.styleFrom(
-                      textStyle: const TextStyle(
-                          color: Colors.blue, fontWeight: FontWeight.bold),
+                      foregroundColor: Colors.blueAccent                      
                     ),
                     onPressed: () {
                       Navigator.push(

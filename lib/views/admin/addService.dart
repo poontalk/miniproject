@@ -26,14 +26,11 @@ class _AddServiceState extends State<AddService> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Add Service'),
-      ),
       body: Form(
         key: _formKey,
         child: Column(
           children: [
-            const SizedBox(height: 10),
+            const SizedBox(height: 50),
       
             const Align(
               alignment: Alignment.center,
@@ -64,6 +61,7 @@ class _AddServiceState extends State<AddService> {
       
             //Button Submit
             ElevatedButton(
+              style: ElevatedButton.styleFrom(backgroundColor: Colors.green, foregroundColor: Colors.white),
                 onPressed: () async {
                   if(_formKey.currentState!.validate()){
                           http.Response response =

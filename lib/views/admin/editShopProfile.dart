@@ -177,7 +177,7 @@ class _EditShopProfileState extends State<EditShopProfile> {
                 //Confirm Button
                 ElevatedButton(
                     style:
-                        ElevatedButton.styleFrom(backgroundColor: Colors.green),
+                        ElevatedButton.styleFrom(backgroundColor: Colors.green ,foregroundColor: Colors.white),
                     onPressed: () async {
                       if (_formKey.currentState!.validate()) {
                         http.Response response = await ownerController.editOwner(

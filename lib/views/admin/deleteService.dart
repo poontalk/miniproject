@@ -104,12 +104,16 @@ class _DeleteServiceScreenState extends State<DeleteServiceScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Delete Service'),
-      ),
       backgroundColor: Colors.white,
       body: Column(
         children: [
+          const SizedBox(height: 30),
+           const Align(
+              alignment: Alignment.center,
+              child: Text('รายการบริการ',
+                  style: TextStyle(
+                      decoration: TextDecoration.underline, fontSize: 30)),
+            ),
           //ส่วน ปุ่มกดเพิ่มบริการ
           Row(
             mainAxisAlignment: MainAxisAlignment.end,
@@ -144,7 +148,7 @@ class _DeleteServiceScreenState extends State<DeleteServiceScreen> {
                     child: Card(
                       elevation: 10,
                       child: ListTile(
-                        leading: Text(
+                        title: Text(
                             '${serviceModels?[index].serviceName} ${serviceModels?[index].price} บาท'),
                         onTap: () {
                           print("Click at ${index}");

@@ -233,7 +233,7 @@ class _CancelServicePageState extends State<CancelServicePage> {
                             side: BorderSide(color: Colors.black, width: 2),
                             shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(20)),
-                            backgroundColor: Colors.redAccent),
+                            backgroundColor: Colors.red,foregroundColor: Colors.white),
                         onPressed: () {
                           DateTime? scheduleTime;
                           for(var item in listreserveDetails){

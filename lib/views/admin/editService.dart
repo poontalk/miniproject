@@ -107,18 +107,15 @@ class _EditServiceState extends State<EditService> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Edit Service'),
-      ),
       body: Form(
         key: _formKey,
         child: Column(
           children: [
-            const SizedBox(height: 10),
+            const SizedBox(height: 50),
       
             const Align(
               alignment: Alignment.center,
-              child: Text('เพิ่มบริการ',
+              child: Text('แก้ไขบริการ',
                   style: TextStyle(
                       decoration: TextDecoration.underline, fontSize: 30)),
             ),
@@ -175,9 +172,11 @@ class _EditServiceState extends State<EditService> {
             const SizedBox(height: 10),
       
             //Button Submit
-            Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+            Row(mainAxisAlignment: MainAxisAlignment.center, 
+            children: [
               //ส่วนปุ่มกดแก้ไข
               ElevatedButton(
+               style: ElevatedButton.styleFrom(backgroundColor: Colors.green, foregroundColor: Colors.white),
                   onPressed: () async {
                      if(_formKey.currentState!.validate()) {
                       ServiceModel updateService = ServiceModel(

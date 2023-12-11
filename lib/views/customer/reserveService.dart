@@ -28,13 +28,14 @@ class _ReserveServiceState extends State<ReserveService> {
   final CustomerController customerController = CustomerController();
   final ReserveController reserveController = ReserveController();
   final BarberController barberController = BarberController();
-  final ReserveDetailController reserveDetailController = ReserveDetailController();
+  final ReserveDetailController reserveDetailController =
+      ReserveDetailController();
   final OwnerCotroller ownerCotroller = OwnerCotroller();
   CalendarFormat _format = CalendarFormat.month; // รูปแแบบปฎิทิน
   DateTime _focusDay = DateTime.now();
   DateTime _currentDay = DateTime.now();
   int? _currentIndex;
-  int? _calOpenTime; 
+  int? _calOpenTime;
   int? _calCloseTime;
   int? unit; //จำนวน TimeSpend
   int? barberCount;
@@ -96,167 +97,176 @@ class _ReserveServiceState extends State<ReserveService> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          title: Text("Reserve Service"),
-        ),
         body: CustomScrollView(
-          slivers: <Widget>[
-            SliverToBoxAdapter(
-              child: Column(
-                children: <Widget>[
-                  _tableCalendar(),
-                  dropdownService(),
-                  const Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 10, vertical: 25),
-                    child: Center(
-                      child: Text(
-                        'เลือกเวลาจอง',
-                        style: TextStyle(
-                            fontWeight: FontWeight.bold, fontSize: 20),
-                      ),
-                    ),
-                  )
+      slivers: <Widget>[
+        SliverToBoxAdapter(
+          child: Column(
+            children: <Widget>[
+              const SizedBox(height: 30),
+              const Align(
+                alignment: Alignment.center,
+                child: Text('จองบริการ',
+                    style: TextStyle(
+                        decoration: TextDecoration.underline, fontSize: 30)),
+              ),
+             const SizedBox(height: 10),
+              _tableCalendar(),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+               const Text("รายการบริการ:" ,style: TextStyle(fontSize: 17,fontWeight: FontWeight.bold),),
+                dropdownService(),
                 ],
               ),
-            ),
-            _isWeekend
-                ? SliverToBoxAdapter(
+              
+              const Padding(
+                padding: EdgeInsets.symmetric(horizontal: 10, vertical: 25),
+                child: Center(
+                  child: Text(
+                    'เลือกเวลาจอง',
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+                  ),
+                ),
+              )
+            ],
+          ),
+        ),
+        _isWeekend
+            ? SliverToBoxAdapter(
+                child: Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 10, vertical: 30),
+                  alignment: Alignment.center,
+                  child: const Text(
+                    'วันหยุดไม่สามารถจองได้ , กรุณาเลือกวันอื่น',
+                    style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.grey),
+                  ),
+                ),
+              )
+            : _serviceSelected
+                ? SliverGrid(
+                    delegate: SliverChildBuilderDelegate(
+                      (context, index) {
+                        index = index * unit!;
+                        int timeBooking = index + _calOpenTime!;
+
+                        bool isDisable = _checkDisable(timeBooking);
+
+                        return InkWell(
+                          splashColor: Colors.black,
+                          onTap: () {
+                            if (isDisable) {
+                              return;
+                            }
+                            setState(() {
+                              _currentIndex = index;
+                              _timeSelected = true;
+                            });
+                          },
+                          child: Container(
+                            margin: const EdgeInsets.all(5),
+                            decoration: BoxDecoration(
+                              border: Border.all(
+                                color: _currentIndex == index
+                                    ? Colors.white
+                                    : isDisable
+                                        ? Colors.grey
+                                        : Colors.black,
+                              ),
+                              borderRadius: BorderRadius.circular(10),
+                              color: _currentIndex == index
+                                  ? Colors.green
+                                  : isDisable
+                                      ? Colors.grey
+                                      : null,
+                            ),
+                            alignment: Alignment.center,
+                            child: index == 0
+                                ? Text(
+                                    '${_calOpenTime!}:00 ${index > 11 ? "PM" : "AM"}', //ข้างหน้าสุดเป็นเวลาเริ่มต้น ส่วนข้างหลังเป็นการปรับเวลาถ้า index > 11 เป็น PM
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      color: _currentIndex == index
+                                          ? Colors.white
+                                          : isDisable
+                                              ? Colors.grey
+                                              : null,
+                                    ),
+                                  )
+                                : Text(
+                                    '$timeBooking:00 ${timeBooking > 11 ? "PM" : "AM"}', //ข้างหน้าสุดเป็นเวลาเริ่มต้น ส่วนข้างหลังเป็นการปรับเวลาถ้า index > 11 เป็น PM
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      color: _currentIndex == index
+                                          ? Colors.white
+                                          : isDisable
+                                              ? Colors.grey
+                                              : null,
+                                    ),
+                                  ),
+                          ),
+                        );
+                      },
+                      childCount: _calculateUnitGrid(), //จำนวนแถว
+                    ),
+                    gridDelegate:
+                        const SliverGridDelegateWithFixedCrossAxisCount(
+                            crossAxisCount: 4, childAspectRatio: 1.5),
+                  )
+                : SliverToBoxAdapter(
                     child: Container(
                       padding: const EdgeInsets.symmetric(
                           horizontal: 10, vertical: 30),
                       alignment: Alignment.center,
                       child: const Text(
-                        'วันหยุดสุดสัปดาห์ไม่สามารถใช้ได้ , กรุณาเลือกวันอื่น',
+                        '',
                         style: TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.bold,
                             color: Colors.grey),
                       ),
                     ),
-                  )
-                : _serviceSelected
-                    ? SliverGrid(
-                        delegate: SliverChildBuilderDelegate(
-                          (context, index) {
-                            index = index * unit!;
-                            int timeBooking = index + _calOpenTime!;
-
-                            bool isDisable = _checkDisable(timeBooking);
-
-                            return InkWell(
-                              splashColor: Colors.black,
-                              onTap: () {
-                                if (isDisable) {
-                                  return;
-                                }
-                                setState(() {
-                                  _currentIndex = index;
-                                  _timeSelected = true;
-                                });
-                              },
-                              child: Container(
-                                margin: const EdgeInsets.all(5),
-                                decoration: BoxDecoration(
-                                  border: Border.all(
-                                    color: _currentIndex == index
-                                        ? Colors.white
-                                        : isDisable
-                                            ? Colors.grey
-                                            : Colors.black,
-                                  ),
-                                  borderRadius: BorderRadius.circular(10),
-                                  color: _currentIndex == index
-                                      ? Colors.green
-                                      : isDisable
-                                          ? Colors.grey
-                                          : null,
-                                ),
-                                alignment: Alignment.center,
-                                child: index == 0
-                                    ? Text(
-                                        '${_calOpenTime!}:00 ${index > 11 ? "PM" : "AM"}', //ข้างหน้าสุดเป็นเวลาเริ่มต้น ส่วนข้างหลังเป็นการปรับเวลาถ้า index > 11 เป็น PM
-                                        style: TextStyle(
-                                          fontWeight: FontWeight.bold,
-                                          color: _currentIndex == index
-                                              ? Colors.white
-                                              : isDisable
-                                                  ? Colors.grey
-                                                  : null,
-                                        ),
-                                      )
-                                    : Text(
-                                        '$timeBooking:00 ${timeBooking > 11 ? "PM" : "AM"}', //ข้างหน้าสุดเป็นเวลาเริ่มต้น ส่วนข้างหลังเป็นการปรับเวลาถ้า index > 11 เป็น PM
-                                        style: TextStyle(
-                                          fontWeight: FontWeight.bold,
-                                          color: _currentIndex == index
-                                              ? Colors.white
-                                              : isDisable
-                                                  ? Colors.grey
-                                                  : null,
-                                        ),
-                                      ),
-                              ),
-                            );
-                          },
-                          childCount: _calculateUnitGrid(), //จำนวนแถว
-                        ),
-                        gridDelegate:
-                            const SliverGridDelegateWithFixedCrossAxisCount(
-                                crossAxisCount: 4, childAspectRatio: 1.5),
-                      )
-                    : SliverToBoxAdapter(
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 10, vertical: 30),
-                          alignment: Alignment.center,
-                          child: const Text(
-                            'กรุณาเลือกบริการ',
-                            style: TextStyle(
-                                fontSize: 18,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.grey),
-                          ),
-                        ),
-                      ),
-            SliverToBoxAdapter(
-              child: Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 10, vertical: 80),
-                  child: ButtonReserve(
-                      width: double.infinity,
-                      title: 'ยืนยันการจอง',
-                      onPressed: () async {
-                        int timeBooking = _currentIndex! + _calOpenTime!;
-                        http.Response response =
-                            await reserveController.addReserve(
-                                _currentDay.toString().split(" ")[0],
-                                _serviceModel?.price,
-                                userId);
-                        if (response.statusCode == 200) {
-                          http.Response response2 =
-                              await reserveDetailController.addReserveDetail(
-                                  selectedValue.toString(),
-                                  _currentDay.toString().split(" ")[0],
-                                  timeBooking.toString());
-                          if (response2.statusCode != 200) {
-                            _errorInputData(
-                                "ไม่สามารถบันทึกคำขอสั่งจองการบริการได้");
-                          } else {
-                            _successInputData();
-                          }
-                        } else {
-                          _errorInputData(
-                              "ไม่สามารถบันทึกคำขอสั่งจองการบริการได้");
-                        }
-                        print("$timeBooking  $_currentDay");
-                      },
-                      disable:
-                          _dateSelected && _timeSelected && _serviceSelected //Check Select date time and service
-                              ? false
-                              : true)),
-            )
-          ],
-        ));
+                  ),
+        SliverToBoxAdapter(
+          child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 80),
+              child: ButtonReserve(
+                  width: double.infinity,
+                  title: 'ยืนยันการจอง',
+                  onPressed: () async {
+                    int timeBooking = _currentIndex! + _calOpenTime!;
+                    http.Response response = await reserveController.addReserve(
+                        _currentDay.toString().split(" ")[0],
+                        _serviceModel?.price,
+                        userId);
+                    if (response.statusCode == 200) {
+                      http.Response response2 =
+                          await reserveDetailController.addReserveDetail(
+                              selectedValue.toString(),
+                              _currentDay.toString().split(" ")[0],
+                              timeBooking.toString());
+                      if (response2.statusCode != 200) {
+                        _errorInputData(
+                            "ไม่สามารถบันทึกคำขอสั่งจองการบริการได้");
+                      } else {
+                        _successInputData();
+                      }
+                    } else {
+                      _errorInputData("ไม่สามารถบันทึกคำขอสั่งจองการบริการได้");
+                    }
+                    print("$timeBooking  $_currentDay");
+                  },
+                  disable: _dateSelected &&
+                          _timeSelected &&
+                          _serviceSelected //Check Select date time and service
+                      ? false
+                      : true)),
+        )
+      ],
+    ));
   }
 
   //Calendar for Reserve service
@@ -283,22 +293,23 @@ class _ReserveServiceState extends State<ReserveService> {
         setState(() {
           _currentDay = selectedDay;
           _focusDay = focusedDay;
-          _dateSelected = true;        
+          _dateSelected = true;
           // ให้ _isWeekend เป็น true เมื่อ selectedDay.weekday อยู่ใน showDay
           _isWeekend = showDay.contains(selectedDay.weekday);
           if (_isWeekend) {
             _timeSelected = false;
             _currentIndex = null;
-          }else{
+          } else {
             _isWeekend = false;
           }
 
-          String _chooseDay = DateFormat("dd-MM-yyyy").format(selectedDay); // เปลี่ยน datetime to String
+          String _chooseDay = DateFormat("dd-MM-yyyy")
+              .format(selectedDay); // เปลี่ยน datetime to String
           if (_chooseDay == dayOff) {
             _isWeekend = true;
             _timeSelected = false;
             _currentIndex = null;
-          } 
+          }
         });
       }),
     );

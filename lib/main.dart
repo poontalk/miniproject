@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_session_manager/flutter_session_manager.dart';
 import 'package:line_icons/line_icons.dart';
 import 'package:miniproject/model/user.dart';
+import 'package:miniproject/views/admin/dashboardAdmin.dart';
 import 'package:miniproject/views/admin/deleteService.dart';
 import 'package:miniproject/views/admin/editShopProfile.dart';
 import 'package:miniproject/views/admin/listallmember.dart';
@@ -46,7 +47,7 @@ class _MyAppState extends State<MyApp> {
       const ListAllMembersScreen(),
       DeleteServiceScreen(),
       EditShopProfile(),
-      const DashboardScreen(),
+      const DashboardAdmin(),
     ];
 
     final List<Widget> _widgetBarber = <Widget>[      

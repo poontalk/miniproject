@@ -107,13 +107,18 @@ class _ListAllMembersScreenState extends State<ListAllMembersScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('List All Members'),
-      ),
+    return Scaffold(      
       backgroundColor: Colors.white,
       body: Column(
         children: [
+          const SizedBox(height: 30),
+           const Align(
+              alignment: Alignment.center,
+              child: Text('รายชื่อช่างตัดผม',
+                  style: TextStyle(
+                      decoration: TextDecoration.underline, fontSize: 30)),
+            ),
+            const SizedBox(height: 10),
           Row(
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
@@ -153,7 +158,7 @@ class _ListAllMembersScreenState extends State<ListAllMembersScreen> {
                       child: Card(
                         elevation: 10,
                         child: ListTile(
-                          leading: Text(
+                          title: Text(
                               '${barber?[index].barberId}    ${user?[index].firstName}        ${user?[index].lastName}    ${barber?[index].barberStatus}'),
                           onTap: () {
                             Navigator.of(context)

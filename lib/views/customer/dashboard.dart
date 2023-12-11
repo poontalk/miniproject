@@ -34,25 +34,27 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: Text('Dashboard')),
+    return Scaffold(    
       body: Column(
         children: [
-          const SizedBox(height: 20,), 
-          Container(child: (Text('$firstname   $lastname' ,style: const TextStyle(fontSize: 20)))),    
-          const SizedBox(height: 20,),      
+          const SizedBox(height: 30,), 
+          Container(child: (Text('$firstname   $lastname' ,style: const TextStyle(fontSize: 30 ,fontWeight: FontWeight.bold)))),    
+          const SizedBox(height: 30,),      
           InkWell(
             onTap: (() => Navigator.of(context).push(
                               MaterialPageRoute(builder: (bui) => const EditProfile()))),
-            child: Container(
-              height: 40,
+            child:  Container(
+              margin: EdgeInsets.only(left: 10.0 ,right: 10.0),
+              height: 50,
               width: MediaQuery.of(context).size.width * 1,
-              decoration: const BoxDecoration(color: Colors.grey),
+              decoration: const BoxDecoration(border: Border(bottom: BorderSide(color: Colors.grey ,width: 1.0))),
               child: const Text("แก้ไขข้อมูลส่วนตัว" ,style: TextStyle(fontSize: 20)),
             ),
             
           ),         
+          const SizedBox(height: 20),
           ElevatedButton.icon(
+            style: ElevatedButton.styleFrom(foregroundColor: Colors.white, backgroundColor: Colors.red),
               onPressed: () async {
                 firstname = await SessionManager().remove("firstname");
                 username = await SessionManager().remove("username");

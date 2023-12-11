@@ -15,6 +15,7 @@ class Reserve {
   UserModel? customer;   
   double? price;
   String? serviceName;
+  String? reportIncome;
   
   Reserve({this.reserveId,this.reserveDate,this.scheduleTime,this.status,this.paydate,this.receiptId});
 
@@ -27,6 +28,8 @@ class Reserve {
   Reserve.getReserve3({this.reserveDate,this.receiptId});
 
   Reserve.getReserve4({this.reserveDate,this.receiptId,this.reserveId,this.paydate,this.barberModel,this.price});
+
+  Reserve.getReserve5({this.price,this.reportIncome});
 
   Map<String,dynamic> fromReserveToJson(){
     return<String,dynamic> {         
@@ -70,6 +73,27 @@ class Reserve {
       paydate: DateTime.parse(json["payDate"]) ,
       barberModel: json["barber"] != null ? BarberModel.fromJsonToBarber(json["barber"]) : null,
       price: json["totalPrice"]               
+    );
+  }
+
+     factory Reserve.fromJsonToDaily(Map<String, dynamic> json) {
+    return Reserve.getReserve5(
+        reportIncome: json["daily"],
+        price: json["total"]
+    );
+  }
+
+   factory Reserve.fromJsonToWeekly(Map<String, dynamic> json) {
+    return Reserve.getReserve5(
+        reportIncome: json["reportDate"],
+        price: json["totalIncome"]
+    );
+  }
+
+   factory Reserve.fromJsonToMonthly(Map<String, dynamic> json) {
+    return Reserve.getReserve5(
+        reportIncome: json["month"],
+        price: json["totalMonthly"]
     );
   }
 }
