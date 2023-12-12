@@ -316,23 +316,23 @@ class _ReserveServiceState extends State<ReserveService> {
   }
 
   //check เวลา open and close shop from database
-  bool _checkDisable(int timeBooking) {
+   bool _checkDisable(int timeBooking) {  
+    int timespend = 0; 
     List<int> closeTimes = [];
     String? chooseDay = DateFormat('yyyy-MM-dd').format(_currentDay);
     DateTime currentTime = DateTime.now();
     String? presentDate = DateFormat('yyyy-MM-dd').format(currentTime);
     if (listReserveDetails != null) {
-      for (var item in listReserveDetails!) {
-        String? scheduleTime =
-            DateFormat('yyyy-MM-dd').format(item.scheduleTime!);
+      for (var item in listReserveDetails!) {           
+          timespend = item.timespend!;                    
+        String? scheduleTime = DateFormat('yyyy-MM-dd').format(item.scheduleTime!);
         if (chooseDay == scheduleTime) {
           if (item.count == barberCount) {
             if (item.count! > 1) {
-              closeTimes
-                  .add(int.parse(DateFormat('HH').format(item.scheduleTime!)));
+               closeTimes.add(int.parse(DateFormat('HH').format(item.scheduleTime!)));                
+              }
             }
-          }
-        }
+          }             
       }
     }
 
@@ -343,15 +343,23 @@ class _ReserveServiceState extends State<ReserveService> {
       }
     }
 
-    // เช็คว่า timeBooking นั้นเกินเวลาปิดหรือไม่
+     // เช็คว่า timeBooking นั้นเกินเวลาปิดหรือไม่
     for (int closeTime in closeTimes) {
-      // ตรวจสอบว่า timeBooking อยู่ในช่วงเวลาที่มีการจองครบ capacity
-      if (timeBooking >= closeTime && timeBooking < closeTime + barberCount!) {
+      int endtime = getEndTime(closeTime, timespend);      
+      // ตรวจสอบว่า timeBooking อยู่ในช่วงเวลาที่มีการจองครบ capacity     
+      if (timeBooking >= closeTime && timeBooking < endtime) {
         return true;
       }
-    }
+    }     
     return false;
-  }
+  } 
+
+  int getEndTime(int startTime, int timespend) {
+  return startTime + timespend;
+}
+
+
+
 
   //คำนวณ เวลาปิด
   void _calculateCloseTime() {

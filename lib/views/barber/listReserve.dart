@@ -24,21 +24,19 @@ class _ListReserveBarberState extends State<ListReserveBarber> {
   final BarberController _barberController = BarberController();
   List<Reserve>? _listReserveBarber;
   String? _name;
-  double? _totalPrice;
+  double? _totalPrice;  
   BarberModel? barber;
-  String? userId;
-
-  String? reserveId;
+  String? userId;  
 
   void _fetchData() async {
     userId = await SessionManager().get("userId");
     barber = await _barberController.getBarberByUserId(userId!);
     _listReserveBarber =
         await _reserveController.listReserveForBarber(barber!.barberId!);
-    if (_listReserveBarber != null)
+  /*   if (_listReserveBarber != null)
       for (var item in _listReserveBarber!) {
         reserveId = item.reserveId;
-      }
+      } */
     setState(() {
       isLoaded = true;
     });
@@ -118,9 +116,7 @@ class _ListReserveBarberState extends State<ListReserveBarber> {
                                           itemBuilder: ((context, index) {
                                             String formattedTime = '';
                                             String formattedDate = '';
-                                            if (listReserveDetailsBarber[index]
-                                                    .scheduleTime !=
-                                                null) {
+                                            if (listReserveDetailsBarber[index].scheduleTime != null) {                                              
                                               try {
                                                 DateTime parsedTime =
                                                     DateTime.parse(
@@ -138,12 +134,7 @@ class _ListReserveBarberState extends State<ListReserveBarber> {
                                             } else {
                                               formattedTime = 'ไม่มีข้อมูล';
                                             }
-                                            return/*  ListTile(
-                                              leading: Text(
-                                                  "$formattedDate \n $formattedTime   "
-                                                  "                    ${listReserveDetailsBarber[index].service?.serviceName}",style: TextStyle(fontSize: 12),),
-                                            ); */
-                                            SizedBox(
+                                            return SizedBox(
                                               height: 50,
                                               child: Row(
                                                 mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -176,7 +167,16 @@ class _ListReserveBarberState extends State<ListReserveBarber> {
                                                   borderRadius:BorderRadius.circular(20)),
                                               backgroundColor:Colors.redAccent , foregroundColor: Colors.white),
                                           onPressed: (() {
-                                            _showCancelJob(_listReserveBarber?[index].reserveId);
+                                            DateTime? scheduleTime;
+                                            for (var item in listReserveDetailsBarber) {
+                                              scheduleTime = item.scheduleTime;
+                                            }
+                                            if(isCheckTimeCancel(scheduleTime!)){
+                                              _showCancelJob(_listReserveBarber?[index].reserveId);
+                                            }else{
+                                              _showFailCancelJob();
+                                            }
+                                            
                                           }),
                                           child: Text("ยกเลิก"))
                                     ],
@@ -219,12 +219,32 @@ class _ListReserveBarberState extends State<ListReserveBarber> {
   }
 
   void _checkCancelJob(String? reserveId) async {
-    http.Response response = await _reserveController.cancelJob(reserveId);
+    http.Response response = await _reserveController.cancelJob(reserveId!);
     if (response.statusCode == 200) {
       _showSucessCancel();
     } else {
       _showFailCancel();
     }
+  }
+
+   void _showFailCancelJob() {
+    showDialog(
+        context: context,
+        builder: (BuildContext context) => AlertDialog(
+              title: Text('แจ้งแตือน'),
+              content: Text('สามารถยกเลิกเวลานัดก่อน 1 ชั่วโมงเท่านั้น!'),
+              actions: <Widget>[
+                TextButton(
+                  onPressed: () {
+                    Navigator.pop(context, 'ตกลง');
+                    setState(() {
+                      _fetchData();
+                    });
+                  },
+                  child: const Text('ตกลง'),
+                ),
+              ],
+            ));
   }
 
   void _showFailCancel() {
@@ -333,4 +353,17 @@ class _ListReserveBarberState extends State<ListReserveBarber> {
               ],
             ));
   }
+
+   bool isCheckTimeCancel(DateTime scheduleTime) {    
+      try {
+        DateTime parsedTime = scheduleTime;
+        DateTime currentTime = DateTime.now();
+        Duration difference = parsedTime.difference(currentTime);        
+        // Check if the scheduled time is more than 1 hour before the current time
+        return difference.inHours >= 1;
+      } catch (e) {
+        // Handle parsing error
+        return false;
+      }      
+    }
 }

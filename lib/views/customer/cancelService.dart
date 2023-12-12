@@ -267,8 +267,6 @@ class _CancelServicePageState extends State<CancelServicePage> {
       } catch (e) {
         // Handle parsing error
         return false;
-      }
-      
+      }      
     }
-
   }

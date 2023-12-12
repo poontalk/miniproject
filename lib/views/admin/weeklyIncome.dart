@@ -43,7 +43,7 @@ class _WeeklyIncomeState extends State<WeeklyIncome> {
                           child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Text("${_listReserve?[index].reportIncome}"),
+                            Text("วันที่ ${_listReserve?[index].reportIncome}"),
                             Text("${_listReserve?[index].price} บาท")
                           ],
                         )

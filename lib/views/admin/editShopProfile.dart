@@ -86,7 +86,7 @@ class _EditShopProfileState extends State<EditShopProfile> {
         shopNameController.text = item.shopName.toString();
         openTimeController.text = DateFormat('HH:mm').format(item.openTime!);
         closeTimeController.text = DateFormat('HH:mm').format(item.closeTime!);
-        textDayOffController.text = DateFormat('dd/MM/yyyy').format(item.dayOff!);
+        textDayOffController.text = item.dayOff == null ? "" : DateFormat('dd/MM/yyyy').format(item.dayOff!) ;
         textWeekendController.text = item.weekend.toString();
       }      
     }
@@ -308,8 +308,7 @@ class _EditShopProfileState extends State<EditShopProfile> {
         child: TextFormField(
           controller: textWeekendController,
            readOnly: true,
-           enabled: false,
-          validator: validateServiceName,
+           enabled: false,          
           autovalidateMode: AutovalidateMode.onUserInteraction,
           showCursor: true,
           style: const TextStyle(color: Colors.black),

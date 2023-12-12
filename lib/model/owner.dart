@@ -29,7 +29,7 @@ class Owner {
       shopName: json["shopName"],  
       openTime: DateTime.parse(json["openTime"]),
       closeTime: DateTime.parse(json["closeTime"]),
-      dayOff: DateTime.parse(json["dayOff"]),
+      dayOff: json["dayOff"] != null ? DateTime.parse(json["dayOff"]) : null,
       weekend: json["weekend"]              
     );
   }

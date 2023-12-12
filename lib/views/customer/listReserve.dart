@@ -67,7 +67,7 @@ class _ListReserveCustomerState extends State<ListReserveCustomer> {
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: <Widget>[                              
-                              Text("วันที่ $formattedTime \n" "เลขที่ใบเสร็จ @${_reserves?[index].receiptId}"),
+                              Text("วันที่ $formattedTime \n" "เลขที่ใบเสร็จ ${_reserves?[index].receiptId}"),
                               Text('\nดูเพิ่มเติม....'),                              
                             ],                            
                           ),
