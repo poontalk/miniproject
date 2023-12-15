@@ -130,7 +130,7 @@ class _AddBarberState extends State<AddBarber> {
                        child: Card(
                          elevation: 10,
                          child: ListTile(
-                leading: Text(' ${user?[index].firstName} ${user?[index].lastName} ') ,
+                title: Text(' ${user?[index].firstName} ${user?[index].lastName} ') ,
                 onTap: (){
                   print("Click at ${index}");             
                 },

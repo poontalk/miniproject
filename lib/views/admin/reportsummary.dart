@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:miniproject/controller/reserveController.dart';
-import 'package:miniproject/model/reserve.dart';
 import 'package:miniproject/views/admin/dailyIncome.dart';
 import 'package:miniproject/views/admin/monthIncome.dart';
 import 'package:miniproject/views/admin/weeklyIncome.dart';

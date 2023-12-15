@@ -201,15 +201,15 @@ class _MyAppState extends State<MyApp> {
             tabs: const [     
                GButton(
                 icon: LineIcons.calendar,
-                text: "นัดจอง",
+                text: "ประวัติการจอง",
               ),           
               GButton(
                 icon: LineIcons.home,
-                text: "ยกเลิกบริการ",
+                text: "นัดจอง",
               ),
               GButton(
                 icon: LineIcons.list,
-                text: "รายการการจอง",
+                text: "ยกเลิกบริการ",
               ),
              
               GButton(

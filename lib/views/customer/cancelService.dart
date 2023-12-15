@@ -66,7 +66,7 @@ class _CancelServicePageState extends State<CancelServicePage> {
   }
 
   void _checkDeleteReserve(String reserveId) async {
-    http.Response response = await _reserveController.deleteReserve(reserveId);
+    http.Response response = await _reserveController.cancelReserve(reserveId);
     if (response.statusCode == 200) {
       _showDeleteReserveSuccessAlert();
     }

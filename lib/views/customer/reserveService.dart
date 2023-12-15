@@ -46,6 +46,7 @@ class _ReserveServiceState extends State<ReserveService> {
   bool _serviceSelected = false;
   List<ServiceModel>? serviceModels;
   List<ReserveDetail>? listReserveDetails;
+  List<ReserveDetail>? listReserveDetailsUser;
   List<Owner>? owners;
   List<int> showDay = [];
   ServiceModel? _serviceModel;
@@ -62,6 +63,7 @@ class _ReserveServiceState extends State<ReserveService> {
     owners = await ownerCotroller.showShopProfile();
     userId = await SessionManager().get("userId");
     customer = await customerController.findCustomerIdByuserId(userId!);
+    listReserveDetailsUser = await reserveDetailController.getScheduleTimeByUserId(userId!);
     _openTime = await SessionManager().get("openTime");
     _closeTime = await SessionManager().get("closeTime");
     barberCount = await barberController.getCountBarber();
@@ -256,8 +258,7 @@ class _ReserveServiceState extends State<ReserveService> {
                       }
                     } else {
                       _errorInputData("ไม่สามารถบันทึกคำขอสั่งจองการบริการได้");
-                    }
-                    print("$timeBooking  $_currentDay");
+                    }                    
                   },
                   disable: _dateSelected &&
                           _timeSelected &&
@@ -333,6 +334,24 @@ class _ReserveServiceState extends State<ReserveService> {
               }
             }
           }             
+      }
+    }
+
+    if(listReserveDetailsUser != null){
+      List<int> scheduleTimeUser = [];
+      for(var item in listReserveDetailsUser!){       
+        String? scheduleTime = DateFormat('yyyy-MM-dd').format(item.scheduleTime!);
+        if(chooseDay == scheduleTime){
+          scheduleTimeUser.add(int.parse(DateFormat('HH').format(item.scheduleTime!)));
+           timespend = item.timespend!; 
+          for (int item in scheduleTimeUser) {
+            int endtime = getEndTime(item, timespend); 
+            if(timeBooking >= item && timeBooking < endtime){
+              print("timeBooking: $timeBooking //// item:$item //// endTime: $endtime");
+              return true;
+            }
+          }
+        }
       }
     }
 

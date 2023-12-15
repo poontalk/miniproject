@@ -46,12 +46,18 @@ class ReserveController {
     return reserve;
   }
 
-   Future deleteReserve(String reserveId) async {
-    var url = Uri.parse(baseURL + "/reserve/delete/" + reserveId);
+   Future cancelReserve(String reserveId) async {
+     Map<String, dynamic> data = {
+      "reserveId" : reserveId,     
+    };
+    var body = json.encode(data);
+    var url = Uri.parse(baseURL + "/reserve/cancelreserve/" + reserveId);
 
-    http.Response response = await http.delete(url);
+    http.Response response = await http.patch(url, headers: headers, body: body);
 
     return response;
+
+   
   }
 
   Future listReserveForBarber(String barberId) async{
@@ -104,7 +110,7 @@ class ReserveController {
   }
 
     Future cancelJob(String? reserveId) async {
-    var url = Uri.parse(baseURL + '/reserve/delete/' + reserveId!);
+    var url = Uri.parse(baseURL + '/reserve/canceljob/' + reserveId!);
 
     http.Response response = await http.delete(url);
 

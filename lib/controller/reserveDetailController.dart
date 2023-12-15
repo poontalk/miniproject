@@ -53,4 +53,13 @@ class ReserveDetailController {
     List<ReserveDetail> list = jsonResponse.map((e) => ReserveDetail.fromJsonToGetCountScheduleTime(e)).toList();    
     return list;
   }
+
+  Future getScheduleTimeByUserId(String userId) async{
+     var url = Uri.parse('$baseURL/reserveDetail/scheduletimebyuserId/$userId');
+    http.Response response = await http.get(url);
+    final utf8body = utf8.decode(response.bodyBytes);
+    List<dynamic> jsonResponse = json.decode(utf8body);
+    List<ReserveDetail> list = jsonResponse.map((e) => ReserveDetail.fromJsonToGetCountScheduleTime(e)).toList();    
+    return list;
+  }
 }
