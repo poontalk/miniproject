@@ -360,7 +360,11 @@ class _ListReserveBarberState extends State<ListReserveBarber> {
         DateTime currentTime = DateTime.now();
         Duration difference = parsedTime.difference(currentTime);        
         // Check if the scheduled time is more than 1 hour before the current time
-        return difference.inHours >= 1;
+        print(difference.inMinutes);
+        if(difference.inMinutes < 0){
+          return true;
+        }
+        return difference.inHours > 1;
       } catch (e) {
         // Handle parsing error
         return false;

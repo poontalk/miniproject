@@ -110,9 +110,15 @@ class ReserveController {
   }
 
     Future cancelJob(String? reserveId) async {
+       Map<String, dynamic> data = {
+      "reserveId" : reserveId,     
+    };
+
+    var body = json.encode(data);
+
     var url = Uri.parse(baseURL + '/reserve/canceljob/' + reserveId!);
 
-    http.Response response = await http.delete(url);
+    http.Response response = await http.patch(url, headers: headers, body: body);
 
     return response;
   }

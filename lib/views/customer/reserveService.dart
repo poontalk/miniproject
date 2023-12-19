@@ -357,7 +357,7 @@ class _ReserveServiceState extends State<ReserveService> {
 
 // เช็คว่า timeBooking น้อยกว่า currentTime
     if (chooseDay == presentDate) {
-      if (timeBooking < currentTime.hour) {
+      if (timeBooking <= currentTime.hour) {
         return true;
       }
     }
