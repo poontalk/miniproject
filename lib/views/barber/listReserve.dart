@@ -51,6 +51,7 @@ class _ListReserveBarberState extends State<ListReserveBarber> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.grey[300],
       body: Column(
         children: [
           const SizedBox(height: 25),
@@ -96,11 +97,13 @@ class _ListReserveBarberState extends State<ListReserveBarber> {
                               snapshot.data; // นำข้อมูลมาใส่ใน list
                           _name =
                               "${_listReserveBarber?[index].customer?.firstName} ${_listReserveBarber?[index].customer?.lastName}";
-                        
+                          _totalPrice = _listReserveBarber?[index].price;                             
                           return Card(
                             elevation: 50,
+                            color: Colors.blue[100],
+                            margin: const EdgeInsets.only(bottom: 20.0 , left: 5,right: 5),
                             child: Padding(
-                              padding: const EdgeInsets.all(8.0),
+                              padding: const EdgeInsets.all(8.0),                              
                               child: Row(
                                 mainAxisAlignment:
                                     MainAxisAlignment.spaceAround,

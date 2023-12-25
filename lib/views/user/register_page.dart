@@ -57,9 +57,10 @@ class _RegisterPageState extends State<RegisterPage> {
 
               const SizedBox(height: 25),
               //FirstName
+              
               _textFieldFirstName(),
 
-              const SizedBox(height: 25),
+              const SizedBox(height: 15),
 
               //lastname
               _textFieldLastName(),
@@ -74,7 +75,7 @@ class _RegisterPageState extends State<RegisterPage> {
               //phonenumber
               _textFieldPhoneNumber(),
 
-              const SizedBox(height: 25),
+              const SizedBox(height: 15),
 
               //address
               _textFieldAddress(),
@@ -87,22 +88,22 @@ class _RegisterPageState extends State<RegisterPage> {
               //username
               _textFieldUserName(),
 
-              const SizedBox(height: 25),
+              const SizedBox(height: 15),
 
               //password
               _textFieldPassword(),
 
-              const SizedBox(height: 25),
+              const SizedBox(height: 15),
 
               //confirmpassword
               _textFieldConfirmPassword(),
 
-              const SizedBox(height: 25),
+              const SizedBox(height: 15),
 
               //Confirm Button
               ElevatedButton(
                   style:
-                      ElevatedButton.styleFrom(backgroundColor: Colors.green),
+                      ElevatedButton.styleFrom(backgroundColor: Colors.green ,foregroundColor: Colors.white),
                   onPressed: () async {
                     if (_formKey.currentState!.validate()) {
                       http.Response response = await (rc.addResgister(
@@ -135,11 +136,11 @@ class _RegisterPageState extends State<RegisterPage> {
   Padding _textFieldConfirmPassword() {
     return Padding(
       padding: const EdgeInsets.only(left: 20.0, right: 20.0),
-      child: TextFormField(
+      child: TextFormField(        
         controller: confirmpasswordController,
         obscureText: true,
         decoration: const InputDecoration(
-          hintText: 'ยืนยันรหัสผ่าน',
+          labelText: 'ยืนยันรหัสผ่าน',
           border: OutlineInputBorder(
               borderRadius: BorderRadius.all(Radius.circular(10.0))),
         ),
@@ -156,7 +157,7 @@ class _RegisterPageState extends State<RegisterPage> {
         controller: passwordController,
         obscureText: true,
         decoration: const InputDecoration(
-          hintText: 'รหัสผ่าน',
+          labelText: 'รหัสผ่าน',
           border: OutlineInputBorder(
               borderRadius: BorderRadius.all(Radius.circular(10.0))),
         ),
@@ -172,7 +173,7 @@ class _RegisterPageState extends State<RegisterPage> {
       child: TextFormField(
         controller: usernameController,
         decoration: const InputDecoration(
-          hintText: 'ชื่อผู้ใช้งาน',
+          labelText: 'ชื่อผู้ใช้งาน',
           border: OutlineInputBorder(
               borderRadius: BorderRadius.all(Radius.circular(10.0))),
         ),
@@ -188,7 +189,7 @@ class _RegisterPageState extends State<RegisterPage> {
       child: TextFormField(
         controller: addressController,
         decoration: const InputDecoration(
-          hintText: 'ที่อยู่',
+          labelText: 'ที่อยู่',
           border: OutlineInputBorder(
               borderRadius: BorderRadius.all(Radius.circular(10.0))),
         ),
@@ -204,7 +205,7 @@ class _RegisterPageState extends State<RegisterPage> {
       child: TextFormField(
         controller: phonenumberController,
         decoration: const InputDecoration(
-          hintText: 'เบอร์โทร',
+          labelText: 'เบอร์โทร',
           border: OutlineInputBorder(
               borderRadius: BorderRadius.all(Radius.circular(10.0))),
         ),
@@ -220,7 +221,7 @@ class _RegisterPageState extends State<RegisterPage> {
       child: TextFormField(
         controller: emailController,
         decoration: const InputDecoration(
-          hintText: 'อีเมล์',
+          labelText: 'อีเมล์',
           border: OutlineInputBorder(
               borderRadius: BorderRadius.all(Radius.circular(10.0))),
         ),
@@ -236,7 +237,7 @@ class _RegisterPageState extends State<RegisterPage> {
       child: TextFormField(
         controller: lastnameController,
         decoration: const InputDecoration(
-          hintText: 'นามสกุล',
+          labelText: 'นามสกุล',
           border: OutlineInputBorder(
               borderRadius: BorderRadius.all(Radius.circular(10.0))),
         ),
@@ -252,7 +253,7 @@ class _RegisterPageState extends State<RegisterPage> {
       child: TextFormField(
         controller: firstnameController,
         decoration: const InputDecoration(
-          hintText: 'ชื่อจริง',
+          labelText: 'ชื่อจริง',
           border: OutlineInputBorder(
               borderRadius: BorderRadius.all(Radius.circular(10.0))),
         ),

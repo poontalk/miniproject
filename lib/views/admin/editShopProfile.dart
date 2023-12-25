@@ -101,6 +101,7 @@ class _EditShopProfileState extends State<EditShopProfile> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.grey[300],
       body: Form(
           key: _formKey,
           child: Center(

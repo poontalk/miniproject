@@ -48,20 +48,10 @@ class _EditBarberScreenState extends State<EditBarberScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.grey[300],
       appBar: AppBar(
-        title: const Text('Edit Barber'),
-        actions: <Widget>[
-          IconButton(
-            icon: const Icon(
-              Icons.home,
-              color: Colors.white,
-            ),
-            onPressed: () {
-              Navigator.push(
-                  context, MaterialPageRoute(builder: (context) => MyApp()));
-            },
-          )
-        ],
+        backgroundColor: Colors.grey[200],
+        title: const Text('Edit Barber'),      
       ),
       body: Center(
         child: Column(
@@ -86,6 +76,12 @@ class _EditBarberScreenState extends State<EditBarberScreen> {
             //Button Submit
             Row(mainAxisAlignment: MainAxisAlignment.center, children: [
               ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(30.0)),
+                        backgroundColor: Colors.green,
+                        foregroundColor: Colors.white,
+                  ),
                   onPressed: () async {
                     http.Response response =
                         await barberController.updateBarber(BarberModel(
@@ -110,6 +106,7 @@ class _EditBarberScreenState extends State<EditBarberScreen> {
                 child: Text("ยกเลิก"),
                 style: ButtonStyle(
                   backgroundColor: MaterialStateProperty.all(Colors.red),
+                  foregroundColor: MaterialStateProperty.all(Colors.white)
                 ),
               ),
             ])

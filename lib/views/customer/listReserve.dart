@@ -39,6 +39,7 @@ class _ListReserveCustomerState extends State<ListReserveCustomer> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.grey[300],
       body: Center(
         child: Column(
           children: [

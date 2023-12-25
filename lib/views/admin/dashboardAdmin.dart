@@ -36,7 +36,8 @@ class _DashboardAdminState extends State<DashboardAdmin> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(     
+    return Scaffold(    
+      backgroundColor: Colors.grey[300], 
       body: Column(
         children: [
           const SizedBox(height: 30,), 

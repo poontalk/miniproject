@@ -32,37 +32,15 @@ class _ListServiceScreenState extends State<ListServiceScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('List Service'),
-      ),
-      backgroundColor: Colors.white,
+    return Scaffold(      
+      backgroundColor: Colors.grey[300],
       body: Column(
         children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.end,
-            children: [
-              Padding(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 10, vertical: 3),
-                child: ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                        shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(30.0)),
-                        primary: Colors.yellow,
-                        onPrimary: Colors.black,
-                        side: const BorderSide(width: 2, color: Colors.black)),
-                    onPressed: () {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) =>
-                                  const DeleteServiceScreen()));
-                    },
-                    child: const Text("Delete")),
-              ),
-            ],
-          ),
+           const SizedBox(height: 25),
+              //Header
+              const Text('รายการบริการ',
+                  style: TextStyle(
+                      decoration: TextDecoration.underline, fontSize: 30)),       
           Expanded(
             child: ListView.builder(
                 itemCount: serviceModels?.length,
@@ -71,9 +49,14 @@ class _ListServiceScreenState extends State<ListServiceScreen> {
                     padding: const EdgeInsets.all(8.0),
                     child: Card(
                       elevation: 10,
-                      child: ListTile(
-                        leading: Text(
-                            '${serviceModels?[index].serviceName} ${serviceModels?[index].price} บาท'),
+                      child: SizedBox(
+                        width: 155,
+                        child: ListTile(
+                          title: Center(
+                            child: Text(
+                                '${serviceModels?[index].serviceName} ${serviceModels?[index].price} บาท  เวลาบริการ: ${serviceModels?[index].timespend} ชั่วโมง'),
+                          ),
+                        ),
                       ),
                     ),
                   );

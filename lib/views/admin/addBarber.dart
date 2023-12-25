@@ -105,9 +105,10 @@ class _AddBarberState extends State<AddBarber> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: Colors.grey[200],
         title: const Text('Add Barber'),
       ),
-      backgroundColor: Colors.white,
+      backgroundColor: Colors.grey[300],
       
       body: Column(        
         children: [ 
@@ -128,6 +129,7 @@ class _AddBarberState extends State<AddBarber> {
                        return Padding(
                        padding: const EdgeInsets.all(8.0),
                        child: Card(
+                        color: Colors.blue[200],
                          elevation: 10,
                          child: ListTile(
                 title: Text(' ${user?[index].firstName} ${user?[index].lastName} ') ,

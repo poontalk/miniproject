@@ -16,10 +16,11 @@ class CancelServicePage extends StatefulWidget {
 
 class _CancelServicePageState extends State<CancelServicePage> {
   final ReserveController _reserveController = ReserveController();
-  final ReserveDetailController _reserveDetailController = ReserveDetailController();
+  final ReserveDetailController _reserveDetailController =
+      ReserveDetailController();
 
   List<Reserve>? _listReserve;
-  DateTime? pickedDate;    
+  DateTime? pickedDate;
   double heightScore = 0.0;
   bool isLoaded = false;
   String? scheduleDate;
@@ -138,7 +139,7 @@ class _CancelServicePageState extends State<CancelServicePage> {
                                 ConnectionState.waiting) {
                               return CircularProgressIndicator(); // แสดงการโหลด
                             }
-                            if (snapshot.hasData) {  
+                            if (snapshot.hasData) {
                               return _boxCancelReserve(
                                   context, _listReserve![index],
                                   listreserveDetails: snapshot.data);
@@ -147,8 +148,7 @@ class _CancelServicePageState extends State<CancelServicePage> {
                             return Text(
                                 'ไม่มีข้อมูล'); // หรือแสดงข้อความว่าไม่มีข้อมูล
                           });
-                    })
-                    )
+                    }))
           ],
         ),
       ),
@@ -157,22 +157,25 @@ class _CancelServicePageState extends State<CancelServicePage> {
 
   Container _boxCancelReserve(BuildContext context, Reserve reserve,
       {required List<ReserveDetail> listreserveDetails}) {
-    heightScore = 70.0 * listreserveDetails.length;    
+    heightScore = 70.0 * listreserveDetails.length;
     DateTime? reserveDate = reserve.scheduleDate;
     String formattedDate = DateFormat('dd-MM-yyyy').format(reserveDate!);
-    return Container(
+    return Container(   
+      margin: const EdgeInsets.symmetric(horizontal: 20,vertical: 10) ,
+      decoration:  BoxDecoration(  
+        border: Border.all(),     
+        borderRadius: const BorderRadius.all(Radius.circular(50)),
+        color: Colors.white, 
+      ),          
       child: Column(
-        children: [
-          const SizedBox(height: 25),
+        children: [           
           //หัวรายการ และ วันนัด
           Container(
               height: 50,
               width: MediaQuery.of(context).size.width * 1,
-              decoration: BoxDecoration(
-                border: Border.all(),
-              ),
+              margin: const EdgeInsets.only(top: 10.0),
               child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
                   Text("รายการ", style: TextStyle(fontSize: 20)),
                   Text("วันที่  ${formattedDate}",
@@ -184,25 +187,23 @@ class _CancelServicePageState extends State<CancelServicePage> {
           Container(
             height: heightScore,
             width: MediaQuery.of(context).size.width * 1,
-            decoration: BoxDecoration(
-              border: Border.all(),
-            ),
+            padding: const EdgeInsets.only(left: 25.0),         
             child: ListView.builder(
                 itemCount: listreserveDetails.length,
                 itemBuilder: ((context, index) {
-                  String formattedTime = '';                    
-                  if (listreserveDetails[index].scheduleTime != null) {   
-                    pickedDate = listreserveDetails[index].scheduleTime;                                                          
-                    try {                         
+                  String formattedTime = '';
+                  if (listreserveDetails[index].scheduleTime != null) {
+                    pickedDate = listreserveDetails[index].scheduleTime;
+                    try {
                       DateTime parsedTime = DateTime.parse(
-                          "${listreserveDetails[index].scheduleTime!}");                                                  
-                      formattedTime = DateFormat('HH:mm').format(parsedTime);                         
+                          "${listreserveDetails[index].scheduleTime!}");
+                      formattedTime = DateFormat('HH:mm').format(parsedTime);
                     } catch (e) {
                       formattedTime = 'เวลาไม่ถูกต้อง';
-                    }                                         
+                    }
                   } else {
                     formattedTime = 'ไม่มีข้อมูล';
-                  }                   
+                  }
                   return ListTile(
                     title: Text(
                         "${listreserveDetails[index].service?.serviceName}   "
@@ -220,9 +221,7 @@ class _CancelServicePageState extends State<CancelServicePage> {
           Container(
               height: 50,
               width: MediaQuery.of(context).size.width * 1,
-              decoration: BoxDecoration(
-                border: Border.all(),
-              ),
+              margin: const EdgeInsets.only(bottom: 10.0 ,top: 5.0),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
@@ -233,15 +232,16 @@ class _CancelServicePageState extends State<CancelServicePage> {
                             side: BorderSide(color: Colors.black, width: 2),
                             shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(20)),
-                            backgroundColor: Colors.red,foregroundColor: Colors.white),
+                            backgroundColor: Colors.red,
+                            foregroundColor: Colors.white),
                         onPressed: () {
                           DateTime? scheduleTime;
-                          for(var item in listreserveDetails){
-                            scheduleTime =  item.scheduleTime ;
-                          }                         
-                          if (isCheckTimeCancel(scheduleTime!)) {                            
-                            _showSureToDeleteReserveAlert(reserve.reserveId);                            
-                          } else {                           
+                          for (var item in listreserveDetails) {
+                            scheduleTime = item.scheduleTime;
+                          }
+                          if (isCheckTimeCancel(scheduleTime!)) {
+                            _showSureToDeleteReserveAlert(reserve.reserveId);
+                          } else {
                             _showFailCancelReserve();
                           }
                         },
@@ -251,22 +251,22 @@ class _CancelServicePageState extends State<CancelServicePage> {
                         )),
                   ),
                 ],
-              )),
+              )), 
         ],
       ),
     );
   }
 
-    bool isCheckTimeCancel(DateTime scheduleTime) {    
-      try {
-        DateTime parsedTime = scheduleTime;
-        DateTime currentTime = DateTime.now();
-        Duration difference = parsedTime.difference(currentTime);        
-        // Check if the scheduled time is more than 1 hour before the current time
-        return difference.inHours >= 1;
-      } catch (e) {
-        // Handle parsing error
-        return false;
-      }      
+  bool isCheckTimeCancel(DateTime scheduleTime) {
+    try {
+      DateTime parsedTime = scheduleTime;
+      DateTime currentTime = DateTime.now();
+      Duration difference = parsedTime.difference(currentTime);
+      // Check if the scheduled time is more than 1 hour before the current time
+      return difference.inHours >= 1;
+    } catch (e) {
+      // Handle parsing error
+      return false;
     }
   }
+}

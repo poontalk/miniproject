@@ -108,7 +108,7 @@ class _ListAllMembersScreenState extends State<ListAllMembersScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(      
-      backgroundColor: Colors.white,
+      backgroundColor: Colors.grey[300],
       body: Column(
         children: [
           const SizedBox(height: 30),
@@ -156,6 +156,7 @@ class _ListAllMembersScreenState extends State<ListAllMembersScreen> {
                     return Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: Card(
+                        color: Colors.blue[200],
                         elevation: 10,
                         child: ListTile(
                           title: Text(

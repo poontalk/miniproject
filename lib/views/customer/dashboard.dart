@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_session_manager/flutter_session_manager.dart';
 import 'package:miniproject/views/customer/editProfile.dart';
+import 'package:miniproject/views/customer/listReserve.dart';
 import 'package:miniproject/views/user/login_page.dart';
 
 class DashboardScreen extends StatefulWidget {
@@ -34,7 +35,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(    
+    return Scaffold(
+      backgroundColor: Colors.grey[300],    
       body: Column(
         children: [
           const SizedBox(height: 30,), 
@@ -51,7 +53,19 @@ class _DashboardScreenState extends State<DashboardScreen> {
               child: const Text("แก้ไขข้อมูลส่วนตัว" ,style: TextStyle(fontSize: 20)),
             ),
             
-          ),         
+          ),
+          const SizedBox(height: 10), 
+            InkWell(
+            onTap: (() => Navigator.of(context).push(
+                              MaterialPageRoute(builder: (bui) => const  ListReserveCustomer()))),
+            child: Container(    
+              margin: EdgeInsets.only(left: 10.0 ,right: 10.0),          
+              height: 50,
+              width: MediaQuery.of(context).size.width * 1,
+              decoration: const BoxDecoration(border: Border(bottom: BorderSide(color: Colors.grey ,width: 1.0))),
+              child: const Text("ประวัติการจอง" ,style: TextStyle(fontSize: 20)),
+            ),            
+          ),           
           const SizedBox(height: 20),
           ElevatedButton.icon(
             style: ElevatedButton.styleFrom(foregroundColor: Colors.white, backgroundColor: Colors.red),

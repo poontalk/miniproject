@@ -47,7 +47,9 @@ class _ViewReceiptState extends State<ViewReceipt> {
     return  Scaffold(
       appBar: AppBar(
         title: Text("รายละเอียดใบเสร็จ"),
+        backgroundColor: Colors.grey[200],
       ),
+      backgroundColor: Colors.grey[300],
       body: Center(
         child: Column(
             children: [

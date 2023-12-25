@@ -107,6 +107,7 @@ class _EditServiceState extends State<EditService> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.grey[300],
       body: Form(
         key: _formKey,
         child: Column(
@@ -199,6 +200,7 @@ class _EditServiceState extends State<EditService> {
                 child: Text("ยกเลิก"),
                 style: ButtonStyle(
                   backgroundColor: MaterialStateProperty.all(Colors.red),
+                  foregroundColor: MaterialStateProperty.all(Colors.white)
                 ),
               ),
             ])

@@ -191,7 +191,7 @@ class _LoginPageState extends State<LoginPage> {
           hintText: "somethingUserName",
           hintStyle: const TextStyle(color: Colors.grey, fontSize: 15),
           prefixIcon: const Icon(
-            Icons.email_outlined,
+            Icons.person_outline,
             color: Colors.black,
           ),
           border: const OutlineInputBorder(

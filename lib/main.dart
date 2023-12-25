@@ -6,12 +6,14 @@ import 'package:miniproject/views/admin/dashboardAdmin.dart';
 import 'package:miniproject/views/admin/deleteService.dart';
 import 'package:miniproject/views/admin/editShopProfile.dart';
 import 'package:miniproject/views/admin/listallmember.dart';
+import 'package:miniproject/views/barber/dashboardBarber.dart';
 import 'package:miniproject/views/barber/listReserve.dart';
 import 'package:miniproject/views/customer/cancelService.dart';
 import 'package:miniproject/views/customer/dashboard.dart';
 import 'package:miniproject/views/customer/editProfile.dart';
 import 'package:miniproject/views/customer/listReserve.dart';
 import 'package:miniproject/views/customer/reserveService.dart';
+import 'package:miniproject/views/user/listService.dart';
 import 'package:miniproject/views/user/login_page.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
 
@@ -53,11 +55,11 @@ class _MyAppState extends State<MyApp> {
     final List<Widget> _widgetBarber = <Widget>[      
       const ListReserveBarber(),
       EditProfile(),                 
-      const DashboardScreen(),
+      const DashBoardBarber(),
     ];
 
      final List<Widget> _widgetCustomer = <Widget>[ 
-      const ListReserveCustomer(), 
+      const ListServiceScreen(), 
       ReserveService(),  
       CancelServicePage(),                   
       const DashboardScreen(),

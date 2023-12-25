@@ -104,7 +104,7 @@ class _DeleteServiceScreenState extends State<DeleteServiceScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: Colors.grey[300],
       body: Column(
         children: [
           const SizedBox(height: 30),
@@ -125,8 +125,8 @@ class _DeleteServiceScreenState extends State<DeleteServiceScreen> {
                     style: ElevatedButton.styleFrom(
                         shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(30.0)),
-                        primary: Colors.yellow,
-                        onPrimary: Colors.black,
+                        backgroundColor: Colors.yellow,
+                        foregroundColor: Colors.black,
                         side: const BorderSide(width: 2, color: Colors.black)),
                     onPressed: () {
                       Navigator.push(
@@ -146,6 +146,7 @@ class _DeleteServiceScreenState extends State<DeleteServiceScreen> {
                   return Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: Card(
+                      color: Colors.blue[200],
                       elevation: 10,
                       child: ListTile(
                         title: Text(
