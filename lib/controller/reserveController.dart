@@ -46,7 +46,7 @@ class ReserveController {
     return reserve;
   }
 
-   Future cancelReserve(String reserveId) async {
+   Future doCancelReserve(String reserveId) async {
      Map<String, dynamic> data = {
       "reserveId" : reserveId,     
     };
@@ -60,7 +60,7 @@ class ReserveController {
    
   }
 
-  Future listReserveForBarber(String barberId) async{
+  Future getListReserveForBarber(String barberId) async{
       var url = Uri.parse(baseURL + '/reserve/listforbarber/$barberId' );
 
     http.Response response = await http.get(url);

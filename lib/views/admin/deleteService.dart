@@ -22,7 +22,7 @@ class _DeleteServiceScreenState extends State<DeleteServiceScreen> {
   List<ServiceModel>? serviceModels;
   //ส่วนรับค่าจาก servicemodels
   void fetchData() async {
-    serviceModels = await serviceController.listAllService();
+    serviceModels = await serviceController.getListService();
     setState(() {
       isLoaded = true;
     });
@@ -36,7 +36,7 @@ class _DeleteServiceScreenState extends State<DeleteServiceScreen> {
 
   Future<void> _checkDeleteService(String serviceId) async{
     http.Response response =
-              await serviceController.deleteService(serviceId);          
+              await serviceController.doDeleteService(serviceId);          
           if (response.statusCode == 200) {            
             showDeleteServiceSuccessAlert();
           } else {
@@ -52,15 +52,15 @@ class _DeleteServiceScreenState extends State<DeleteServiceScreen> {
           content: Text('ท่านต้องการลบข้อมูลบริการหรือไม่'),
           actions:<Widget> [
                TextButton(
-              onPressed: () => Navigator.pop(context, 'Cancel'),
-              child: const Text('Cancel'),
+              onPressed: () => Navigator.pop(context, 'ยกเลิก'),
+              child: const Text('ยกเลิก'),
             ),
             TextButton(
               onPressed: () {
-                Navigator.pop(context, 'OK'); 
+                Navigator.pop(context, 'ใช่'); 
                 _checkDeleteService(serviceId);
               } ,
-              child: const Text('OK'),
+              child: const Text('ใช่'),
             ),
           ],
         )
@@ -134,7 +134,7 @@ class _DeleteServiceScreenState extends State<DeleteServiceScreen> {
                           MaterialPageRoute(
                               builder: (context) => const AddService()));
                     },
-                    child: const Text("Add")),
+                    child: const Text("เพิ่มบริการ")),
               ),
             ],
           ),

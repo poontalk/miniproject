@@ -82,12 +82,12 @@ class _LoginPageState extends State<LoginPage> {
                       ElevatedButton.styleFrom(backgroundColor: Colors.green, foregroundColor: Colors.white),
                   onPressed: () async {
                     if (_formKey.currentState!.validate()) {
-                      http.Response response = await loginController.loginId(
+                      http.Response response = await loginController.doLoginMember(
                           usernameController.text, passwordController.text);
                       print(response.body);
                       if (response.body.contains("false")) {
                         // print("Failed Login");
-                        Fluttertoast.showToast(msg: "Failed Login");
+                        Fluttertoast.showToast(msg: "ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง");
                       } else {
                         loginModel = await loginController
                             .findLoginIdByUsername(usernameController.text);

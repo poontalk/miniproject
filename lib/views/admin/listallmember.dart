@@ -3,7 +3,6 @@ import 'package:miniproject/controller/barberController.dart';
 import 'package:miniproject/controller/userController.dart';
 import 'package:miniproject/main.dart';
 import 'package:miniproject/model/barber.dart';
-import 'package:miniproject/model/user.dart';
 import 'package:miniproject/views/admin/addBarber.dart';
 import 'package:miniproject/views/admin/editBarber.dart';
 import 'package:quickalert/quickalert.dart';
@@ -20,13 +19,11 @@ class _ListAllMembersScreenState extends State<ListAllMembersScreen> {
   final UserController userController = UserController();
   final BarberController barberController = BarberController();
 
-  bool? isLoaded = false;
-  List<UserModel>? user;
+  bool? isLoaded = false;  
   List<BarberModel>? barber;
 
   void fetchData() async {
-    barber = await barberController.listAllBarber();
-    user = await userController.listAllBarbers();
+    barber = await barberController.listAllMembers();    
     if (mounted) {
       setState(() {
         isLoaded = true;
@@ -59,8 +56,8 @@ class _ListAllMembersScreenState extends State<ListAllMembersScreen> {
           content: Text('ท่านต้องการลบช่างตัดผมหรือไม่'),
           actions:<Widget> [
                TextButton(
-              onPressed: () => Navigator.pop(context, 'Cancel'),
-              child: const Text('Cancel'),
+              onPressed: () => Navigator.pop(context, 'ยกเลิก'),
+              child: const Text('ยกเลิก'),
             ),
             TextButton(
               onPressed: () {
@@ -151,7 +148,7 @@ class _ListAllMembersScreenState extends State<ListAllMembersScreen> {
           Expanded(
             child: Container(
               child: ListView.builder(
-                  itemCount: barber?.length ?? user?.length,
+                  itemCount: barber?.length,
                   itemBuilder: ((context, index) {
                     return Padding(
                       padding: const EdgeInsets.all(8.0),
@@ -160,7 +157,7 @@ class _ListAllMembersScreenState extends State<ListAllMembersScreen> {
                         elevation: 10,
                         child: ListTile(
                           title: Text(
-                              '${barber?[index].barberId}    ${user?[index].firstName}        ${user?[index].lastName}    ${barber?[index].barberStatus}'),
+                              '${barber?[index].barberId}    ${barber?[index].userModel?.firstName}        ${barber?[index].userModel?.lastName}     ${barber?[index].barberStatus}'),
                           onTap: () {
                             Navigator.of(context)
                                 .push(MaterialPageRoute(

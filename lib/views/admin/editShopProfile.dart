@@ -2,6 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_session_manager/flutter_session_manager.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intl/intl.dart';
 import 'package:http/http.dart' as http;
 import 'package:miniproject/controller/ownerController.dart';
@@ -86,7 +87,7 @@ class _EditShopProfileState extends State<EditShopProfile> {
         shopNameController.text = item.shopName.toString();
         openTimeController.text = DateFormat('HH:mm').format(item.openTime!);
         closeTimeController.text = DateFormat('HH:mm').format(item.closeTime!);
-        textDayOffController.text = item.dayOff == null ? "" : DateFormat('dd/MM/yyyy').format(item.dayOff!) ;
+        textDayOffController.text = item.dayOff == null ? "" : DateFormat('dd-MM-yyyy').format(item.dayOff!) ;
         textWeekendController.text = item.weekend.toString();
       }      
     }
@@ -96,6 +97,32 @@ class _EditShopProfileState extends State<EditShopProfile> {
   void initState() {
     super.initState();
     _fetchData();
+  }
+
+   void showSureToDeleteDayOff() {     
+        showDialog(context: context, 
+        builder: (BuildContext context) =>
+         AlertDialog(
+          title: Text('ลบข้อมูลวันหยุด'),
+          content: Text('ท่านต้องการลบข้อมูลวันหยุดหรือไม่'),
+          actions:<Widget> [
+               TextButton(
+              onPressed: () => Navigator.pop(context, 'ไม่'),
+              child: const Text('ไม่'),
+            ),
+            TextButton(
+              onPressed: () {
+                setState(() {
+                  Navigator.pop(context, 'ใช่'); 
+                textDayOffController.clear();
+                });                
+              } ,
+              child: const Text('ใช่'),
+            ),
+          ],
+        )
+        );     
+     
   }
 
   @override
@@ -167,7 +194,7 @@ class _EditShopProfileState extends State<EditShopProfile> {
                         onPressed: isCheckTextDayOff()
                             ? null
                             : () => setState(() {
-                                  textDayOffController.clear();
+                                  showSureToDeleteDayOff();
                                 }),
                         child: const Text('ลบ'))
                   ],
@@ -181,13 +208,14 @@ class _EditShopProfileState extends State<EditShopProfile> {
                         ElevatedButton.styleFrom(backgroundColor: Colors.green ,foregroundColor: Colors.white),
                     onPressed: () async {
                       if (_formKey.currentState!.validate()) {
-                        http.Response response = await ownerController.editOwner(
+                        http.Response response = await ownerController.editShopProfile(
                            shopNameController.text, 
                            openTimeController.text, 
                           closeTimeController.text, 
                           textDayOffController.text);
                           if(response.statusCode == 200){
                             print("success edit owner");
+                            Fluttertoast.showToast(msg: "แก้ไขข้อมูลสำเร็จ");
                             _fetchData();                            
                           }
                       }else{

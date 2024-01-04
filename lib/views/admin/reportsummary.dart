@@ -39,7 +39,7 @@ class _ReportSummaryIncomeState extends State<ReportSummaryIncome>  with TickerP
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-            title:const Text("Report summary income"),   
+            title:const Text("รายงานผลรวมรายได้"),   
             backgroundColor: Colors.grey[200],         
             bottom: TabBar(
               controller: _tabController,

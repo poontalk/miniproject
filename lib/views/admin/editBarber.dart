@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:miniproject/controller/barberController.dart';
-import 'package:miniproject/main.dart';
 import 'package:miniproject/model/barber.dart';
 import 'package:miniproject/model/user.dart';
 import 'package:http/http.dart' as http;
@@ -21,13 +20,16 @@ class _EditBarberScreenState extends State<EditBarberScreen> {
 
   final BarberController barberController = BarberController();
   TextEditingController barberIdController = TextEditingController();
+  TextEditingController barberNameController = TextEditingController();
   TextEditingController userIdController = TextEditingController();
 
   void fetchData(String baeberId) async {
     barberModel = await barberController.getBarberById(baeberId);
-    // setDataToText();
+    String _name = "${barberModel?.userModel?.firstName ?? ""}  ${barberModel?.userModel?.lastName ?? ""}";
+    barberNameController.text = _name;
     barberIdController.text = barberModel?.barberId ?? "";
     userIdController.text = barberModel?.userModel?.userId ?? "";
+
     
     if (mounted) {
       setState(() {
@@ -62,6 +64,12 @@ class _EditBarberScreenState extends State<EditBarberScreen> {
               style: const TextStyle(fontSize: 24),
               decoration: const InputDecoration(border: InputBorder.none),
             ),
+              TextField(
+              controller: barberNameController,
+              enabled: false,
+              style: const TextStyle(fontSize: 24),
+              decoration: const InputDecoration(border: InputBorder.none),
+            ),
             DropdownButton<String>(
               value: selectedItem,
               items: items
@@ -84,7 +92,7 @@ class _EditBarberScreenState extends State<EditBarberScreen> {
                   ),
                   onPressed: () async {
                     http.Response response =
-                        await barberController.updateBarber(BarberModel(
+                        await barberController.doEditBarber(BarberModel(
                       barberId: barberIdController.text,
                       barberStatus: selectedItem,
                       userModel: barberModel?.userModel

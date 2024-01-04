@@ -7,7 +7,7 @@ import 'package:miniproject/model/service.dart';
 import 'package:miniproject/ws_config.dart';
 
 class ServiceController {
-  Future addServcieModel(
+  Future addServiceModel(
       String serviceName, double price, int timespend) async {
     Map<String, dynamic> data = {
       "serviceName": serviceName,
@@ -24,7 +24,7 @@ class ServiceController {
     return response;
   }
 
-  Future listAllService() async {
+  Future getListService() async {
     var url = Uri.parse(baseURL + '/service/list');
     http.Response response = await http.get(url);
 
@@ -35,7 +35,7 @@ class ServiceController {
     return list;
   }
 
-  Future updateService(ServiceModel serviceModel) async {
+  Future editService(ServiceModel serviceModel) async {
     Map<String, dynamic> data = serviceModel.fromServiceToJson();
 
     var body = json.encode(data);
@@ -47,7 +47,7 @@ class ServiceController {
     return response;
   }
 
-  Future deleteService(String serviceId) async {
+  Future doDeleteService(String serviceId) async {
     var url = Uri.parse(baseURL + "/service/delete/" + serviceId);
 
     http.Response response = await http.delete(url);

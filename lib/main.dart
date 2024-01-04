@@ -8,10 +8,9 @@ import 'package:miniproject/views/admin/editShopProfile.dart';
 import 'package:miniproject/views/admin/listallmember.dart';
 import 'package:miniproject/views/barber/dashboardBarber.dart';
 import 'package:miniproject/views/barber/listReserve.dart';
-import 'package:miniproject/views/customer/cancelService.dart';
+import 'package:miniproject/views/customer/cancelReserve.dart';
 import 'package:miniproject/views/customer/dashboard.dart';
 import 'package:miniproject/views/customer/editProfile.dart';
-import 'package:miniproject/views/customer/listReserve.dart';
 import 'package:miniproject/views/customer/reserveService.dart';
 import 'package:miniproject/views/user/listService.dart';
 import 'package:miniproject/views/user/login_page.dart';
@@ -61,7 +60,7 @@ class _MyAppState extends State<MyApp> {
      final List<Widget> _widgetCustomer = <Widget>[ 
       const ListServiceScreen(), 
       ReserveService(),  
-      CancelServicePage(),                   
+      CancelReservePage(),                   
       const DashboardScreen(),
     ];
 
@@ -109,8 +108,8 @@ class _MyAppState extends State<MyApp> {
             padding: EdgeInsets.symmetric(horizontal: 15, vertical: 8),
             child: 
             role.toString() == "barber" ?  _bottomNavBarber() : 
-            role.toString() == "admin" ? _bottomNavAdmin():              
-            _bottomNavCustomer()
+            role.toString() == "customer" ? _bottomNavCustomer():              
+            _bottomNavAdmin()
           )),
         ),
       ),
@@ -129,7 +128,7 @@ class _MyAppState extends State<MyApp> {
             color: Colors.black,
             tabs: const [                
               GButton(
-                icon: LineIcons.calendar,
+                icon: LineIcons.list,
                 text: "รายการการจอง",
               ),             
               GButton(
@@ -202,11 +201,11 @@ class _MyAppState extends State<MyApp> {
             color: Colors.black,
             tabs: const [     
                GButton(
-                icon: LineIcons.calendar,
-                text: "ประวัติการจอง",
+                icon: LineIcons.home,
+                text: "รายการบริการ",
               ),           
               GButton(
-                icon: LineIcons.home,
+                icon: LineIcons.calendar,
                 text: "นัดจอง",
               ),
               GButton(

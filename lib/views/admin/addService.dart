@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:miniproject/controller/service_controller.dart';
 import 'package:http/http.dart' as http;
 import 'package:miniproject/main.dart';
@@ -66,18 +67,18 @@ class _AddServiceState extends State<AddService> {
                 onPressed: () async {
                   if(_formKey.currentState!.validate()){
                           http.Response response =
-                        await serviceController.addServcieModel(
+                        await serviceController.addServiceModel(
                             serviceNameController.text,
                             double.parse(priceController.text),
                             int.parse(timespendController.text));
       
                     if (response.statusCode == 500) {
-                      print("Error!");
+                      Fluttertoast.showToast(msg: "กรุณากรอกข้อมูลให้ครบถ้วน");
                     } else {
                       print(serviceNameController.text);
                       print(priceController.text);
                       print(timespendController.text);
-                      print("Service was added successfully");
+                      Fluttertoast.showToast(msg: "เพิ่มบริการสำเร็จ");
                       if (context.mounted) {                       
                          Navigator.pushReplacement(
                             context,
@@ -89,7 +90,7 @@ class _AddServiceState extends State<AddService> {
                     print('success');
                   }               
                 },
-                child: Text("Add"))
+                child: Text("ยืนยัน"))
           ],
         ),
       ),

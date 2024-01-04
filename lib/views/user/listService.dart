@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:miniproject/controller/service_controller.dart';
 import 'package:miniproject/model/service.dart';
-import 'package:miniproject/views/admin/deleteService.dart';
+
 
 class ListServiceScreen extends StatefulWidget {
   const ListServiceScreen({super.key});
@@ -18,7 +18,7 @@ class _ListServiceScreenState extends State<ListServiceScreen> {
   int i = 0;
 
   void fetchData() async {
-    serviceModels = await serviceController.listAllService();
+    serviceModels = await serviceController.getListService();
     setState(() {
       isLoaded = true;
     });

@@ -58,7 +58,7 @@ class _ReserveServiceState extends State<ReserveService> {
   String? dayOff;
 
   void fetchData() async {
-    serviceModels = await serviceController.listAllService();
+    serviceModels = await serviceController.getListService();
     listReserveDetails = await reserveDetailController.getCountScheduleTime();
     owners = await ownerCotroller.showShopProfile();
     userId = await SessionManager().get("userId");

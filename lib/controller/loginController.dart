@@ -9,7 +9,7 @@ import 'package:http/http.dart' as http;
 class LoginController {
 
   //ใช้ Log in โดยเรียกผ่าน webservice 
-  Future loginId (String userName, String password) async{
+  Future doLoginMember (String userName, String password) async{
     try {
        Map<String,dynamic> data = {
         "username" : userName,

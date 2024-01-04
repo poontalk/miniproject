@@ -35,7 +35,7 @@ class OwnerCotroller {
     return response;
   } 
 
-    Future editOwner(
+    Future editShopProfile(
       String shopName, String openTime, String closeTime, String dayOff) async {
     Map<String, dynamic> data = {
       "shopName": shopName,

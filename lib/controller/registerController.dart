@@ -4,7 +4,7 @@ import 'package:miniproject/ws_config.dart';
 import 'package:http/http.dart' as http;
 class RegisterController{
 
-   Future addResgister (String firstName,String lastName,String address,String email,String mobileNo,
+   Future doRegister (String firstName,String lastName,String address,String email,String mobileNo,
                         String username,String password) async {
       Map<String,dynamic> data = {       
         "firstName" : firstName,

@@ -106,7 +106,7 @@ class _RegisterPageState extends State<RegisterPage> {
                       ElevatedButton.styleFrom(backgroundColor: Colors.green ,foregroundColor: Colors.white),
                   onPressed: () async {
                     if (_formKey.currentState!.validate()) {
-                      http.Response response = await (rc.addResgister(
+                      http.Response response = await (rc.doRegister(
                           firstnameController.text,
                           lastnameController.text,
                           addressController.text,

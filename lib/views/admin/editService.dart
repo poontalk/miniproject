@@ -52,7 +52,7 @@ class _EditServiceState extends State<EditService> {
 
    Future<void> _checkUpdateService(ServiceModel uService) async{
     http.Response response =
-              await serviceController.updateService(uService);
+              await serviceController.editService(uService);
           if (response.statusCode == 200) {             
               showUpdateServiceSuccessAlert();                                
           }   

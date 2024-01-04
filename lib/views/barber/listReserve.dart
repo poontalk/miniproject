@@ -32,11 +32,7 @@ class _ListReserveBarberState extends State<ListReserveBarber> {
     userId = await SessionManager().get("userId");
     barber = await _barberController.getBarberByUserId(userId!);
     _listReserveBarber =
-        await _reserveController.listReserveForBarber(barber!.barberId!);
-  /*   if (_listReserveBarber != null)
-      for (var item in _listReserveBarber!) {
-        reserveId = item.reserveId;
-      } */
+        await _reserveController.getListReserveForBarber(barber!.barberId!);  
     setState(() {
       isLoaded = true;
     });

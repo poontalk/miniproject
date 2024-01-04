@@ -29,7 +29,7 @@ class BarberController {
     return barberModel;
   }
 
-  Future updateBarber(BarberModel barberModel) async {
+  Future doEditBarber(BarberModel barberModel) async {
     Map<String, dynamic> data = barberModel.fromBarberToJson();
 
     var body = json.encode(data);
@@ -57,7 +57,7 @@ class BarberController {
     return response;
   }
 
-  Future listAllBarber() async {
+  Future listAllMembers() async {
     var url = Uri.parse(baseURL + '/barber/list');
 
     http.Response response = await http.get(url);

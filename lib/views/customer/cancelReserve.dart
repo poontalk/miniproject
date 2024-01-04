@@ -7,14 +7,14 @@ import 'package:miniproject/model/reserve.dart';
 import 'package:miniproject/model/reserveDetail.dart';
 import 'package:http/http.dart' as http;
 
-class CancelServicePage extends StatefulWidget {
-  const CancelServicePage({super.key});
+class CancelReservePage extends StatefulWidget {
+  const CancelReservePage({super.key});
 
   @override
-  State<CancelServicePage> createState() => _CancelServicePageState();
+  State<CancelReservePage> createState() => _CancelReservePageState();
 }
 
-class _CancelServicePageState extends State<CancelServicePage> {
+class _CancelReservePageState extends State<CancelReservePage> {
   final ReserveController _reserveController = ReserveController();
   final ReserveDetailController _reserveDetailController =
       ReserveDetailController();
@@ -67,7 +67,7 @@ class _CancelServicePageState extends State<CancelServicePage> {
   }
 
   void _checkDeleteReserve(String reserveId) async {
-    http.Response response = await _reserveController.cancelReserve(reserveId);
+    http.Response response = await _reserveController.doCancelReserve(reserveId);
     if (response.statusCode == 200) {
       _showDeleteReserveSuccessAlert();
     }
