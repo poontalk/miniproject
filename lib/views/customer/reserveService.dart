@@ -241,7 +241,7 @@ class _ReserveServiceState extends State<ReserveService> {
                   title: 'ยืนยันการจอง',
                   onPressed: () async {
                     int timeBooking = _currentIndex! + _calOpenTime!;
-                    http.Response response = await reserveController.addReserve(
+                    http.Response response = await reserveController.doReserveService(
                         _currentDay.toString().split(" ")[0],
                         _serviceModel?.price,
                         userId);

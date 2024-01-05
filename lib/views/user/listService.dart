@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_session_manager/flutter_session_manager.dart';
 import 'package:miniproject/controller/service_controller.dart';
 import 'package:miniproject/model/service.dart';
+import 'package:miniproject/views/user/login_page.dart';
 
 
 class ListServiceScreen extends StatefulWidget {
@@ -16,9 +18,11 @@ class _ListServiceScreenState extends State<ListServiceScreen> {
   bool? isLoaded = false;
   List<ServiceModel>? serviceModels;
   int i = 0;
+  String? userId;
 
   void fetchData() async {
     serviceModels = await serviceController.getListService();
+    userId = await SessionManager().get("userId");
     setState(() {
       isLoaded = true;
     });
@@ -28,6 +32,13 @@ class _ListServiceScreenState extends State<ListServiceScreen> {
   void initState() {
     super.initState();
     fetchData();
+  }
+
+  bool _checkLogin(){
+     if(userId != null){
+      return false;
+    }
+    return true;  
   }
 
   @override
@@ -60,8 +71,32 @@ class _ListServiceScreenState extends State<ListServiceScreen> {
                       ),
                     ),
                   );
-                })),
-          )
+                })),                
+          ),
+          Expanded(
+            child: Column(
+              children: [
+                Visibility(
+                  visible: _checkLogin(),
+                  child: const Text('เข้าสู่ระบบ',
+                  style: TextStyle(
+                      decoration: TextDecoration.underline, fontSize: 20,fontWeight: FontWeight.bold))),
+            Visibility(
+               visible: _checkLogin(),
+               child: ElevatedButton(
+                style: ElevatedButton.styleFrom(backgroundColor: Colors.green, foregroundColor: Colors.white),
+                onPressed: () { 
+                  Navigator.push(context,
+                            MaterialPageRoute(
+                                builder: (context) => LoginPage()));
+                                },
+                                 child: const Text("Log in")),
+                                 ),
+              ],
+             
+            
+            )
+            )
         ],
       ),
     );
