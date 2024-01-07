@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:miniproject/controller/service_controller.dart';
+import 'package:miniproject/controller/serviceController.dart';
 import 'package:miniproject/model/service.dart';
 import 'package:miniproject/views/admin/addService.dart';
 import 'package:miniproject/views/admin/editService.dart';

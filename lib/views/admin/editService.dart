@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:miniproject/controller/service_controller.dart';
+import 'package:miniproject/controller/serviceController.dart';
 import 'package:http/http.dart' as http;
 import 'package:miniproject/main.dart';
 import 'package:miniproject/model/service.dart';
@@ -37,7 +37,7 @@ class _EditServiceState extends State<EditService> {
 
   //ส่วนการรับค่าข้อมูล
   void fetchData(String serviceId) async {
-    serviceModel = await serviceController.getServiceById(serviceId);
+    serviceModel = await serviceController.getService(serviceId);
     setDataToText();    
       setState(() {
         isLoaded = true;

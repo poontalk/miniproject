@@ -10,7 +10,7 @@ import 'package:table_calendar/table_calendar.dart';
 import 'package:http/http.dart' as http;
 import '../../controller/customerController.dart';
 import '../../controller/reserveDetailController.dart';
-import '../../controller/service_controller.dart';
+import '../../controller/serviceController.dart';
 import '../../main.dart';
 import '../../model/customer.dart';
 import '../../model/owner.dart';
@@ -427,7 +427,7 @@ class _ReserveServiceState extends State<ReserveService> {
   //DropdownService
   FutureBuilder<List<ServiceModel>> dropdownService() {
     return FutureBuilder<List<ServiceModel>>(
-        future: serviceController.getService(),
+        future: serviceController.getServiceForDropdown(),
         builder: (context, snapshot) {
           if (snapshot.hasData) {
             return DropdownButton(

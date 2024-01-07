@@ -23,7 +23,7 @@ class ReserveController {
     return response;
   }
 
-  Future listReserves(String customerId) async {
+  Future listReserveForCustomer(String customerId) async {
     var url = Uri.parse(baseURL + '/reserve/getbyReserve/' +customerId);
 
     http.Response response = await http.get(url);

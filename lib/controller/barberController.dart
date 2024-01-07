@@ -18,7 +18,7 @@ class BarberController {
     return response;
   }
 
-  Future getBarberById(String barberId) async {
+  Future getBarber(String barberId) async {
     var url = Uri.parse(baseURL + '/barber/getbyid/' + barberId);
 
     http.Response response = await http.get(url);

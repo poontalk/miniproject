@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_session_manager/flutter_session_manager.dart';
-import 'package:miniproject/controller/service_controller.dart';
+import 'package:miniproject/controller/serviceController.dart';
 import 'package:miniproject/model/service.dart';
 import 'package:miniproject/views/user/login_page.dart';
 

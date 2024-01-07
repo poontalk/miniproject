@@ -55,7 +55,7 @@ class ServiceController {
     return response;
   }
 
-  Future getServiceById(String serviceId) async {
+  Future getService(String serviceId) async {
     var url = Uri.parse(baseURL + '/service/getbyid/' + serviceId);
 
     http.Response response = await http.get(url);
@@ -66,7 +66,7 @@ class ServiceController {
     return serviceModel;
   }
 
-  Future<List<ServiceModel>> getService() async {
+  Future<List<ServiceModel>> getServiceForDropdown() async {
     try {
       var url = Uri.parse(baseURL + '/service/list');
       http.Response response = await http.get(url);

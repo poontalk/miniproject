@@ -29,7 +29,7 @@ class _CancelReservePageState extends State<CancelReservePage> {
 
   void fetchData() async {
     userId = await SessionManager().get("userId");
-    _listReserve = await _reserveController.listReserves(userId!);
+    _listReserve = await _reserveController.listReserveForCustomer(userId!);
     for (var item in _listReserve!) {
       reserveId = item.reserveId;
     }

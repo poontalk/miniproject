@@ -24,7 +24,7 @@ class _EditBarberScreenState extends State<EditBarberScreen> {
   TextEditingController userIdController = TextEditingController();
 
   void fetchData(String baeberId) async {
-    barberModel = await barberController.getBarberById(baeberId);
+    barberModel = await barberController.getBarber(baeberId);
     String _name = "${barberModel?.userModel?.firstName ?? ""}  ${barberModel?.userModel?.lastName ?? ""}";
     barberNameController.text = _name;
     barberIdController.text = barberModel?.barberId ?? "";

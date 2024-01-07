@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:miniproject/controller/service_controller.dart';
+import 'package:miniproject/controller/serviceController.dart';
 import 'package:http/http.dart' as http;
 import 'package:miniproject/main.dart';
 import '../../components/validator.dart';
