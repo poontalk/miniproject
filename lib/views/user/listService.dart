@@ -78,23 +78,27 @@ class _ListServiceScreenState extends State<ListServiceScreen> {
               children: [
                 Visibility(
                   visible: _checkLogin(),
-                  child: const Text('เข้าสู่ระบบ',
-                  style: TextStyle(
-                      decoration: TextDecoration.underline, fontSize: 20,fontWeight: FontWeight.bold))),
-            Visibility(
-               visible: _checkLogin(),
-               child: ElevatedButton(
-                style: ElevatedButton.styleFrom(backgroundColor: Colors.green, foregroundColor: Colors.white),
-                onPressed: () { 
-                  Navigator.push(context,
-                            MaterialPageRoute(
-                                builder: (context) => LoginPage()));
-                                },
-                                 child: const Text("Log in")),
-                                 ),
-              ],
-             
-            
+                  child:  Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Text('คุณต้องการเข้าการงาน',
+                      style: TextStyle(color: Colors.black)),
+                  const SizedBox(width: 4),
+                  TextButton(
+                    style: TextButton.styleFrom(
+                      foregroundColor: Colors.blueAccent                      
+                    ),
+                    onPressed: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => LoginPage()));
+                    },
+                    child: const Text('เข้าสู่ระบบ'),
+                  ),
+                ],
+              ),),           
+              ],           
             )
             )
         ],

@@ -14,12 +14,13 @@ import 'package:miniproject/views/customer/editProfile.dart';
 import 'package:miniproject/views/customer/reserveService.dart';
 import 'package:miniproject/views/user/listService.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
+import 'package:miniproject/views/user/login_page.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();   
   runApp(MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: _openUserName().toString() != ' ' ? ListServiceScreen() : MyApp()));  
+      home: _openUserName().toString() != ' ' ? LoginPage() : MyApp()));  
 }
 
 Future<dynamic> _openUserName() async {
@@ -63,6 +64,11 @@ class _MyAppState extends State<MyApp> {
       const DashboardScreen(),
     ];
 
+    final List<Widget> _widgetOwner = <Widget>[     
+      EditShopProfile(),
+      const DashboardAdmin(),
+    ];
+
  
   Future<dynamic> _openRole() async {
     role = await sessionManager.get("roles");
@@ -90,6 +96,7 @@ class _MyAppState extends State<MyApp> {
             child: 
                  role.toString() == "barber" ? _widgetBarber.elementAt(_selectedIndex) : 
                  role.toString() == "customer" ? _widgetCustomer.elementAt(_selectedIndex) :
+                 role.toString() == "owner" ? _widgetOwner.elementAt(_selectedIndex) :
                   _widgetAdmin.elementAt(_selectedIndex)
         ),
         bottomNavigationBar: Container(
@@ -107,7 +114,8 @@ class _MyAppState extends State<MyApp> {
             padding: EdgeInsets.symmetric(horizontal: 15, vertical: 8),
             child: 
             role.toString() == "barber" ?  _bottomNavBarber() : 
-            role.toString() == "customer" ? _bottomNavCustomer():              
+            role.toString() == "customer" ? _bottomNavCustomer():   
+            role.toString() == "owner" ? _bottomNavOwner():             
             _bottomNavAdmin()
           )),
         ),
@@ -145,6 +153,37 @@ class _MyAppState extends State<MyApp> {
                 _selectedIndex = index;
               });
               }              
+            },
+          );
+  } 
+
+   GNav _bottomNavOwner() {
+    return GNav(
+            rippleColor: Colors.grey[300]!,
+            hoverColor: Colors.grey[100]!,
+            gap: 8,
+            activeColor: Colors.redAccent,
+            iconSize: 24,
+            padding: EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+            tabBackgroundColor: Colors.grey[100]!,
+            color: Colors.black,
+            tabs: const [              
+              GButton(
+                icon: LineIcons.shoppingBag,
+                text: "ร้าน",
+              ),
+              GButton(
+                icon: LineIcons.userCircle,
+                text: "โปร์ไฟล์",
+              )
+            ],
+            selectedIndex: _selectedIndex,
+            onTabChange: (index) {
+              if(mounted){
+                 setState(() {
+                _selectedIndex = index;
+              });
+              }             
             },
           );
   } 

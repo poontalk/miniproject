@@ -450,7 +450,7 @@ class _EditShopProfileState extends State<EditShopProfile> {
                   onPressed: () {
                     Navigator.of(context).pop();
                   },
-                  child: Text('Cancel'),
+                  child: Text('ยกเลิก'),
                 ),
                 TextButton(
                   onPressed: () async {
@@ -467,7 +467,7 @@ class _EditShopProfileState extends State<EditShopProfile> {
                       Navigator.pop(context, "ยืนยัน");
                     }
                   },
-                  child: Text('OK'),
+                  child: Text('ตกลง'),
                 ),
               ],
             );
